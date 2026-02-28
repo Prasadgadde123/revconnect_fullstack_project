@@ -1,0 +1,15 @@
+# Resource files
+New-Item -Path src\main\resources\application.properties -ItemType File -Force
+New-Item -Path src\main\resources\application-dev.properties -ItemType File -Force
+New-Item -Path src\main\resources\application-prod.properties -ItemType File -Force
+New-Item -Path src\main\resources\log4j2.xml -ItemType File -Force
+New-Item -Path src\main\resources\db\migration\V1__init.sql -ItemType File -Force
+
+# Test resources
+New-Item -Path src\test\resources\application-test.properties -ItemType File -Force
+
+# Documentation
+New-Item -Path README.md -ItemType File -Force
+New-Item -Path docs\ERD.md -ItemType File -Force
+New-Item -Path docs\ARCHITECTURE.md -ItemType File -Force
+New-Item -Path docs\API.md -ItemType File -Force
