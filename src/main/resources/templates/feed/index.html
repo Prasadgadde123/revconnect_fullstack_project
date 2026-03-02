@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="layout/header :: head('Feed - RevConnect')">
+<body>
+<nav th:replace="layout/header :: navbar"></nav>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-8 mx-auto">
+      <!-- Welcome Card -->
+      <div class="card shadow mb-4">
+        <div class="card-header text-white text-center py-3" style="background-color: #ff6b35 !important;">
+          <h4 class="mb-0">
+            <i class="fas fa-rss me-2"></i>Your Feed
+          </h4>
+        </div>
+        <div class="card-body text-center p-5">
+          <div class="mb-4">
+            <i class="fas fa-user-circle fa-5x" style="color: #ff6b35;"></i>
+          </div>
+          <h3>Welcome, <span th:text="${session.user.fullName != null ? session.user.fullName : session.user.username}">User</span>!</h3>
+          <p class="lead text-muted">You have successfully logged in to RevConnect.</p>
+
+          <div class="alert alert-info mt-4">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Username:</strong> <span th:text="${session.user.username}">username</span><br>
+            <strong>Email:</strong> <span th:text="${session.user.email}">email</span><br>
+            <strong>Account Type:</strong> <span th:text="${session.user.userType}">type</span>
+          </div>
+
+          <div class="d-flex justify-content-center gap-3 mt-4">
+            <a th:href="@{/profile/view}" class="btn px-4 py-2" style="background-color: #ff6b35; color: white; border: none;">
+              <i class="fas fa-user me-2"></i>View Profile
+            </a>
+            <a th:href="@{/profile/edit}" class="btn px-4 py-2" style="background-color: #6c757d; color: white; border: none;">
+              <i class="fas fa-cog me-2"></i>Edit Profile
+            </a>
+            <a th:href="@{/logout}" class="btn px-4 py-2" style="background-color: #dc3545; color: white; border: none;">
+              <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Posts Section (Coming Soon) -->
+      <div class="card shadow">
+        <div class="card-body text-center p-4">
+          <i class="fas fa-newspaper fa-3x mb-3" style="color: #ff6b35;"></i>
+          <h5>Posts Coming Soon!</h5>
+          <p class="text-muted">Your feed will show posts from people you follow.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+  }
+  .card {
+    border: none;
+    border-radius: 15px;
+  }
+  .card-header {
+    border-radius: 15px 15px 0 0 !important;
+  }
+</style>
+</body>
+</html>

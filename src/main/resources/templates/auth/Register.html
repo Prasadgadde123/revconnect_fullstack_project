@@ -1,0 +1,341 @@
+<!--@formatter:off-->
+<!--@thymesVar id="registerRequest" type="com.revconnect.dto.request.RegisterRequest"-->
+<!--@thymesVar id="error" type="java.lang.String"-->
+<!--@thymesVar id="success" type="java.lang.String"-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="layout/header :: head('Register - RevConnect')">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - RevConnect</title>
+    <style>
+        .password-requirements {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .requirement {
+            font-size: 0.85rem;
+            margin: 5px 0;
+            color: #6c757d;
+        }
+        .requirement.valid {
+            color: #28a745;
+        }
+        .requirement.valid:before {
+            content: "✓ ";
+            font-weight: bold;
+        }
+        .requirement.invalid {
+            color: #dc3545;
+        }
+        .requirement.invalid:before {
+            content: "✗ ";
+            font-weight: bold;
+        }
+        .password-strength {
+            height: 5px;
+            margin-top: 5px;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+        .strength-weak {
+            width: 25%;
+            background-color: #dc3545;
+        }
+        .strength-fair {
+            width: 50%;
+            background-color: #ffc107;
+        }
+        .strength-good {
+            width: 75%;
+            background-color: #17a2b8;
+        }
+        .strength-strong {
+            width: 100%;
+            background-color: #28a745;
+        }
+    </style>
+</head>
+<body>
+<nav th:replace="layout/header :: navbar"></nav>
+
+<div class="container">
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-white text-center py-3" style="background-color: #ff6b35 !important;">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Error Message Display -->
+                    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle"></i> <span th:text="${error}">Error message</span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+
+                    <!-- Success Message Display -->
+                    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle"></i> <span th:text="${success}">Success message</span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+
+                    <form th:action="@{/register}" method="post" th:object="${registerRequest}" id="registrationForm">
+                        <!-- Basic Information -->
+                        <h5 class="mb-3" style="color: #ff6b35;">Basic Information</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="username" class="form-label">Username *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user" style="color: #ff6b35;"></i></span>
+                                    <input type="text" class="form-control" id="username"
+                                           th:field="*{username}"
+                                           placeholder="Choose username" required>
+                                </div>
+                                <small class="text-muted">3-20 characters (letters, numbers, dots, underscores)</small>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="fullName" class="form-label">Full Name</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-id-card" style="color: #ff6b35;"></i></span>
+                                    <input type="text" class="form-control" id="fullName"
+                                           th:field="*{fullName}"
+                                           placeholder="Enter your full name">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-envelope" style="color: #ff6b35;"></i></span>
+                                    <input type="email" class="form-control" id="email"
+                                           th:field="*{email}"
+                                           placeholder="Enter your email" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="password" class="form-label">Password *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock" style="color: #ff6b35;"></i></span>
+                                    <input type="password" class="form-control" id="password"
+                                           th:field="*{password}"
+                                           placeholder="Create password" required>
+                                </div>
+                                <!-- Password Strength Meter -->
+                                <div class="password-strength" id="passwordStrength"></div>
+
+                                <!-- Password Requirements -->
+                                <div class="password-requirements">
+                                    <div class="requirement" id="req-length">At least 8 characters</div>
+                                    <div class="requirement" id="req-uppercase">At least one uppercase letter (A-Z)</div>
+                                    <div class="requirement" id="req-lowercase">At least one lowercase letter (a-z)</div>
+                                    <div class="requirement" id="req-number">At least one number (0-9)</div>
+                                    <div class="requirement" id="req-special">At least one special character (@#$%^&+=!)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Account Type -->
+                        <div class="mb-4">
+                            <label class="form-label">Account Type</label>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="userType"
+                                               id="personal" value="PERSONAL" th:field="*{userType}" checked>
+                                        <label class="form-check-label" for="personal">
+                                            <i class="fas fa-user text-primary"></i> Personal
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="userType"
+                                               id="creator" value="CREATOR" th:field="*{userType}">
+                                        <label class="form-check-label" for="creator">
+                                            <i class="fas fa-star text-warning"></i> Creator
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="userType"
+                                               id="business" value="BUSINESS" th:field="*{userType}">
+                                        <label class="form-check-label" for="business">
+                                            <i class="fas fa-building text-success"></i> Business
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Security Questions Section -->
+                        <h5 class="mb-3 mt-4" style="color: #ff6b35;">Security Questions (For Password Recovery)</h5>
+
+                        <!-- Question 1 -->
+                        <div class="mb-3">
+                            <label for="securityQuestion1" class="form-label">Security Question 1 *</label>
+                            <select class="form-select" id="securityQuestion1" th:field="*{securityQuestion1}" required>
+                                <option value="">-- Select a question --</option>
+                                <option value="What was the name of your first school?">What was the name of your first school?</option>
+                                <option value="Who is your childhood hero?">Who is your childhood hero?</option>
+                                <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                                <option value="What was your first pet's name?">What was your first pet's name?</option>
+                                <option value="What is your favorite book?">What is your favorite book?</option>
+                                <option value="Who is your inspiration?">Who is your inspiration?</option>
+                                <option value="What places do you like most?">What places do you like most?</option>
+                                <option value="What was your first job?">What was your first job?</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="securityAnswer1" class="form-label">Answer 1 *</label>
+                            <input type="text" class="form-control" id="securityAnswer1"
+                                   th:field="*{securityAnswer1}"
+                                   placeholder="Your answer" required>
+                        </div>
+
+                        <!-- Question 2 -->
+                        <div class="mb-3">
+                            <label for="securityQuestion2" class="form-label">Security Question 2 *</label>
+                            <select class="form-select" id="securityQuestion2" th:field="*{securityQuestion2}" required>
+                                <option value="">-- Select a question --</option>
+                                <option value="What was the name of your first school?">What was the name of your first school?</option>
+                                <option value="Who is your childhood hero?">Who is your childhood hero?</option>
+                                <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                                <option value="What was your first pet's name?">What was your first pet's name?</option>
+                                <option value="What is your favorite book?">What is your favorite book?</option>
+                                <option value="Who is your inspiration?">Who is your inspiration?</option>
+                                <option value="What places do you like most?">What places do you like most?</option>
+                                <option value="What was your first job?">What was your first job?</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="securityAnswer2" class="form-label">Answer 2 *</label>
+                            <input type="text" class="form-control" id="securityAnswer2"
+                                   th:field="*{securityAnswer2}"
+                                   placeholder="Your answer" required>
+                        </div>
+
+                        <!-- Question 3 -->
+                        <div class="mb-3">
+                            <label for="securityQuestion3" class="form-label">Security Question 3 *</label>
+                            <select class="form-select" id="securityQuestion3" th:field="*{securityQuestion3}" required>
+                                <option value="">-- Select a question --</option>
+                                <option value="What was the name of your first school?">What was the name of your first school?</option>
+                                <option value="Who is your childhood hero?">Who is your childhood hero?</option>
+                                <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                                <option value="What was your first pet's name?">What was your first pet's name?</option>
+                                <option value="What is your favorite book?">What is your favorite book?</option>
+                                <option value="Who is your inspiration?">Who is your inspiration?</option>
+                                <option value="What places do you like most?">What places do you like most?</option>
+                                <option value="What was your first job?">What was your first job?</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label for="securityAnswer3" class="form-label">Answer 3 *</label>
+                            <input type="text" class="form-control" id="securityAnswer3"
+                                   th:field="*{securityAnswer3}"
+                                   placeholder="Your answer" required>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-warning text-white py-2" id="submitBtn" style="background-color: #ff6b35; border-color: #ff6b35;" disabled>
+                                <i class="fas fa-user-plus me-2"></i>Register
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <p class="mb-0">Already have an account?
+                            <a th:href="@{/login}" class="text-decoration-none" style="color: #ff6b35;">
+                                Login here <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Password validation and strength meter
+    const passwordInput = document.getElementById('password');
+    const submitBtn = document.getElementById('submitBtn');
+
+    const requirements = {
+        length: { regex: /.{8,}/, element: document.getElementById('req-length') },
+        uppercase: { regex: /[A-Z]/, element: document.getElementById('req-uppercase') },
+        lowercase: { regex: /[a-z]/, element: document.getElementById('req-lowercase') },
+        number: { regex: /[0-9]/, element: document.getElementById('req-number') },
+        special: { regex: /[@#$%^&+=!]/, element: document.getElementById('req-special') }
+    };
+
+    const strengthMeter = document.getElementById('passwordStrength');
+
+    passwordInput.addEventListener('input', function() {
+        const password = this.value;
+        let validCount = 0;
+        let allValid = true;
+
+        // Check each requirement
+        for (let key in requirements) {
+            const req = requirements[key];
+            const isValid = req.regex.test(password);
+
+            if (isValid) {
+                req.element.classList.add('valid');
+                req.element.classList.remove('invalid');
+                validCount++;
+            } else {
+                req.element.classList.add('invalid');
+                req.element.classList.remove('valid');
+                allValid = false;
+            }
+        }
+
+        // Update strength meter
+        strengthMeter.className = 'password-strength';
+        if (password.length === 0) {
+            strengthMeter.style.width = '0';
+        } else if (validCount <= 2) {
+            strengthMeter.classList.add('strength-weak');
+        } else if (validCount === 3) {
+            strengthMeter.classList.add('strength-fair');
+        } else if (validCount === 4) {
+            strengthMeter.classList.add('strength-good');
+        } else if (validCount === 5) {
+            strengthMeter.classList.add('strength-strong');
+        }
+
+        // Enable/disable submit button
+        submitBtn.disabled = !allValid;
+    });
+
+    // Form validation before submit
+    document.getElementById('registrationForm').addEventListener('submit', function(e) {
+        const password = passwordInput.value;
+        let allValid = true;
+
+        for (let key in requirements) {
+            if (!requirements[key].regex.test(password)) {
+                allValid = false;
+                break;
+            }
+        }
+
+        if (!allValid) {
+            e.preventDefault();
+            alert('Please meet all password requirements before submitting.');
+        }
+    });
+</script>
+</body>
+</html>
