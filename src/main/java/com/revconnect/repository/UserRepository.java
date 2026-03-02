@@ -21,15 +21,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Boolean existsByEmail(String email);
 
-    // Add this method
+    // Add this method for search functionality
     List<User> findByUsernameContainingIgnoreCase(String username);
 
+    // Optional: Add search by both username and full name
     @Query("SELECT u FROM User u WHERE " +
             "LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
             "LOWER(u.fullName) LIKE LOWER(CONCAT('%', :search, '%'))")
     List<User> searchUsers(@Param("search") String search);
-
-    long countByStatus(String status);
-
-    long countByUserType(String userType);
 }

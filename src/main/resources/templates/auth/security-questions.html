@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="layout/header :: head('Security Questions - RevConnect')">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security Questions - RevConnect</title>
+  <style>
+    .btn-orange {
+      background-color: #ff6b35 !important;
+      color: white !important;
+      border: none !important;
+    }
+    .btn-orange:hover {
+      background-color: #e55a2b !important;
+    }
+    .text-orange {
+      color: #ff6b35 !important;
+    }
+  </style>
+</head>
+<body>
+<nav th:replace="layout/header :: navbar"></nav>
+
+<div class="container">
+  <div class="row justify-content-center mt-5">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow">
+        <div class="card-header text-white text-center py-3" style="background-color: #ff6b35 !important;">
+          <h4 class="mb-0">
+            <i class="fas fa-shield-alt"></i> Security Questions
+          </h4>
+        </div>
+        <div class="card-body p-4">
+          <!-- Error Message Display -->
+          <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> <span th:text="${error}">Error</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+
+          <p class="text-muted mb-4">Please answer the following security questions for <strong th:text="${email}">user@example.com</strong></p>
+
+          <!-- SIMPLE FORM - NO JAVASCRIPT -->
+          <form th:action="@{/forgot-password/verify-answers}" method="post">
+            <input type="hidden" name="email" th:value="${email}">
+
+            <div class="mb-3">
+              <label class="form-label fw-bold" th:text="${question1}">Question 1</label>
+              <input type="text" class="form-control" name="answer1" placeholder="Your answer" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold" th:text="${question2}">Question 2</label>
+              <input type="text" class="form-control" name="answer2" placeholder="Your answer" required>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label fw-bold" th:text="${question3}">Question 3</label>
+              <input type="text" class="form-control" name="answer3" placeholder="Your answer" required>
+            </div>
+
+            <div class="d-grid">
+              <button type="submit" class="btn btn-orange py-2">
+                Verify Answers <i class="fas fa-check ms-2"></i>
+              </button>
+            </div>
+          </form>
+
+          <div class="text-center mt-3">
+            <a th:href="@{/forgot-password}" class="text-orange text-decoration-none">
+              <i class="fas fa-arrow-left"></i> Back to Email
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

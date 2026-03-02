@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="layout/header :: head('Profile - RevConnect')">
+<body>
+<nav th:replace="layout/header :: navbar"></nav>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow">
+        <div class="card-header text-white text-center py-3" style="background-color: #ff6b35 !important;">
+          <h4 class="mb-0">
+            <i class="fas fa-user-circle me-2"></i>My Profile
+          </h4>
+        </div>
+        <div class="card-body p-4">
+          <div th:if="${session.user != null}">
+            <!-- Profile Picture Placeholder -->
+            <div class="text-center mb-4">
+              <div class="rounded-circle d-inline-flex justify-content-center align-items-center"
+                   style="width: 120px; height: 120px; background-color: #ff6b35;">
+                <i class="fas fa-user fa-4x text-white"></i>
+              </div>
+            </div>
+
+            <!-- Profile Information -->
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Username</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white"><i class="fas fa-user" style="color: #ff6b35;"></i></span>
+                  <input type="text" class="form-control" th:value="${session.user.username}" readonly disabled>
+                </div>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Full Name</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white"><i class="fas fa-id-card" style="color: #ff6b35;"></i></span>
+                  <input type="text" class="form-control" th:value="${session.user.fullName != null ? session.user.fullName : 'Not set'}" readonly disabled>
+                </div>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Email</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white"><i class="fas fa-envelope" style="color: #ff6b35;"></i></span>
+                  <input type="email" class="form-control" th:value="${session.user.email}" readonly disabled>
+                </div>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Account Type</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white"><i class="fas fa-tag" style="color: #ff6b35;"></i></span>
+                  <input type="text" class="form-control" th:value="${session.user.userType}" readonly disabled>
+                </div>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Member Since</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white"><i class="fas fa-calendar" style="color: #ff6b35;"></i></span>
+                  <input type="text" class="form-control" th:value="${#temporals.format(session.user.createdAt, 'dd MMM yyyy')}" readonly disabled>
+                </div>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Status</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white"><i class="fas fa-circle" style="color: #28a745;"></i></span>
+                  <input type="text" class="form-control" value="Active" readonly disabled>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex justify-content-center gap-3 mt-4">
+              <a th:href="@{/profile/edit}" class="btn px-4 py-2" style="background-color: #ff6b35; color: white; border: none;">
+                <i class="fas fa-edit me-2"></i>Edit Profile
+              </a>
+              <a th:href="@{/feed}" class="btn px-4 py-2" style="background-color: #6c757d; color: white; border: none;">
+                <i class="fas fa-arrow-left me-2"></i>Back to Feed
+              </a>
+              <a th:href="@{/logout}" class="btn px-4 py-2" style="background-color: #dc3545; color: white; border: none;">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
+              </a>
+            </div>
+          </div>
+
+          <div th:if="${session.user == null}" class="text-center py-5">
+            <i class="fas fa-exclamation-circle fa-3x mb-3" style="color: #dc3545;"></i>
+            <h5>You are not logged in!</h5>
+            <p class="text-muted">Please login to view your profile.</p>
+            <a th:href="@{/login}" class="btn px-4 py-2" style="background-color: #ff6b35; color: white; border: none;">
+              <i class="fas fa-sign-in-alt me-2"></i>Login
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+  }
+  .card {
+    border: none;
+    border-radius: 15px;
+  }
+  .card-header {
+    border-radius: 15px 15px 0 0 !important;
+  }
+  .form-control:disabled {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+  }
+</style>
+</body>
+</html>
