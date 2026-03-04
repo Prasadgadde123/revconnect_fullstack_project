@@ -1,3 +1,230 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org" lang="en">-->
+<!--<head th:replace="layout/header :: head('RevConnect - Connect with the world')">-->
+<!--<body>-->
+<!--<nav th:replace="layout/header :: navbar"></nav>-->
+
+<!--<div class="container-fluid p-0">-->
+<!--    &lt;!&ndash; Orange Banner &ndash;&gt;-->
+<!--    <div class="py-5 mb-5" style="background-color: #ff6b35 !important;">-->
+<!--        <div class="container text-center text-white">-->
+<!--            <h1 class="display-3 fw-bold mb-3">RevConnect</h1>-->
+<!--            <p class="lead fs-3">Connect with friends, share moments, and discover amazing content.</p>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Logo Section &ndash;&gt;-->
+<!--    <div class="container text-center mb-5">-->
+<!--        <div class="row justify-content-center">-->
+<!--            <div class="col-md-6">-->
+<!--                <div class="p-4 rounded-circle d-inline-block mb-3" style="width: 120px; height: 120px; background-color: #ff6b35 !important;">-->
+<!--                    <i class="fas fa-link fa-4x text-white mt-3"></i>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; If user is logged in, show welcome message &ndash;&gt;-->
+<!--    <div class="container mb-5" th:if="${session.user != null}">-->
+<!--        <div class="row justify-content-center">-->
+<!--            <div class="col-11 col-md-8 text-center">-->
+<!--                <div class="card shadow-sm border-0 p-4">-->
+<!--                    <div class="card-body">-->
+<!--                        <h2 class="fs-2 fs-md-1 mb-3">Welcome back, <span style="color: #ff6b35;" th:text="${session.user.fullName != null ? session.user.fullName : session.user.username}">User</span>!</h2>-->
+<!--                        <p class="lead fs-6 fs-md-5 text-muted mb-4">Ready to connect with your friends?</p>-->
+
+<!--                        <div class="d-flex justify-content-center gap-3 flex-wrap">-->
+<!--                            <a th:href="@{/feed}" class="btn btn-lg px-4 px-md-5 py-2 py-md-3" style="background-color: #ff6b35; color: white; border: none; border-radius: 50px;">-->
+<!--                                <i class="fas fa-home me-2"></i> Go to Home Feed-->
+<!--                            </a>-->
+<!--                            <a th:href="@{/profile/view}" class="btn btn-lg px-4 px-md-5 py-2 py-md-3" style="background-color: #ff6b35; color: white; border: none; border-radius: 50px;">-->
+<!--                                <i class="fas fa-user me-2"></i> My Profile-->
+<!--                            </a>-->
+<!--                        </div>-->
+
+<!--                        &lt;!&ndash; Logout option for mobile &ndash;&gt;-->
+<!--                        <div class="mt-3 d-block d-md-none">-->
+<!--                            <a th:href="@{/logout}" class="btn btn-outline-danger btn-sm">-->
+<!--                                <i class="fas fa-sign-out-alt"></i> Logout-->
+<!--                            </a>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Features Section - Show only when NOT logged in &ndash;&gt;-->
+<!--    <div class="container mb-5" th:unless="${session.user != null}">-->
+<!--        <div class="row justify-content-center g-4">-->
+<!--            &lt;!&ndash; Login Card &ndash;&gt;-->
+<!--            <div class="col-md-4">-->
+<!--                <div class="card text-center h-100 shadow-sm border-0">-->
+<!--                    <div class="card-body p-4">-->
+<!--                        <div class="rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 70px; height: 70px; background-color: #ff6b35 !important;">-->
+<!--                            <i class="fas fa-sign-in-alt text-white fa-2x"></i>-->
+<!--                        </div>-->
+<!--                        <h4 class="card-title fw-bold">Login</h4>-->
+<!--                        <p class="card-text text-muted">Access your existing account</p>-->
+<!--                        <a th:href="@{/login}" class="btn px-4 py-2" style="background-color: #ff6b35; color: white; border: none; border-radius: 50px;">-->
+<!--                            Login <i class="fas fa-arrow-right ms-2"></i>-->
+<!--                        </a>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; Register Card &ndash;&gt;-->
+<!--            <div class="col-md-4">-->
+<!--                <div class="card text-center h-100 shadow-sm border-0">-->
+<!--                    <div class="card-body p-4">-->
+<!--                        <div class="rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 70px; height: 70px; background-color: #ff6b35 !important;">-->
+<!--                            <i class="fas fa-user-plus text-white fa-2x"></i>-->
+<!--                        </div>-->
+<!--                        <h4 class="card-title fw-bold">Register</h4>-->
+<!--                        <p class="card-text text-muted">Create a new account</p>-->
+<!--                        <a th:href="@{/register}" class="btn px-4 py-2" style="background-color: #ff6b35; color: white; border: none; border-radius: 50px;">-->
+<!--                            Register <i class="fas fa-arrow-right ms-2"></i>-->
+<!--                        </a>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; Forgot Password Card &ndash;&gt;-->
+<!--            <div class="col-md-4">-->
+<!--                <div class="card text-center h-100 shadow-sm border-0">-->
+<!--                    <div class="card-body p-4">-->
+<!--                        <div class="rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 70px; height: 70px; background-color: #ff6b35 !important;">-->
+<!--                            <i class="fas fa-key text-white fa-2x"></i>-->
+<!--                        </div>-->
+<!--                        <h4 class="card-title fw-bold">Forgot Password?</h4>-->
+<!--                        <p class="card-text text-muted">Reset your password</p>-->
+<!--                        <a th:href="@{/forgot-password}" class="btn px-4 py-2" style="background-color: #ff6b35; color: white; border: none; border-radius: 50px;">-->
+<!--                            Reset <i class="fas fa-arrow-right ms-2"></i>-->
+<!--                        </a>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Discover, Share, Connect Section &ndash;&gt;-->
+<!--    <div class="container py-5">-->
+<!--        <div class="row g-4">-->
+<!--            <div class="col-md-4 text-center">-->
+<!--                <div class="p-4">-->
+<!--                    <i class="fas fa-compass fa-4x mb-3" style="color: #ff6b35;"></i>-->
+<!--                    <h4 class="fw-bold">Discover</h4>-->
+<!--                    <p class="text-muted">Explore amazing content and find new friends with similar interests</p>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="col-md-4 text-center">-->
+<!--                <div class="p-4">-->
+<!--                    <i class="fas fa-share-alt fa-4x mb-3" style="color: #ff6b35;"></i>-->
+<!--                    <h4 class="fw-bold">Share</h4>-->
+<!--                    <p class="text-muted">Share your thoughts, moments, and experiences with the world</p>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="col-md-4 text-center">-->
+<!--                <div class="p-4">-->
+<!--                    <i class="fas fa-users fa-4x mb-3" style="color: #ff6b35;"></i>-->
+<!--                    <h4 class="fw-bold">Connect</h4>-->
+<!--                    <p class="text-muted">Build meaningful connections with people who share your passion</p>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Footer &ndash;&gt;-->
+<!--    <div class="container text-center py-4 border-top">-->
+<!--        <p class="text-muted mb-0">&copy; 2026 RevConnect. All rights reserved.</p>-->
+<!--        <div class="mt-2">-->
+<!--            <a href="#" class="text-decoration-none mx-2" style="color: #ff6b35;">About</a>-->
+<!--            <a href="#" class="text-decoration-none mx-2" style="color: #ff6b35;">Privacy</a>-->
+<!--            <a href="#" class="text-decoration-none mx-2" style="color: #ff6b35;">Terms</a>-->
+<!--            <a href="#" class="text-decoration-none mx-2" style="color: #ff6b35;">Contact</a>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<style>-->
+<!--    /* Global Orange Theme for all buttons */-->
+<!--    .btn, button, input[type="submit"], .btn-primary, .btn-secondary, .btn-success {-->
+<!--        background-color: #ff6b35 !important;-->
+<!--        color: white !important;-->
+<!--        border: none !important;-->
+<!--        transition: all 0.3s ease !important;-->
+<!--    }-->
+
+<!--    .btn:hover, button:hover, input[type="submit"]:hover {-->
+<!--        background-color: #e55a2b !important;-->
+<!--        transform: translateY(-2px);-->
+<!--        box-shadow: 0 5px 15px rgba(255,107,53,0.3);-->
+<!--    }-->
+
+<!--    /* Orange text for links */-->
+<!--    a {-->
+<!--        color: #ff6b35 !important;-->
+<!--    }-->
+
+<!--    a:hover {-->
+<!--        color: #e55a2b !important;-->
+<!--    }-->
+
+<!--    /* Card hover effects */-->
+<!--    .card {-->
+<!--        transition: all 0.3s ease;-->
+<!--        border-radius: 15px !important;-->
+<!--        overflow: hidden;-->
+<!--    }-->
+
+<!--    .card:hover {-->
+<!--        transform: translateY(-10px);-->
+<!--        box-shadow: 0 20px 30px rgba(255,107,53,0.2) !important;-->
+<!--    }-->
+
+<!--    .rounded-circle {-->
+<!--        transition: all 0.3s ease;-->
+<!--    }-->
+
+<!--    .card:hover .rounded-circle {-->
+<!--        transform: scale(1.1);-->
+<!--    }-->
+
+<!--    /* Responsive adjustments */-->
+<!--    @media (max-width: 768px) {-->
+<!--        .display-3 {-->
+<!--            font-size: 2.5rem;-->
+<!--        }-->
+<!--        .lead {-->
+<!--            font-size: 1.2rem;-->
+<!--        }-->
+<!--        .col-md-4 {-->
+<!--            margin-bottom: 20px;-->
+<!--        }-->
+<!--    }-->
+
+<!--    /* Animation for cards */-->
+<!--    @keyframes fadeInUp {-->
+<!--        from {-->
+<!--            opacity: 0;-->
+<!--            transform: translateY(20px);-->
+<!--        }-->
+<!--        to {-->
+<!--            opacity: 1;-->
+<!--            transform: translateY(0);-->
+<!--        }-->
+<!--    }-->
+
+<!--    .card {-->
+<!--        animation: fadeInUp 0.5s ease-out;-->
+<!--    }-->
+<!--</style>-->
+<!--</body>-->
+<!--</html>-->
+
+
+
+<!-- src/main/resources/templates/index.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head th:replace="layout/header :: head('RevConnect - Connect with the world')">
@@ -24,21 +251,61 @@
         </div>
     </div>
 
-    <!-- If user is logged in, show welcome message -->
+    <!-- If user is logged in, show welcome message with enhanced options -->
     <div class="container mb-5" th:if="${session.user != null}">
         <div class="row justify-content-center">
             <div class="col-11 col-md-8 text-center">
                 <div class="card shadow-sm border-0 p-4">
                     <div class="card-body">
+                        <!-- Profile Picture -->
+                        <div class="mb-3">
+                            <img th:if="${session.user.profilePicture}" th:src="${session.user.profilePicture}"
+                                 class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover; border: 3px solid #ff6b35;">
+                            <i th:unless="${session.user.profilePicture}" class="fas fa-user-circle fa-4x" style="color: #ff6b35;"></i>
+                        </div>
+
                         <h2 class="fs-2 fs-md-1 mb-3">Welcome back, <span style="color: #ff6b35;" th:text="${session.user.fullName != null ? session.user.fullName : session.user.username}">User</span>!</h2>
                         <p class="lead fs-6 fs-md-5 text-muted mb-4">Ready to connect with your friends?</p>
 
+                        <!-- Stats Row -->
+                        <div class="row mb-4">
+                            <div class="col-4">
+                                <h5 class="mb-0" id="followersCount">0</h5>
+                                <small class="text-muted">Followers</small>
+                            </div>
+                            <div class="col-4">
+                                <h5 class="mb-0" id="followingCount">0</h5>
+                                <small class="text-muted">Following</small>
+                            </div>
+                            <div class="col-4">
+                                <h5 class="mb-0" id="profileViews">0</h5>
+                                <small class="text-muted">Profile Views</small>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons - Enhanced with more options -->
                         <div class="d-flex justify-content-center gap-3 flex-wrap">
                             <a th:href="@{/feed}" class="btn btn-lg px-4 px-md-5 py-2 py-md-3" style="background-color: #ff6b35; color: white; border: none; border-radius: 50px;">
-                                <i class="fas fa-home me-2"></i> Go to Home Feed
+                                <i class="fas fa-home me-2"></i> Feed
                             </a>
-                            <a th:href="@{/profile/view}" class="btn btn-lg px-4 px-md-5 py-2 py-md-3" style="background-color: #ff6b35; color: white; border: none; border-radius: 50px;">
-                                <i class="fas fa-user me-2"></i> My Profile
+                            <a th:href="@{|/profile/${session.user.username}|}" class="btn btn-lg px-4 px-md-5 py-2 py-md-3" style="background-color: #ff6b35; color: white; border: none; border-radius: 50px;">
+                                <i class="fas fa-user me-2"></i> Profile
+                            </a>
+                            <a th:href="@{/discover}" class="btn btn-lg px-4 px-md-5 py-2 py-md-3" style="background-color: #ff6b35; color: white; border: none; border-radius: 50px;">
+                                <i class="fas fa-compass me-2"></i> Discover
+                            </a>
+                        </div>
+
+                        <!-- Secondary Action Buttons -->
+                        <div class="d-flex justify-content-center gap-2 mt-3 flex-wrap">
+                            <a th:href="@{/profile/enhanced/edit}" class="btn btn-sm px-3 py-2" style="background-color: #6c757d; color: white; border: none; border-radius: 50px;">
+                                <i class="fas fa-edit me-1"></i> Edit Profile
+                            </a>
+                            <a th:href="@{/profile/privacy}" class="btn btn-sm px-3 py-2" style="background-color: #6c757d; color: white; border: none; border-radius: 50px;">
+                                <i class="fas fa-shield-alt me-1"></i> Privacy
+                            </a>
+                            <a th:href="@{/search?q=}" class="btn btn-sm px-3 py-2" style="background-color: #6c757d; color: white; border: none; border-radius: 50px;">
+                                <i class="fas fa-search me-1"></i> Search
                             </a>
                         </div>
 
@@ -81,7 +348,7 @@
                             <i class="fas fa-user-plus text-white fa-2x"></i>
                         </div>
                         <h4 class="card-title fw-bold">Register</h4>
-                        <p class="card-text text-muted">Create a new account</p>
+                        <p class="card-text text-muted">Create a new account with enhanced profile</p>
                         <a th:href="@{/register}" class="btn px-4 py-2" style="background-color: #ff6b35; color: white; border: none; border-radius: 50px;">
                             Register <i class="fas fa-arrow-right ms-2"></i>
                         </a>
@@ -97,7 +364,7 @@
                             <i class="fas fa-key text-white fa-2x"></i>
                         </div>
                         <h4 class="card-title fw-bold">Forgot Password?</h4>
-                        <p class="card-text text-muted">Reset your password</p>
+                        <p class="card-text text-muted">Reset using security questions</p>
                         <a th:href="@{/forgot-password}" class="btn px-4 py-2" style="background-color: #ff6b35; color: white; border: none; border-radius: 50px;">
                             Reset <i class="fas fa-arrow-right ms-2"></i>
                         </a>
@@ -107,28 +374,89 @@
         </div>
     </div>
 
-    <!-- Discover, Share, Connect Section -->
+    <!-- Discover, Share, Connect Section - Enhanced -->
     <div class="container py-5">
+        <h2 class="text-center mb-5" style="color: #ff6b35;">Why Choose RevConnect?</h2>
         <div class="row g-4">
             <div class="col-md-4 text-center">
                 <div class="p-4">
-                    <i class="fas fa-compass fa-4x mb-3" style="color: #ff6b35;"></i>
-                    <h4 class="fw-bold">Discover</h4>
-                    <p class="text-muted">Explore amazing content and find new friends with similar interests</p>
+                    <div class="rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 80px; height: 80px; background-color: rgba(255,107,53,0.1);">
+                        <i class="fas fa-id-card fa-3x" style="color: #ff6b35;"></i>
+                    </div>
+                    <h4 class="fw-bold">Enhanced Profiles</h4>
+                    <p class="text-muted">Showcase your skills, interests, and professional background with our enhanced profile system</p>
                 </div>
             </div>
             <div class="col-md-4 text-center">
                 <div class="p-4">
-                    <i class="fas fa-share-alt fa-4x mb-3" style="color: #ff6b35;"></i>
-                    <h4 class="fw-bold">Share</h4>
-                    <p class="text-muted">Share your thoughts, moments, and experiences with the world</p>
+                    <div class="rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 80px; height: 80px; background-color: rgba(255,107,53,0.1);">
+                        <i class="fas fa-shield-alt fa-3x" style="color: #ff6b35;"></i>
+                    </div>
+                    <h4 class="fw-bold">Privacy Control</h4>
+                    <p class="text-muted">Granular privacy settings to control who sees your information and interactions</p>
                 </div>
             </div>
             <div class="col-md-4 text-center">
                 <div class="p-4">
-                    <i class="fas fa-users fa-4x mb-3" style="color: #ff6b35;"></i>
-                    <h4 class="fw-bold">Connect</h4>
-                    <p class="text-muted">Build meaningful connections with people who share your passion</p>
+                    <div class="rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 80px; height: 80px; background-color: rgba(255,107,53,0.1);">
+                        <i class="fas fa-search fa-3x" style="color: #ff6b35;"></i>
+                    </div>
+                    <h4 class="fw-bold">Smart Discovery</h4>
+                    <p class="text-muted">Find people with similar interests, skills, and professional backgrounds</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-2">
+            <div class="col-md-4 text-center">
+                <div class="p-4">
+                    <div class="rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 80px; height: 80px; background-color: rgba(255,107,53,0.1);">
+                        <i class="fas fa-users fa-3x" style="color: #ff6b35;"></i>
+                    </div>
+                    <h4 class="fw-bold">Follow System</h4>
+                    <p class="text-muted">Follow your interests and build meaningful connections with people</p>
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="p-4">
+                    <div class="rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 80px; height: 80px; background-color: rgba(255,107,53,0.1);">
+                        <i class="fas fa-ban fa-3x" style="color: #ff6b35;"></i>
+                    </div>
+                    <h4 class="fw-bold">Block Management</h4>
+                    <p class="text-muted">Full control over your experience with block/unblock functionality</p>
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="p-4">
+                    <div class="rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 80px; height: 80px; background-color: rgba(255,107,53,0.1);">
+                        <i class="fas fa-lightbulb fa-3x" style="color: #ff6b35;"></i>
+                    </div>
+                    <h4 class="fw-bold">Smart Suggestions</h4>
+                    <p class="text-muted">Get personalized user recommendations based on your interests</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Testimonials / Stats Section -->
+    <div class="container-fluid py-5" style="background-color: #f8f9fa;">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-md-3 col-6 mb-3">
+                    <h2 class="fw-bold" style="color: #ff6b35;">100+</h2>
+                    <p class="text-muted">Active Users</p>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                    <h2 class="fw-bold" style="color: #ff6b35;">50+</h2>
+                    <p class="text-muted">Daily Connections</p>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                    <h2 class="fw-bold" style="color: #ff6b35;">24/7</h2>
+                    <p class="text-muted">Support</p>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                    <h2 class="fw-bold" style="color: #ff6b35;">100%</h2>
+                    <p class="text-muted">Privacy Focused</p>
                 </div>
             </div>
         </div>
@@ -145,6 +473,37 @@
         </div>
     </div>
 </div>
+
+<!-- JavaScript to load user stats when logged in -->
+<script th:if="${session.user != null}">
+    document.addEventListener('DOMContentLoaded', function() {
+        const username = '[[${session.user.username}]]';
+
+        // Load followers count
+        fetch(`/api/followers/${username}?page=0&size=1`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('followersCount').textContent = data.totalElements || 0;
+            })
+            .catch(error => console.error('Error loading followers:', error));
+
+        // Load following count
+        fetch(`/api/following/${username}?page=0&size=1`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('followingCount').textContent = data.totalElements || 0;
+            })
+            .catch(error => console.error('Error loading following:', error));
+
+        // Load profile views (from session or API)
+        fetch(`/api/profiles/${username}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('profileViews').textContent = data.profileViews || 0;
+            })
+            .catch(error => console.error('Error loading profile views:', error));
+    });
+</script>
 
 <style>
     /* Global Orange Theme for all buttons */
@@ -164,10 +523,12 @@
     /* Orange text for links */
     a {
         color: #ff6b35 !important;
+        transition: all 0.3s ease;
     }
 
     a:hover {
         color: #e55a2b !important;
+        text-decoration: none;
     }
 
     /* Card hover effects */
@@ -201,6 +562,9 @@
         .col-md-4 {
             margin-bottom: 20px;
         }
+        h2.fs-2 {
+            font-size: 1.5rem !important;
+        }
     }
 
     /* Animation for cards */
@@ -217,6 +581,22 @@
 
     .card {
         animation: fadeInUp 0.5s ease-out;
+    }
+
+    /* Stats number styling */
+    #followersCount, #followingCount, #profileViews {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #ff6b35;
+    }
+
+    /* Feature icons hover effect */
+    .rounded-circle {
+        transition: transform 0.3s ease;
+    }
+
+    .rounded-circle:hover {
+        transform: scale(1.1) rotate(5deg);
     }
 </style>
 </body>
