@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout/header :: head('Profile - RevConnect')}"></head>
+<body>
+<nav th:replace="~{layout/header :: navbar}"></nav>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow mb-4">
+                <div class="card-body text-center p-4">
+
+                    <!-- Cover Photo -->
+                    <div style="height:100px;overflow:hidden;border-radius:10px;
+                                margin-top:-24px;margin-left:-24px;margin-right:-24px;">
+                        <img th:if="${profile.coverPhoto != null}"
+                             th:src="${profile.coverPhoto}"
+                             style="width:100%;height:100%;object-fit:cover;" alt="Cover">
+                        <div th:unless="${profile.coverPhoto != null}"
+                             style="width:100%;height:100%;background:linear-gradient(45deg,#ff6b35,#ff8c5a);"></div>
+                    </div>
+
+                    <!-- Profile Picture -->
+                    <div class="mt-4">
+                        <img th:src="${profile.profilePicture != null ? profile.profilePicture : 'https://via.placeholder.com/120'}"
+                             class="rounded-circle border border-4 border-white shadow"
+                             style="width:120px;height:120px;object-fit:cover;margin-top:-60px;"
+                             alt="Profile Picture">
+                    </div>
+
+                    <h3 class="mt-3 mb-1"
+                        th:text="${profile.fullName != null ? profile.fullName : profile.username}">Name</h3>
+                    <p class="text-muted mb-1">@<span th:text="${profile.username}">username</span></p>
+                    <span class="badge mb-3"
+                          style="background-color:#ff6b35;padding:8px 15px;color:white;"
+                          th:text="${profile.userType}">PERSONAL</span>
+
+                    <p class="text-muted"
+                       th:text="${profile.bio != null ? profile.bio : 'No bio yet'}"></p>
+
+                    <div class="mb-3">
+                        <div th:if="${profile.location != null}" class="mb-2">
+                            <i class="fas fa-map-marker-alt" style="color:#ff6b35;"></i>
+                            <span th:text="${profile.location}"></span>
+                        </div>
+                        <div th:if="${profile.website != null}">
+                            <i class="fas fa-link" style="color:#ff6b35;"></i>
+                            <a th:href="${profile.website}" target="_blank"
+                               th:text="${profile.website}" class="text-decoration-none"></a>
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="row text-center border-top border-bottom py-3 my-3">
+                        <div class="col-4">
+                            <h5 class="mb-0" th:text="${profile.postsCount != null ? profile.postsCount : 0}">0</h5>
+                            <small class="text-muted">Posts</small>
+                        </div>
+                        <div class="col-4">
+                            <h5 class="mb-0" th:text="${profile.followersCount != null ? profile.followersCount : 0}">0</h5>
+                            <small class="text-muted">Followers</small>
+                        </div>
+                        <div class="col-4">
+                            <h5 class="mb-0" th:text="${profile.followingCount != null ? profile.followingCount : 0}">0</h5>
+                            <small class="text-muted">Following</small>
+                        </div>
+                    </div>
+
+                    <!-- Other user's buttons -->
+                    <div th:if="${!isOwnProfile}" class="d-grid gap-2">
+                        <button th:if="${profile.isFollowedByCurrentUser == null or !profile.isFollowedByCurrentUser}"
+                                class="btn btn-follow"
+                                style="background-color:#ff6b35;color:white;"
+                                th:attr="data-username=${profile.username}">
+                            <i class="fas fa-user-plus"></i> Follow
+                        </button>
+                        <button th:if="${profile.isFollowedByCurrentUser != null and profile.isFollowedByCurrentUser}"
+                                class="btn btn-outline-danger btn-unfollow"
+                                th:attr="data-username=${profile.username}">
+                            <i class="fas fa-user-minus"></i> Unfollow
+                        </button>
+                        <button class="btn btn-outline-secondary btn-block-user"
+                                th:attr="data-username=${profile.username}">
+                            <i class="fas fa-ban"></i> Block
+                        </button>
+                    </div>
+
+                    <!-- Own profile buttons -->
+                    <div th:if="${isOwnProfile}" class="d-grid gap-2">
+                        <a th:href="@{/profile/enhanced/edit}"
+                           class="btn" style="background-color:#ff6b35;color:white;">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </a>
+                        <a th:href="@{/profile/privacy}" class="btn btn-outline-secondary">
+                            <i class="fas fa-shield-alt"></i> Privacy Settings
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Professional Info -->
+            <div class="card shadow mb-4"
+                 th:if="${profile.occupation != null or profile.company != null or profile.education != null}">
+                <div class="card-header" style="background-color:#ff6b35;color:white;">
+                    <h5 class="mb-0"><i class="fas fa-briefcase me-2"></i>Professional Info</h5>
+                </div>
+                <div class="card-body">
+                    <div th:if="${profile.occupation != null}" class="mb-2">
+                        <i class="fas fa-user-tie" style="color:#ff6b35;"></i>
+                        <strong>Occupation:</strong> <span th:text="${profile.occupation}"></span>
+                    </div>
+                    <div th:if="${profile.company != null}" class="mb-2">
+                        <i class="fas fa-building" style="color:#ff6b35;"></i>
+                        <strong>Company:</strong> <span th:text="${profile.company}"></span>
+                    </div>
+                    <div th:if="${profile.education != null}" class="mb-2">
+                        <i class="fas fa-graduation-cap" style="color:#ff6b35;"></i>
+                        <strong>Education:</strong> <span th:text="${profile.education}"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills & Interests -->
+            <div class="card shadow mb-4"
+                 th:if="${profile.skills != null or profile.interests != null}">
+                <div class="card-header" style="background-color:#ff6b35;color:white;">
+                    <h5 class="mb-0"><i class="fas fa-star me-2"></i>Skills &amp; Interests</h5>
+                </div>
+                <div class="card-body">
+                    <div th:if="${profile.skills != null}" class="mb-3">
+                        <strong>Skills:</strong>
+                        <div class="mt-2">
+                            <span th:each="skill : ${#strings.arraySplit(profile.skills, ',')}"
+                                  class="badge me-1 mb-1"
+                                  style="background-color:#ff6b35;padding:5px 10px;color:white;"
+                                  th:text="${#strings.trim(skill)}"></span>
+                        </div>
+                    </div>
+                    <div th:if="${profile.interests != null}">
+                        <strong>Interests:</strong>
+                        <div class="mt-2">
+                            <span th:each="interest : ${#strings.arraySplit(profile.interests, ',')}"
+                                  class="badge me-1 mb-1"
+                                  style="background-color:#6c757d;padding:5px 10px;color:white;"
+                                  th:text="${#strings.trim(interest)}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Social Links -->
+            <div class="card shadow mb-4"
+                 th:if="${profile.facebookUrl != null or profile.twitterUrl != null
+                          or profile.instagramUrl != null or profile.linkedinUrl != null
+                          or profile.githubUrl != null}">
+                <div class="card-header" style="background-color:#ff6b35;color:white;">
+                    <h5 class="mb-0"><i class="fas fa-share-alt me-2"></i>Social Links</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-around flex-wrap">
+                        <a th:if="${profile.facebookUrl != null}"  th:href="${profile.facebookUrl}"  target="_blank" class="btn btn-outline-primary btn-sm rounded-circle m-1" style="width:40px;height:40px;padding:8px;"><i class="fab fa-facebook-f"></i></a>
+                        <a th:if="${profile.twitterUrl != null}"   th:href="${profile.twitterUrl}"   target="_blank" class="btn btn-outline-info btn-sm rounded-circle m-1"    style="width:40px;height:40px;padding:8px;"><i class="fab fa-twitter"></i></a>
+                        <a th:if="${profile.instagramUrl != null}" th:href="${profile.instagramUrl}" target="_blank" class="btn btn-outline-danger btn-sm rounded-circle m-1"  style="width:40px;height:40px;padding:8px;"><i class="fab fa-instagram"></i></a>
+                        <a th:if="${profile.linkedinUrl != null}"  th:href="${profile.linkedinUrl}"  target="_blank" class="btn btn-outline-primary btn-sm rounded-circle m-1" style="width:40px;height:40px;padding:8px;"><i class="fab fa-linkedin-in"></i></a>
+                        <a th:if="${profile.githubUrl != null}"    th:href="${profile.githubUrl}"    target="_blank" class="btn btn-outline-dark btn-sm rounded-circle m-1"    style="width:40px;height:40px;padding:8px;"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Views -->
+            <div class="card shadow mb-4">
+                <div class="card-body text-center py-2">
+                    <small class="text-muted">
+                        <i class="fas fa-clock me-1" style="color:#ff6b35;"></i>
+                        Profile Views: <span th:text="${profile.profileViews != null ? profile.profileViews : 0}">0</span>
+                        <span th:if="${profile.lastActive != null}">
+                            | Last Active: <span th:text="${profile.lastActive}">Date</span>
+                        </span>
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right column -->
+        <div class="col-md-8">
+            <ul class="nav nav-tabs mb-4" id="profileTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="posts-tab"
+                            data-bs-toggle="tab" data-bs-target="#posts" type="button">Posts</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="followers-tab"
+                            data-bs-toggle="tab" data-bs-target="#followers" type="button">
+                        Followers <span class="badge bg-secondary ms-1"
+                                        th:text="${profile.followersCount != null ? profile.followersCount : 0}">0</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="following-tab"
+                            data-bs-toggle="tab" data-bs-target="#following" type="button">
+                        Following <span class="badge bg-secondary ms-1"
+                                        th:text="${profile.followingCount != null ? profile.followingCount : 0}">0</span>
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="posts" role="tabpanel">
+                    <div class="card shadow">
+                        <div class="card-body text-center py-5">
+                            <i class="fas fa-newspaper fa-4x mb-3" style="color:#ff6b35;"></i>
+                            <h5>No Posts Yet</h5>
+                            <p class="text-muted">When this user posts, they'll appear here</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="followers" role="tabpanel">
+                    <div class="card shadow">
+                        <div class="card-header" style="background-color:#ff6b35;color:white;">
+                            <h5 class="mb-0">Followers · <span th:text="${profile.followersCount != null ? profile.followersCount : 0}">0</span></h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="followersList"></div>
+                            <div id="followersLoading" style="display:none;" class="text-center py-3">
+                                <div class="spinner-border" style="color:#ff6b35;" role="status"></div>
+                            </div>
+                            <div id="noFollowers" style="display:none;" class="text-center py-3">
+                                <p class="text-muted">No followers yet</p>
+                            </div>
+                            <button id="loadMoreFollowers" style="display:none;"
+                                    class="btn w-100 mt-2" style="background-color:#ff6b35;color:white;">Load More</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="following" role="tabpanel">
+                    <div class="card shadow">
+                        <div class="card-header" style="background-color:#ff6b35;color:white;">
+                            <h5 class="mb-0">Following · <span th:text="${profile.followingCount != null ? profile.followingCount : 0}">0</span></h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="followingList"></div>
+                            <div id="followingLoading" style="display:none;" class="text-center py-3">
+                                <div class="spinner-border" style="color:#ff6b35;" role="status"></div>
+                            </div>
+                            <div id="noFollowing" style="display:none;" class="text-center py-3">
+                                <p class="text-muted">Not following anyone yet</p>
+                            </div>
+                            <button id="loadMoreFollowing" style="display:none;"
+                                    class="btn w-100 mt-2" style="background-color:#ff6b35;color:white;">Load More</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .nav-tabs .nav-link { color: #6c757d; }
+    .nav-tabs .nav-link.active { color: #ff6b35; font-weight: bold; border-bottom: 2px solid #ff6b35; }
+</style>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const profileUsername   = /*[[${profile.username}]]*/ '';
+    const isOwnProfile      = /*[[${isOwnProfile}]]*/ false;
+    const currentUsername   = /*[[${session.user.username}]]*/ '';  // ✅ needed for own-profile check
+
+    let followersPage = 0, followingPage = 0;
+    let followersLoading = false, followingLoading = false;
+    let followersEnd = false, followingEnd = false;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('click', function (e) {
+            var btn = e.target.closest('button');
+            if (!btn) return;
+            var username = btn.getAttribute('data-username');
+            if (!username) return;
+            if (btn.classList.contains('btn-follow'))     followUser(username);
+            if (btn.classList.contains('btn-unfollow'))   unfollowUser(username);
+            if (btn.classList.contains('btn-block-user')) blockUser(username);
+        });
+
+        document.getElementById('followers-tab').addEventListener('click', function () {
+            if (!followersEnd && document.getElementById('followersList').children.length === 0)
+                loadFollowers();
+        });
+        document.getElementById('following-tab').addEventListener('click', function () {
+            if (!followingEnd && document.getElementById('followingList').children.length === 0)
+                loadFollowing();
+        });
+        document.getElementById('loadMoreFollowers').addEventListener('click', loadFollowers);
+        document.getElementById('loadMoreFollowing').addEventListener('click', loadFollowing);
+    });
+
+    function followUser(username) {
+        fetch('/api/follow/' + username, { method: 'POST' })
+            .then(r => r.json())
+            .then(d => { showToast(d.message || 'Followed!'); setTimeout(() => location.reload(), 800); })
+            .catch(() => showToast('Failed to follow', true));
+    }
+    function unfollowUser(username) {
+        if (!confirm('Unfollow @' + username + '?')) return;
+        fetch('/api/follow/' + username, { method: 'DELETE' })
+            .then(r => r.json())
+            .then(d => { showToast(d.message || 'Unfollowed!'); setTimeout(() => location.reload(), 800); })
+            .catch(() => showToast('Failed to unfollow', true));
+    }
+    function blockUser(username) {
+        if (!confirm('Block @' + username + '?')) return;
+        fetch('/api/block/' + username, { method: 'POST' })
+            .then(r => r.json())
+            .then(d => { showToast(d.message || 'Blocked!'); setTimeout(() => location.reload(), 800); })
+            .catch(() => showToast('Failed to block', true));
+    }
+
+    function loadFollowers() {
+        if (followersLoading || followersEnd) return;
+        followersLoading = true;
+        document.getElementById('followersLoading').style.display = 'block';
+        document.getElementById('loadMoreFollowers').style.display = 'none';
+        fetch('/api/followers/' + profileUsername + '?page=' + followersPage + '&size=5')
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('followersLoading').style.display = 'none';
+                if (data.content && data.content.length > 0) {
+                    renderUsers(data.content, 'followersList');
+                    followersPage++; followersEnd = data.last;
+                    document.getElementById('loadMoreFollowers').style.display = data.last ? 'none' : 'block';
+                } else { document.getElementById('noFollowers').style.display = 'block'; }
+            })
+            .catch(() => document.getElementById('followersLoading').style.display = 'none')
+            .finally(() => followersLoading = false);
+    }
+
+    function loadFollowing() {
+        if (followingLoading || followingEnd) return;
+        followingLoading = true;
+        document.getElementById('followingLoading').style.display = 'block';
+        document.getElementById('loadMoreFollowing').style.display = 'none';
+        fetch('/api/following/' + profileUsername + '?page=' + followingPage + '&size=5')
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('followingLoading').style.display = 'none';
+                if (data.content && data.content.length > 0) {
+                    renderUsers(data.content, 'followingList');
+                    followingPage++; followingEnd = data.last;
+                    document.getElementById('loadMoreFollowing').style.display = data.last ? 'none' : 'block';
+                } else { document.getElementById('noFollowing').style.display = 'block'; }
+            })
+            .catch(() => document.getElementById('followingLoading').style.display = 'none')
+            .finally(() => followingLoading = false);
+    }
+
+    function renderUsers(users, containerId) {
+        const container = document.getElementById(containerId);
+        users.forEach(function (user) {
+            const pic   = esc(user.profilePicture || 'https://via.placeholder.com/40');
+            const name  = esc(user.fullName || user.username);
+            const uname = esc(user.username);
+
+            // ✅ FIX: own username → /profile/view, others → /profile/{username}
+            const profileLink = (uname === currentUsername) ? '/profile/view' : '/profile/' + uname;
+
+            let btn = '';
+            if (!isOwnProfile) {
+                btn = user.isFollowedByCurrentUser
+                    ? `<button class="btn btn-sm btn-outline-danger btn-unfollow" data-username="${uname}"><i class="fas fa-user-minus"></i> Unfollow</button>`
+                    : `<button class="btn btn-sm btn-follow" data-username="${uname}" style="background-color:#ff6b35;color:white;"><i class="fas fa-user-plus"></i> Follow</button>`;
+            }
+
+            container.insertAdjacentHTML('beforeend', `
+            <div class="d-flex align-items-center justify-content-between p-2 border-bottom">
+                <div class="d-flex align-items-center">
+                    <img src="${pic}" class="rounded-circle me-2" style="width:40px;height:40px;object-fit:cover;"
+                         onerror="this.src='https://via.placeholder.com/40'" alt="${uname}">
+                    <div>
+                        <a href="${profileLink}" class="text-decoration-none fw-bold" style="color:#ff6b35;">${name}</a><br>
+                        <small class="text-muted">@${uname}</small>
+                    </div>
+                </div>
+                ${btn}
+            </div>`);
+        });
+    }
+
+    function esc(t) {
+        if (!t) return '';
+        var d = document.createElement('div'); d.textContent = t; return d.innerHTML;
+    }
+    function showToast(msg, isError) {
+        var t = document.createElement('div');
+        t.textContent = msg;
+        t.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:9999;padding:12px 20px;'
+            + 'border-radius:8px;color:white;font-size:.9rem;box-shadow:0 4px 12px rgba(0,0,0,.2);'
+            + 'background:' + (isError ? '#dc3545' : '#ff6b35') + ';';
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 3000);
+    }
+    /*]]>*/
+</script>
+
+</body>
+</html>

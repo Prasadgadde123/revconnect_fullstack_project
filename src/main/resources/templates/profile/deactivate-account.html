@@ -1,0 +1,124 @@
+<!-- src/main/resources/templates/profile/deactivate-account.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="layout/header :: head('Deactivate Account - RevConnect')">
+<body>
+<nav th:replace="layout/header :: navbar"></nav>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header text-white text-center py-3" style="background-color: #dc3545;">
+                    <h4 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Deactivate Account
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Warning:</strong> Deactivating your account will hide your profile from others. You can reactivate anytime by logging in again.
+                    </div>
+
+                    <form id="deactivateForm" onsubmit="deactivateAccount(event)">
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Enter your password to confirm</label>
+                            <input type="password" class="form-control" id="password" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="reason" class="form-label">Reason for leaving (optional)</label>
+                            <select class="form-select" id="reason">
+                                <option value="">Select a reason</option>
+                                <option value="Privacy concerns">Privacy concerns</option>
+                                <option value="Too many notifications">Too many notifications</option>
+                                <option value="Found another platform">Found another platform</option>
+                                <option value="Taking a break">Taking a break</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="confirmCheck" required>
+                            <label class="form-check-label" for="confirmCheck">
+                                I understand that deactivating will hide my profile and content
+                            </label>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between">
+                            <a th:href="@{|/profile/${session.user.username}|}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-danger" id="deactivateBtn">
+                                <span id="btnText">Deactivate Account</span>
+                                <span id="btnSpinner" class="spinner-border spinner-border-sm d-none"></span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function deactivateAccount(event) {
+        event.preventDefault();
+
+        const password = document.getElementById('password').value;
+        const reason = document.getElementById('reason').value;
+
+        if (!password) {
+            alert('Please enter your password');
+            return;
+        }
+
+        if (!document.getElementById('confirmCheck').checked) {
+            alert('Please confirm that you understand the consequences');
+            return;
+        }
+
+        if (!confirm('Are you absolutely sure? This action can be reversed by logging in again.')) {
+            return;
+        }
+
+        // Show loading
+        const btn = document.getElementById('deactivateBtn');
+        const btnText = document.getElementById('btnText');
+        const btnSpinner = document.getElementById('btnSpinner');
+
+        btnText.textContent = 'Deactivating...';
+        btnSpinner.classList.remove('d-none');
+        btn.disabled = true;
+
+        // Send request
+        fetch('/api/profiles/deactivate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                password: password,
+                reason: reason
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                    window.location.href = '/login?deactivated=true';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to deactivate account');
+                btnText.textContent = 'Deactivate Account';
+                btnSpinner.classList.add('d-none');
+                btn.disabled = false;
+            });
+    }
+</script>
+</body>
+</html>

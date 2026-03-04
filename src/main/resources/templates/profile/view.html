@@ -1,25 +1,32 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head th:replace="layout/header :: head('Profile - RevConnect')">
+<head th:replace="layout/header :: head('My Profile - RevConnect')">
 <body>
 <nav th:replace="layout/header :: navbar"></nav>
 
-<div class="container">
+<div class="container mt-4">
   <div class="row justify-content-center">
     <div class="col-md-8">
       <div class="card shadow">
-        <div class="card-header text-white text-center py-3" style="background-color: #ff6b35 !important;">
+        <div class="card-header text-white text-center py-3" style="background-color: #ff6b35;">
           <h4 class="mb-0">
             <i class="fas fa-user-circle me-2"></i>My Profile
           </h4>
         </div>
         <div class="card-body p-4">
-          <div th:if="${session.user != null}">
-            <!-- Profile Picture Placeholder -->
+          <div th:if="${profile != null}">
+
+            <!-- Profile Picture -->
+            <!-- ✅ FIX 1: Read from ${profile.profilePicture} (fresh from DB), not session -->
             <div class="text-center mb-4">
-              <div class="rounded-circle d-inline-flex justify-content-center align-items-center"
-                   style="width: 120px; height: 120px; background-color: #ff6b35;">
-                <i class="fas fa-user fa-4x text-white"></i>
+              <img th:if="${profile.profilePicture != null}"
+                   th:src="${profile.profilePicture}"
+                   class="rounded-circle img-fluid border"
+                   style="width:120px;height:120px;object-fit:cover;border:3px solid #ff6b35 !important;">
+              <div th:unless="${profile.profilePicture != null}"
+                   class="rounded-circle d-inline-flex justify-content-center align-items-center bg-light"
+                   style="width:120px;height:120px;border:3px solid #ff6b35;">
+                <i class="fas fa-user fa-4x" style="color:#ff6b35;"></i>
               </div>
             </div>
 
@@ -28,97 +35,115 @@
               <div class="col-md-6 mb-3">
                 <label class="form-label fw-bold">Username</label>
                 <div class="input-group">
-                  <span class="input-group-text bg-white"><i class="fas fa-user" style="color: #ff6b35;"></i></span>
-                  <input type="text" class="form-control" th:value="${session.user.username}" readonly disabled>
+                  <span class="input-group-text bg-white"><i class="fas fa-user" style="color:#ff6b35;"></i></span>
+                  <!-- ✅ FIX 2: Use ${profile.*} for all fields -->
+                  <input type="text" class="form-control" th:value="${profile.username}" readonly disabled>
                 </div>
               </div>
 
               <div class="col-md-6 mb-3">
                 <label class="form-label fw-bold">Full Name</label>
                 <div class="input-group">
-                  <span class="input-group-text bg-white"><i class="fas fa-id-card" style="color: #ff6b35;"></i></span>
-                  <input type="text" class="form-control" th:value="${session.user.fullName != null ? session.user.fullName : 'Not set'}" readonly disabled>
+                  <span class="input-group-text bg-white"><i class="fas fa-id-card" style="color:#ff6b35;"></i></span>
+                  <input type="text" class="form-control"
+                         th:value="${profile.fullName != null ? profile.fullName : 'Not set'}"
+                         readonly disabled>
                 </div>
               </div>
 
               <div class="col-md-6 mb-3">
                 <label class="form-label fw-bold">Email</label>
                 <div class="input-group">
-                  <span class="input-group-text bg-white"><i class="fas fa-envelope" style="color: #ff6b35;"></i></span>
-                  <input type="email" class="form-control" th:value="${session.user.email}" readonly disabled>
+                  <span class="input-group-text bg-white"><i class="fas fa-envelope" style="color:#ff6b35;"></i></span>
+                  <input type="email" class="form-control" th:value="${profile.email}" readonly disabled>
                 </div>
               </div>
 
               <div class="col-md-6 mb-3">
                 <label class="form-label fw-bold">Account Type</label>
                 <div class="input-group">
-                  <span class="input-group-text bg-white"><i class="fas fa-tag" style="color: #ff6b35;"></i></span>
-                  <input type="text" class="form-control" th:value="${session.user.userType}" readonly disabled>
+                  <span class="input-group-text bg-white"><i class="fas fa-tag" style="color:#ff6b35;"></i></span>
+                  <input type="text" class="form-control" th:value="${profile.userType}" readonly disabled>
                 </div>
               </div>
 
-              <div class="col-md-6 mb-3">
-                <label class="form-label fw-bold">Member Since</label>
-                <div class="input-group">
-                  <span class="input-group-text bg-white"><i class="fas fa-calendar" style="color: #ff6b35;"></i></span>
-                  <input type="text" class="form-control" th:value="${#temporals.format(session.user.createdAt, 'dd MMM yyyy')}" readonly disabled>
+              <!-- ✅ FIX 3: Bio uses th:text on a <p>, not ${} in raw HTML -->
+              <div class="col-12 mb-3">
+                <label class="form-label fw-bold">Bio</label>
+                <div class="p-3 bg-light rounded">
+                  <p class="mb-0"
+                     th:text="${profile.bio != null ? profile.bio : 'No bio yet'}">Bio here</p>
                 </div>
               </div>
 
-              <div class="col-md-6 mb-3">
-                <label class="form-label fw-bold">Status</label>
+              <!-- Extra profile fields -->
+              <div class="col-md-6 mb-3" th:if="${profile.location != null}">
+                <label class="form-label fw-bold">Location</label>
                 <div class="input-group">
-                  <span class="input-group-text bg-white"><i class="fas fa-circle" style="color: #28a745;"></i></span>
-                  <input type="text" class="form-control" value="Active" readonly disabled>
+                  <span class="input-group-text bg-white"><i class="fas fa-map-marker-alt" style="color:#ff6b35;"></i></span>
+                  <input type="text" class="form-control" th:value="${profile.location}" readonly disabled>
+                </div>
+              </div>
+
+              <div class="col-md-6 mb-3" th:if="${profile.occupation != null}">
+                <label class="form-label fw-bold">Occupation</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white"><i class="fas fa-briefcase" style="color:#ff6b35;"></i></span>
+                  <input type="text" class="form-control" th:value="${profile.occupation}" readonly disabled>
+                </div>
+              </div>
+
+              <!-- Stats row -->
+              <div class="col-12 mb-3">
+                <div class="row text-center border rounded p-3 bg-light">
+                  <div class="col-4">
+                    <h5 class="mb-0" th:text="${profile.followersCount != null ? profile.followersCount : 0}">0</h5>
+                    <small class="text-muted">Followers</small>
+                  </div>
+                  <div class="col-4">
+                    <h5 class="mb-0" th:text="${profile.followingCount != null ? profile.followingCount : 0}">0</h5>
+                    <small class="text-muted">Following</small>
+                  </div>
+                  <div class="col-4">
+                    <h5 class="mb-0" th:text="${profile.profileViews != null ? profile.profileViews : 0}">0</h5>
+                    <small class="text-muted">Profile Views</small>
+                  </div>
                 </div>
               </div>
             </div>
 
             <!-- Action Buttons -->
-            <div class="d-flex justify-content-center gap-3 mt-4">
-              <a th:href="@{/profile/edit}" class="btn px-4 py-2" style="background-color: #ff6b35; color: white; border: none;">
+            <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+              <a th:href="@{/profile/enhanced/edit}" class="btn px-4 py-2"
+                 style="background-color:#ff6b35;color:white;border:none;">
                 <i class="fas fa-edit me-2"></i>Edit Profile
               </a>
-              <a th:href="@{/feed}" class="btn px-4 py-2" style="background-color: #6c757d; color: white; border: none;">
+              <a th:href="@{/feed}" class="btn px-4 py-2"
+                 style="background-color:#6c757d;color:white;border:none;">
                 <i class="fas fa-arrow-left me-2"></i>Back to Feed
               </a>
-              <a th:href="@{/logout}" class="btn px-4 py-2" style="background-color: #dc3545; color: white; border: none;">
+              <a th:href="@{/logout}" class="btn px-4 py-2"
+                 style="background-color:#dc3545;color:white;border:none;">
                 <i class="fas fa-sign-out-alt me-2"></i>Logout
               </a>
             </div>
           </div>
 
-          <div th:if="${session.user == null}" class="text-center py-5">
-            <i class="fas fa-exclamation-circle fa-3x mb-3" style="color: #dc3545;"></i>
-            <h5>You are not logged in!</h5>
-            <p class="text-muted">Please login to view your profile.</p>
-            <a th:href="@{/login}" class="btn px-4 py-2" style="background-color: #ff6b35; color: white; border: none;">
-              <i class="fas fa-sign-in-alt me-2"></i>Login
+          <!-- Fallback if profile is null -->
+          <div th:if="${profile == null}" class="text-center py-5">
+            <i class="fas fa-exclamation-circle fa-3x mb-3" style="color:#dc3545;"></i>
+            <h5>Could not load profile!</h5>
+            <p class="text-muted">Please try again.</p>
+            <a th:href="@{/feed}" class="btn px-4 py-2"
+               style="background-color:#ff6b35;color:white;border:none;">
+              <i class="fas fa-home me-2"></i>Back to Feed
             </a>
           </div>
+
         </div>
       </div>
     </div>
   </div>
 </div>
-
-<style>
-  .btn:hover {
-    opacity: 0.9;
-    transform: translateY(-2px);
-    transition: all 0.3s ease;
-  }
-  .card {
-    border: none;
-    border-radius: 15px;
-  }
-  .card-header {
-    border-radius: 15px 15px 0 0 !important;
-  }
-  .form-control:disabled {
-    background-color: #f8f9fa;
-    border-color: #dee2e6;
-  }
-</style>
 </body>
 </html>

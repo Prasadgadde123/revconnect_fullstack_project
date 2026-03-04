@@ -1,7 +1,6 @@
 package com.revconnect.controller;
 
 import com.revconnect.model.user.User;
-import com.revconnect.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;

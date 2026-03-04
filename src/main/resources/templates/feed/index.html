@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head th:replace="layout/header :: head('Feed - RevConnect')">
+<head th:replace="~{layout/header :: head('Feed - RevConnect')}">
 <body>
-<nav th:replace="layout/header :: navbar"></nav>
+<nav th:replace="~{layout/header :: navbar}"></nav>
 
 <div class="container">
   <div class="row">
     <div class="col-md-8 mx-auto">
-      <!-- Welcome Card -->
       <div class="card shadow mb-4">
         <div class="card-header text-white text-center py-3" style="background-color: #ff6b35 !important;">
           <h4 class="mb-0">
@@ -16,33 +15,79 @@
         </div>
         <div class="card-body text-center p-5">
           <div class="mb-4">
-            <i class="fas fa-user-circle fa-5x" style="color: #ff6b35;"></i>
+            <img th:if="${session.user != null and session.user.profilePicture != null}"
+                 th:src="${session.user.profilePicture}"
+                 class="rounded-circle"
+                 style="width: 100px; height: 100px; object-fit: cover;">
+            <i th:unless="${session.user != null and session.user.profilePicture != null}"
+               class="fas fa-user-circle fa-5x" style="color: #ff6b35;"></i>
           </div>
-          <h3>Welcome, <span th:text="${session.user.fullName != null ? session.user.fullName : session.user.username}">User</span>!</h3>
-          <p class="lead text-muted">You have successfully logged in to RevConnect.</p>
 
-          <div class="alert alert-info mt-4">
+          <h3>Welcome, <span th:text="${session.user != null
+              ? (session.user.fullName != null ? session.user.fullName : session.user.username)
+              : 'Guest'}">User</span>!</h3>
+
+          <p class="lead text-muted" th:if="${session.user != null}">
+            You have successfully logged in to RevConnect.
+          </p>
+          <p class="lead text-muted" th:unless="${session.user != null}">
+            Please log in to access your feed.
+          </p>
+
+          <div class="alert alert-info mt-4 text-start" th:if="${session.user != null}">
             <i class="fas fa-info-circle me-2"></i>
             <strong>Username:</strong> <span th:text="${session.user.username}">username</span><br>
             <strong>Email:</strong> <span th:text="${session.user.email}">email</span><br>
-            <strong>Account Type:</strong> <span th:text="${session.user.userType}">type</span>
+            <strong>Account Type:</strong> <span th:text="${session.user.userType}">type</span><br>
+            <strong>Followers:</strong> <span id="followersCount">0</span> |
+            <strong>Following:</strong> <span id="followingCount">0</span>
           </div>
 
-          <div class="d-flex justify-content-center gap-3 mt-4">
-            <a th:href="@{/profile/view}" class="btn px-4 py-2" style="background-color: #ff6b35; color: white; border: none;">
+          <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap" th:if="${session.user != null}">
+
+            <!-- ✅ FIX: Points to /profile/view (own profile MVC route) instead of /profile/{username} -->
+            <a th:href="@{/profile/view}" class="btn px-4 py-2"
+               style="background-color: #ff6b35; color: white; border: none;">
               <i class="fas fa-user me-2"></i>View Profile
             </a>
-            <a th:href="@{/profile/edit}" class="btn px-4 py-2" style="background-color: #6c757d; color: white; border: none;">
-              <i class="fas fa-cog me-2"></i>Edit Profile
+
+            <a th:href="@{/discover}" class="btn px-4 py-2"
+               style="background-color: #6c757d; color: white; border: none;">
+              <i class="fas fa-compass me-2"></i>Discover People
             </a>
-            <a th:href="@{/logout}" class="btn px-4 py-2" style="background-color: #dc3545; color: white; border: none;">
-              <i class="fas fa-sign-out-alt me-2"></i>Logout
+
+            <a th:href="@{/profile/enhanced/edit}" class="btn px-4 py-2"
+               style="background-color: #17a2b8; color: white; border: none;">
+              <i class="fas fa-edit me-2"></i>Edit Profile
             </a>
+          </div>
+
+          <div th:unless="${session.user != null}" class="mt-4">
+            <a th:href="@{/login}" class="btn btn-primary">Login</a>
+            <a th:href="@{/register}" class="btn btn-secondary">Register</a>
           </div>
         </div>
       </div>
 
-      <!-- Posts Section (Coming Soon) -->
+      <div class="card shadow mb-4" th:if="${session.user != null}">
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-4">
+              <h5 class="mb-0" id="statPosts">0</h5>
+              <small class="text-muted">Posts</small>
+            </div>
+            <div class="col-4">
+              <h5 class="mb-0" id="statFollowers">0</h5>
+              <small class="text-muted">Followers</small>
+            </div>
+            <div class="col-4">
+              <h5 class="mb-0" id="statFollowing">0</h5>
+              <small class="text-muted">Following</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="card shadow">
         <div class="card-body text-center p-4">
           <i class="fas fa-newspaper fa-3x mb-3" style="color: #ff6b35;"></i>
@@ -53,6 +98,37 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    fetch('/api/user/current')
+            .then(response => {
+              if (response.ok) return response.json();
+              throw new Error('Not authenticated');
+            })
+            .then(user => {
+              if (user && user.username) {
+                return Promise.all([
+                  fetch(`/api/followers/${user.username}?page=0&size=1`).then(r => r.json()),
+                  fetch(`/api/following/${user.username}?page=0&size=1`).then(r => r.json())
+                ]);
+              }
+            })
+            .then(([followersData, followingData]) => {
+              if (followersData) {
+                document.getElementById('followersCount').textContent = followersData.totalElements || 0;
+                document.getElementById('statFollowers').textContent  = followersData.totalElements || 0;
+              }
+              if (followingData) {
+                document.getElementById('followingCount').textContent = followingData.totalElements || 0;
+                document.getElementById('statFollowing').textContent  = followingData.totalElements || 0;
+              }
+            })
+            .catch(error => {
+              console.log('User not authenticated or error loading stats:', error);
+            });
+  });
+</script>
 
 <style>
   .btn:hover {

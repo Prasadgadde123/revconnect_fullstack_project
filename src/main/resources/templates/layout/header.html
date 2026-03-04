@@ -7,304 +7,299 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body {
-            background-color: #f8f9fa;
-            overflow-x: hidden;
-        }
-        .navbar-brand {
-            font-weight: bold;
-            font-size: 1.5rem;
-            color: #ff6b35 !important;
-        }
+        body { background-color: #f8f9fa; overflow-x: hidden; padding-top: 70px; }
+        .navbar-brand { font-weight: bold; font-size: 1.5rem; color: #ff6b35 !important; }
         .navbar {
             background-color: #ffffff !important;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             padding: 0.5rem 1rem;
+            position: fixed; top: 0; width: 100%; z-index: 1000;
         }
-        .navbar-dark .navbar-nav .nav-link {
-            color: #333333 !important;
-            padding: 0.8rem 1rem;
-            transition: all 0.3s ease;
-        }
-        .navbar-dark .navbar-nav .nav-link:hover {
-            color: #ff6b35 !important;
-            background-color: rgba(255,107,53,0.1);
-        }
-        .navbar-dark .navbar-nav .nav-link i {
-            margin-right: 8px;
-            width: 20px;
-            text-align: center;
-            color: #ff6b35;
-        }
-        .btn-outline-light {
-            color: #333333;
-            border-color: #dddddd;
-        }
-        .btn-outline-light:hover {
-            background-color: #ff6b35;
-            border-color: #ff6b35;
-            color: white;
-        }
-        .badge.bg-danger {
-            background-color: #ff6b35 !important;
-        }
-        .dropdown-item:active {
-            background-color: #ff6b35;
-        }
-        .profile-pic {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #ff6b35;
-            margin-right: 5px;
-        }
-        .logout-btn {
-            color: #dc3545 !important;
-        }
-        .logout-btn:hover {
-            background-color: #dc3545 !important;
-            color: white !important;
-        }
-        .logout-btn i {
-            color: #dc3545 !important;
-        }
-        .logout-btn:hover i {
-            color: white !important;
-        }
+        .navbar-nav .nav-link { color: #333333 !important; padding: 0.8rem 1rem; transition: all 0.3s ease; border-radius: 5px; }
+        .navbar-nav .nav-link:hover { color: #ff6b35 !important; background-color: rgba(255,107,53,0.1); }
+        .navbar-nav .nav-link i { margin-right: 8px; width: 20px; text-align: center; color: #ff6b35; }
+        .btn-orange { background-color: #ff6b35 !important; color: white !important; border: none !important; transition: all 0.3s ease; }
+        .btn-orange:hover { background-color: #e55a2b !important; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,107,53,0.3); }
+        .profile-pic { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid #ff6b35; margin-right: 5px; }
 
-        /* Mobile First Responsive Design */
+        .rc-dropdown { position: relative; display: inline-block; }
+        .rc-dropdown-toggle {
+            cursor: pointer; display: flex; align-items: center;
+            padding: 0.5rem 1rem; color: #333; border-radius: 5px;
+            background: none; border: none;
+        }
+        .rc-dropdown-toggle:hover { background-color: rgba(255,107,53,0.1); }
+        .rc-dropdown-menu {
+            position: absolute; top: calc(100% + 6px); right: 0;
+            background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 8px; min-width: 160px;
+            display: none;
+            z-index: 1100; padding: 0.4rem 0; border: 1px solid #eee;
+        }
+        .rc-dropdown-menu.rc-open { display: block; }
+        .rc-dropdown-item {
+            display: flex; align-items: center; padding: 0.6rem 1rem;
+            color: #333; text-decoration: none; transition: background 0.2s;
+            font-size: 0.95rem; width: 100%; border: none; background: none; cursor: pointer;
+        }
+        .rc-dropdown-item i { width: 20px; margin-right: 10px; color: #ff6b35; }
+        .rc-dropdown-item:hover { background-color: #f8f9fa; }
+        .rc-dropdown-item.rc-danger { color: #dc3545 !important; }
+        .rc-dropdown-item.rc-danger i { color: #dc3545 !important; }
+        .rc-dropdown-item.rc-danger:hover { background-color: #dc3545; color: white !important; }
+        .rc-dropdown-item.rc-danger:hover i { color: white !important; }
+
+        .rc-search-wrapper { position: relative; }
+        .rc-search-dropdown {
+            position: absolute; top: 100%; left: 0; right: 0;
+            background: white; border: 1px solid #ddd;
+            border-radius: 0 0 10px 10px; max-height: 400px;
+            overflow-y: auto; z-index: 1100;
+            display: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .rc-search-dropdown.rc-open { display: block; }
+        .rc-search-item {
+            padding: 10px 15px; border-bottom: 1px solid #eee;
+            cursor: pointer; transition: background 0.2s; display: flex; align-items: center;
+        }
+        .rc-search-item:last-child { border-bottom: none; }
+        .rc-search-item:hover { background-color: #f8f9fa; }
+        .rc-search-item img { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; object-fit: cover; }
+        .rc-search-item .rc-user-info { flex: 1; }
+        .rc-search-item .rc-uname { font-weight: bold; color: #333; }
+        .rc-search-item .rc-fname { font-size: 0.85rem; color: #666; }
+        .rc-search-item .rc-badge {
+            background-color: #ff6b35 !important; color: white;
+            padding: 3px 8px; border-radius: 20px; font-size: 0.7rem;
+        }
         @media (max-width: 768px) {
-            .navbar-brand {
-                font-size: 1.2rem;
-            }
-            .navbar-nav {
-                margin: 10px 0;
-            }
-            .navbar-nav .nav-link {
-                padding: 12px 15px !important;
-                border-radius: 8px;
-                margin: 2px 0;
-            }
-            .navbar-nav .nav-link i {
-                width: 25px;
-                font-size: 1.2rem;
-            }
-            .dropdown-menu {
-                border: none;
-                background-color: #f8f9fa;
-                margin: 5px 0;
-                padding: 5px 0;
-            }
-            .dropdown-item {
-                padding: 10px 20px;
-                border-radius: 8px;
-            }
-            .dropdown-item i {
-                margin-right: 10px;
-                width: 20px;
-            }
-            .d-flex.me-3 {
-                margin: 10px 0 !important;
-                width: 100%;
-            }
-            .d-flex.me-3 input {
-                flex: 1;
-                min-width: 0;
-            }
-            .nav-link.dropdown-toggle {
-                display: flex;
-                align-items: center;
-                background-color: #f8f9fa;
-                border-radius: 50px;
-                padding: 5px 15px !important;
-            }
-            .nav-link.dropdown-toggle img {
-                margin-right: 8px;
-            }
-            .custom-toggler {
-                border: 1px solid #ff6b35 !important;
-                padding: 8px 12px;
-                border-radius: 8px;
-            }
-            .custom-toggler:focus {
-                outline: none;
-                box-shadow: 0 0 0 3px rgba(255,107,53,0.3);
-            }
-            .custom-toggler .navbar-toggler-icon {
-                width: 25px;
-                height: 18px;
-            }
-            .custom-toggler .navbar-toggler-icon span {
-                height: 2px;
-            }
-        }
-        @media (min-width: 769px) and (max-width: 992px) {
-            .navbar-nav .nav-link {
-                padding: 10px 12px !important;
-                font-size: 0.9rem;
-            }
-            .navbar-nav .nav-link i {
-                margin-right: 5px;
-            }
-            .profile-pic {
-                width: 30px;
-                height: 30px;
-            }
-        }
-        @media (min-width: 993px) {
-            .navbar-nav .nav-link {
-                padding: 10px 15px !important;
-                border-radius: 5px;
-                margin: 0 2px;
-            }
-            .navbar-nav .nav-link:hover {
-                background-color: rgba(255,107,53,0.1);
-            }
-        }
-        .custom-toggler {
-            border-color: #ff6b35 !important;
-        }
-        .custom-toggler .navbar-toggler-icon {
-            background-image: none;
-            position: relative;
-            width: 30px;
-            height: 24px;
-        }
-        .custom-toggler .navbar-toggler-icon span {
-            display: block;
-            position: absolute;
-            height: 3px;
-            width: 100%;
-            background: #ff6b35;
-            border-radius: 3px;
-            left: 0;
-            transition: all 0.3s ease;
-        }
-        .custom-toggler .navbar-toggler-icon span:nth-child(1) {
-            top: 0;
-        }
-        .custom-toggler .navbar-toggler-icon span:nth-child(2) {
-            top: 10px;
-        }
-        .custom-toggler .navbar-toggler-icon span:nth-child(3) {
-            top: 20px;
-        }
-        .navbar-collapse {
-            transition: all 0.3s ease;
-        }
-        .navbar-collapse.show {
-            padding: 10px 0;
+            body { padding-top: 60px; }
+            .navbar-brand { font-size: 1.2rem; }
+            .rc-dropdown-menu { position: static; width: 100%; box-shadow: none; }
         }
     </style>
 </head>
 <body>
-<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark">
+
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-light">
     <div class="container">
         <a class="navbar-brand" th:href="@{/}">
-            <i class="fas fa-link" style="color: #ff6b35;"></i> RevConnect
+            <i class="fas fa-link" style="color:#ff6b35;"></i> RevConnect
         </a>
-        <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon">
-                <span></span>
-                <span></span>
-                <span></span>
-            </span>
+
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse" id="navbarNav">
-            <!-- Show these links ONLY when user is logged in -->
-            <ul class="navbar-nav me-auto" th:if="${session.user != null}">
+
+            <!-- Left nav – logged in -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0" th:if="${session.user != null}">
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/feed}">
-                        <i class="fas fa-home"></i> <span class="nav-text">Home</span>
+                        <i class="fas fa-home"></i> Home
                     </a>
                 </li>
                 <li class="nav-item">
+                    <!-- ✅ FIX 1: Profile nav link → always /profile/view for own profile -->
                     <a class="nav-link" th:href="@{/profile/view}">
-                        <i class="fas fa-user"></i> <span class="nav-text">Profile</span>
+                        <i class="fas fa-user"></i> Profile
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/chat}">
-                        <i class="fas fa-comment"></i> <span class="nav-text">Chat</span>
+                    <a class="nav-link" th:href="@{/discover}">
+                        <i class="fas fa-compass"></i> Discover
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/notifications}">
-                        <i class="fas fa-bell"></i>
-                        <span class="nav-text">Notifications</span>
-                        <span class="badge ms-1" style="background-color: #ff6b35;" th:if="${unreadCount != null and unreadCount > 0}" th:text="${unreadCount}">3</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/post/create}">
-                        <i class="fas fa-plus-circle"></i> <span class="nav-text">Post</span>
+                        <i class="fas fa-bell"></i> Notifications
                     </a>
                 </li>
             </ul>
 
-            <!-- Search bar - show only when logged in -->
-            <form class="d-flex me-3 mb-2 mb-lg-0" th:if="${session.user != null}" th:action="@{/search}" method="get">
-                <input class="form-control me-2" type="search" placeholder="Search users..." name="q" style="border-color: #ff6b35;">
-                <button class="btn" type="submit" style="background-color: #ff6b35; color: white; border-color: #ff6b35;">
-                    <i class="fas fa-search"></i>
+            <!-- Search bar – logged in -->
+            <div th:if="${session.user != null}" class="rc-search-wrapper me-3" style="width:300px;">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="rcSearchInput"
+                           placeholder="Search users..." autocomplete="off"
+                           style="border-color:#ff6b35;">
+                    <button class="btn btn-orange" type="button" id="rcSearchBtn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <div class="rc-search-dropdown" id="rcSearchResults"></div>
+            </div>
+
+            <!-- User dropdown – logged in -->
+            <div th:if="${session.user != null}" class="rc-dropdown ms-2">
+                <button class="rc-dropdown-toggle" id="rcUserToggle" type="button">
+                    <img th:if="${session.user.profilePicture != null}"
+                         th:src="${session.user.profilePicture}" class="profile-pic" alt="Profile">
+                    <img th:unless="${session.user.profilePicture != null}"
+                         src="https://via.placeholder.com/35" class="profile-pic" alt="Profile">
+                    <span class="ms-1"
+                          th:text="${session.user.fullName != null ? session.user.fullName : session.user.username}">
+                        User
+                    </span>
+                    <i class="fas fa-chevron-down ms-2" style="font-size:0.8rem;color:#ff6b35;"></i>
                 </button>
-            </form>
+                <div class="rc-dropdown-menu" id="rcUserMenu">
+                    <form th:action="@{/logout}" method="POST">
+                        <button type="submit" class="rc-dropdown-item rc-danger">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
 
-            <!-- User dropdown - show only when logged in -->
-            <ul class="navbar-nav" th:if="${session.user != null}">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img th:if="${session.user.profilePicture != null}" th:src="${session.user.profilePicture}"
-                             class="profile-pic" alt="Profile">
-                        <img th:unless="${session.user.profilePicture != null}" src="https://via.placeholder.com/40"
-                             class="profile-pic" alt="Profile">
-                        <span class="d-none d-lg-inline" th:text="${session.user.fullName != null ? session.user.fullName : session.user.username}">User</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li>
-                            <a class="dropdown-item" th:href="@{|/profile/${session.user.username}|}">
-                                <i class="fas fa-user" style="color: #ff6b35;"></i> My Profile
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" th:href="@{/profile/edit}">
-                                <i class="fas fa-cog" style="color: #ff6b35;"></i> Settings
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item logout-btn" th:href="@{/logout}">
-                                <i class="fas fa-sign-out-alt"></i> Logout
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-
-            <!-- Login/Register links - show only when NOT logged in -->
-            <ul class="navbar-nav ms-auto" th:unless="${session.user != null}">
+            <!-- Login / Register – logged out -->
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0" th:unless="${session.user != null}">
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/login}">
-                        <i class="fas fa-sign-in-alt" style="color: #ff6b35;"></i> Login
-                    </a>
+                    <a class="nav-link" th:href="@{/login}"><i class="fas fa-sign-in-alt"></i> Login</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/register}">
-                        <i class="fas fa-user-plus" style="color: #ff6b35;"></i> Register
-                    </a>
+                    <a class="nav-link" th:href="@{/register}"><i class="fas fa-user-plus"></i> Register</a>
                 </li>
             </ul>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        // ✅ FIX 2: Get current username from session so search dropdown can route correctly
+        var currentUsername = /*[[${session.user != null ? session.user.username : ''}]]*/ '';
+        /*]]>*/
+
+        (function () {
+            function initNavbar() {
+
+                /* ── Dropdown ── */
+                var toggle = document.getElementById('rcUserToggle');
+                var menu   = document.getElementById('rcUserMenu');
+
+                if (toggle && menu) {
+                    toggle.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        menu.classList.toggle('rc-open', !menu.classList.contains('rc-open'));
+                    });
+                    document.addEventListener('click', function (e) {
+                        if (!toggle.contains(e.target) && !menu.contains(e.target))
+                            menu.classList.remove('rc-open');
+                    });
+                    menu.addEventListener('mousedown', function (e) { e.stopPropagation(); });
+                }
+
+                /* ── Search ── */
+                var input   = document.getElementById('rcSearchInput');
+                var results = document.getElementById('rcSearchResults');
+                var btn     = document.getElementById('rcSearchBtn');
+
+                if (!input || !results) return;
+
+                var abort = null;
+
+                function navigate() {
+                    var q = input.value.trim();
+                    if (q) window.location.href = '/search?q=' + encodeURIComponent(q);
+                }
+
+                input.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') { e.preventDefault(); navigate(); }
+                });
+                if (btn) btn.addEventListener('click', navigate);
+
+                input.addEventListener('input', function () {
+                    var q = this.value.trim();
+                    if (q.length < 2) { closeSearch(); return; }
+
+                    if (abort) { abort.abort(); }
+                    results.innerHTML =
+                        '<div class="rc-search-item" style="justify-content:center;color:#999;">' +
+                        '<i class="fas fa-spinner fa-spin" style="margin-right:6px;"></i>Searching...</div>';
+                    results.classList.add('rc-open');
+
+                    var ctrl = new AbortController();
+                    abort    = ctrl;
+
+                    fetch('/api/search/live?query=' + encodeURIComponent(q), { signal: ctrl.signal })
+                        .then(function (r) { if (!r.ok) throw new Error('err'); return r.json(); })
+                        .then(function (users) {
+                            if (users && users.length) {
+                                renderResults(users);
+                            } else {
+                                results.innerHTML =
+                                    '<div class="rc-search-item" style="justify-content:center;color:#999;">No users found</div>';
+                                results.classList.add('rc-open');
+                            }
+                        })
+                        .catch(function (err) {
+                            if (err.name === 'AbortError') return;
+                            results.innerHTML =
+                                '<div class="rc-search-item" style="justify-content:center;color:#dc3545;">Error loading results</div>';
+                            results.classList.add('rc-open');
+                        })
+                        .finally(function () { abort = null; });
+                });
+
+                document.addEventListener('click', function (e) {
+                    if (!input.contains(e.target) && !results.contains(e.target)) closeSearch();
+                });
+
+                function closeSearch() {
+                    results.classList.remove('rc-open');
+                    results.innerHTML = '';
+                }
+
+                function renderResults(users) {
+                    var html = '';
+                    users.forEach(function (u) {
+                        var pic   = u.profilePicture || 'https://via.placeholder.com/40';
+                        var dname = esc(u.fullName || u.username);
+                        var uname = esc(u.username);
+                        var type  = (u.userType || 'USER');
+                        var badge = type.charAt(0) + type.slice(1).toLowerCase();
+
+                        // ✅ FIX 3: own username → /profile/view, others → /profile/{username}
+                        var profileUrl = (uname === currentUsername)
+                            ? '/profile/view'
+                            : '/profile/' + uname;
+
+                        html +=
+                            '<div class="rc-search-item" onclick="location.href=\'' + profileUrl + '\'">' +
+                            '<img src="' + pic + '" alt="' + uname +
+                            '" onerror="this.src=\'https://via.placeholder.com/40\'">' +
+                            '<div class="rc-user-info">' +
+                            '<div class="rc-uname">' + dname + '</div>' +
+                            '<div class="rc-fname">@' + uname + '</div>' +
+                            '</div>' +
+                            '<span class="rc-badge">' + esc(badge) + '</span>' +
+                            '</div>';
+                    });
+                    results.innerHTML = html;
+                    results.classList.add('rc-open');
+                }
+
+                function esc(t) {
+                    if (!t) return '';
+                    var d = document.createElement('div');
+                    d.textContent = t;
+                    return d.innerHTML;
+                }
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initNavbar);
+            } else {
+                initNavbar();
+            }
+        })();
+    </script>
 </nav>
 
-<main class="container mt-4">
-    <div th:fragment="content">
-        <div th:replace="${content}"></div>
-    </div>
-</main>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
