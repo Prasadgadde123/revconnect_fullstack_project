@@ -241,15 +241,6 @@ public class PageController {
     // FEED
     // ═══════════════════════════════════════════
 
-    @GetMapping("/feed")
-    public String feed(Model model, HttpSession session) {
-        if (session.getAttribute("user") == null) return "redirect:/login";
-        User user = (User) session.getAttribute("user");
-        model.addAttribute("posts", Collections.emptyList());
-        model.addAttribute("title", "Feed");
-        model.addAttribute("username", user.getUsername());
-        return "feed/index";
-    }
 
     // ═══════════════════════════════════════════
     // PROFILE PAGES

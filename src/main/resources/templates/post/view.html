@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout/header :: head('Post - RevConnect')}">
+<body>
+<nav th:replace="~{layout/header :: navbar}"></nav>
+
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-7">
+
+      <!-- Flash messages -->
+      <div th:if="${successMsg}" class="alert alert-success alert-dismissible fade show">
+        <i class="fas fa-check-circle me-2"></i><span th:text="${successMsg}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      <div th:if="${errorMsg}" class="alert alert-danger alert-dismissible fade show">
+        <i class="fas fa-exclamation-circle me-2"></i><span th:text="${errorMsg}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+
+      <!-- Back button -->
+      <div class="mb-3">
+        <a th:href="@{/feed}" class="btn btn-sm px-3"
+           style="background-color:#6c757d;color:white;border:none;border-radius:8px;">
+          <i class="fas fa-arrow-left me-1"></i>Back to Feed
+        </a>
+      </div>
+
+      <!-- Post card -->
+      <div th:if="${post != null}" class="card shadow" style="border-radius:15px;border:none;">
+        <div class="card-body p-4">
+
+          <!-- Repost banner -->
+          <div th:if="${post.postType == 'REPOST'}"
+               class="alert alert-light border-start border-4 py-2 mb-3"
+               style="border-color:#ff6b35 !important;border-radius:8px;">
+            <small>
+              <i class="fas fa-retweet me-1" style="color:#ff6b35;"></i>
+              <span th:text="${post.authorUsername}">user</span> reposted from
+              <a th:href="@{/profile/{u}(u=${post.originalAuthorUsername})}"
+                 class="fw-bold text-decoration-none" style="color:#ff6b35;"
+                 th:text="'@' + ${post.originalAuthorUsername}">@original</a>
+            </small>
+          </div>
+
+          <!-- Author row -->
+          <div class="d-flex align-items-center mb-3">
+            <a th:href="@{/profile/{u}(u=${post.authorUsername})}" class="text-decoration-none">
+              <img th:if="${post.authorProfilePicture != null}"
+                   th:src="${post.authorProfilePicture}"
+                   class="rounded-circle me-2"
+                   style="width:50px;height:50px;object-fit:cover;border:2px solid #ff6b35;">
+              <i th:unless="${post.authorProfilePicture != null}"
+                 class="fas fa-user-circle fa-3x me-2" style="color:#ff6b35;"></i>
+            </a>
+            <div class="flex-grow-1">
+              <a th:href="@{/profile/{u}(u=${post.authorUsername})}"
+                 class="fw-bold text-dark text-decoration-none d-block"
+                 th:text="${post.authorFullName != null ? post.authorFullName : post.authorUsername}">Name</a>
+              <small class="text-muted"
+                     th:text="'@' + ${post.authorUsername} + ' · ' + ${#temporals.format(post.createdAt,'dd MMM yyyy, HH:mm')}">info</small>
+            </div>
+            <!-- Edit / Delete (own post only) -->
+            <div th:if="${post.ownPost}" class="dropdown">
+              <button class="btn btn-sm btn-light" data-bs-toggle="dropdown"
+                      style="border-radius:50%;width:36px;height:36px;">
+                <i class="fas fa-ellipsis-h"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                <li>
+                  <a class="dropdown-item" th:href="@{/posts/{id}/edit(id=${post.id})}">
+                    <i class="fas fa-edit me-2" style="color:#ff6b35;"></i>Edit Post
+                  </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <a class="dropdown-item text-danger" href="#"
+                     onclick="document.getElementById('deleteForm').submit();">
+                    <i class="fas fa-trash me-2"></i>Delete Post
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Original post block (if repost) -->
+          <div th:if="${post.postType == 'REPOST' and post.originalContent != null}"
+               class="p-3 mb-3 rounded"
+               style="background:#fff5f2;border:1px solid #ffe0d4;border-radius:10px;">
+            <small class="text-muted d-block mb-1">
+              <i class="fas fa-quote-left me-1" style="color:#ff6b35;"></i>
+              Original by <strong th:text="'@' + ${post.originalAuthorUsername}">@user</strong>
+            </small>
+            <p class="mb-0" th:text="${post.originalContent}">original content</p>
+          </div>
+
+          <!-- Post content -->
+          <p class="fs-6 mb-3" style="line-height:1.7;" th:text="${post.content}">Content</p>
+
+          <!-- Hashtags -->
+          <div th:if="${post.hashtagList != null and not #lists.isEmpty(post.hashtagList)}"
+               class="d-flex flex-wrap gap-1 mb-3">
+            <a th:each="tag : ${post.hashtagList}"
+               th:href="@{/posts/hashtag(tag=${tag})}"
+               th:text="${tag}"
+               class="badge text-decoration-none"
+               style="background-color:#fff5f2;color:#ff6b35;border:1px solid #ff6b35;border-radius:20px;padding:.4em .8em;font-size:.82rem;">
+            </a>
+          </div>
+
+          <!-- Stats bar -->
+          <div class="d-flex gap-4 border-top border-bottom py-2 mb-3 text-muted small">
+            <span><i class="fas fa-heart me-1" style="color:#e74c3c;"></i>
+              <span th:text="${post.likesCount}">0</span> Likes</span>
+            <span><i class="fas fa-comment me-1" style="color:#ff6b35;"></i>
+              <span th:text="${post.commentsCount}">0</span> Comments</span>
+            <span><i class="fas fa-retweet me-1" style="color:#27ae60;"></i>
+              <span th:text="${post.repostsCount}">0</span> Reposts</span>
+          </div>
+
+          <!-- Action buttons -->
+          <div class="d-flex gap-2 flex-wrap">
+            <!-- Like placeholder (Social Interactions module) -->
+            <button class="btn btn-sm px-3"
+                    style="border:1px solid #e74c3c;color:#e74c3c;border-radius:20px;background:white;">
+              <i class="fas fa-heart me-1"></i>Like
+            </button>
+
+            <!-- Comment placeholder -->
+            <button class="btn btn-sm px-3"
+                    style="border:1px solid #ff6b35;color:#ff6b35;border-radius:20px;background:white;">
+              <i class="fas fa-comment me-1"></i>Comment
+            </button>
+
+            <!-- Repost (not own post) -->
+            <div th:unless="${post.ownPost}">
+              <button class="btn btn-sm px-3"
+                      style="border:1px solid #27ae60;color:#27ae60;border-radius:20px;background:white;"
+                      data-bs-toggle="modal" data-bs-target="#repostModal">
+                <i class="fas fa-retweet me-1"></i>Repost
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Fallback -->
+      <div th:if="${post == null}" class="card shadow text-center p-5" style="border-radius:15px;border:none;">
+        <i class="fas fa-exclamation-circle fa-3x mb-3" style="color:#dc3545;"></i>
+        <h5>Post not found</h5>
+        <a th:href="@{/feed}" class="btn mt-2" style="background-color:#ff6b35;color:white;border:none;">Back to Feed</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Hidden delete form -->
+<form th:if="${post != null}" id="deleteForm"
+      th:action="@{/posts/{id}/delete(id=${post.id})}" method="post" style="display:none;"></form>
+
+<!-- Repost modal -->
+<div th:if="${post != null}" class="modal fade" id="repostModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content" style="border-radius:15px;">
+      <div class="modal-header" style="background-color:#ff6b35;color:white;border-radius:15px 15px 0 0;">
+        <h5 class="modal-title"><i class="fas fa-retweet me-2"></i>Repost</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form th:action="@{/posts/{id}/repost(id=${post.id})}" method="post" id="repostForm">
+          <div class="mb-3">
+            <label class="form-label">Add a comment <small class="text-muted">(optional)</small></label>
+            <textarea name="comment" class="form-control" rows="3"
+                      placeholder="Say something about this post..."
+                      style="border-radius:10px;"></textarea>
+          </div>
+          <!-- Preview of original -->
+          <div class="p-3 rounded" style="background:#fff5f2;border:1px solid #ffe0d4;border-radius:10px;">
+            <small class="text-muted d-block mb-1">
+              <i class="fas fa-quote-left me-1" style="color:#ff6b35;"></i>
+              <strong th:text="'@' + ${post.authorUsername}">@user</strong>
+            </small>
+            <p class="mb-0 small" th:text="${post.content}">content</p>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" form="repostForm" class="btn"
+                style="background-color:#ff6b35;color:white;border:none;">
+          <i class="fas fa-retweet me-1"></i>Repost
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .btn:hover { opacity:.9; transform:translateY(-1px); transition:all .2s ease; }
+</style>
+</body>
+</html>
