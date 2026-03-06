@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -37,79 +38,67 @@ public class PostController {
 
     // ─── READ ─────────────────────────────────────────────────────────────────
 
-    /** Single post by id */
     @GetMapping("/{postId}")
     public ResponseEntity<?> getPost(@PathVariable Long postId) {
         try {
-            PostResponse response = postService.getPostById(postId);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(postService.getPostById(postId));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
     }
 
-    /** Own posts (for profile page) */
     @GetMapping("/my")
     public ResponseEntity<?> getMyPosts(
             @RequestParam(defaultValue = "0")  int page,
             @RequestParam(defaultValue = "10") int size) {
         try {
-            Page<PostResponse> posts = postService.getMyPosts(page, size);
-            return ResponseEntity.ok(posts);
+            return ResponseEntity.ok(postService.getMyPosts(page, size));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
     }
 
-    /** Posts by a specific user (for viewing another user's profile) */
     @GetMapping("/user/{userId}")
     public ResponseEntity<?> getPostsByUser(
             @PathVariable Long userId,
             @RequestParam(defaultValue = "0")  int page,
             @RequestParam(defaultValue = "10") int size) {
         try {
-            Page<PostResponse> posts = postService.getPostsByUser(userId, page, size);
-            return ResponseEntity.ok(posts);
+            return ResponseEntity.ok(postService.getPostsByUser(userId, page, size));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
     }
 
-    /** Personalized feed */
     @GetMapping("/feed")
     public ResponseEntity<?> getFeed(
             @RequestParam(defaultValue = "0")  int page,
             @RequestParam(defaultValue = "10") int size) {
         try {
-            Page<PostResponse> posts = postService.getFeedPosts(page, size);
-            return ResponseEntity.ok(posts);
+            return ResponseEntity.ok(postService.getFeedPosts(page, size));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
     }
 
-    /** Trending posts */
     @GetMapping("/trending")
     public ResponseEntity<?> getTrending(
             @RequestParam(defaultValue = "0")  int page,
             @RequestParam(defaultValue = "10") int size) {
         try {
-            Page<PostResponse> posts = postService.getTrendingPosts(page, size);
-            return ResponseEntity.ok(posts);
+            return ResponseEntity.ok(postService.getTrendingPosts(page, size));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
     }
 
-    /** Search by hashtag */
     @GetMapping("/search")
     public ResponseEntity<?> searchByHashtag(
             @RequestParam String hashtag,
             @RequestParam(defaultValue = "0")  int page,
             @RequestParam(defaultValue = "10") int size) {
         try {
-            Page<PostResponse> posts = postService.searchByHashtag(hashtag, page, size);
-            return ResponseEntity.ok(posts);
+            return ResponseEntity.ok(postService.searchByHashtag(hashtag, page, size));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
@@ -122,8 +111,7 @@ public class PostController {
             @PathVariable Long postId,
             @Valid @RequestBody UpdatePostRequest request) {
         try {
-            PostResponse response = postService.updatePost(postId, request);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(postService.updatePost(postId, request));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new MessageResponse("Failed to update post: " + e.getMessage()));
         }
@@ -134,8 +122,7 @@ public class PostController {
     @DeleteMapping("/{postId}")
     public ResponseEntity<?> deletePost(@PathVariable Long postId) {
         try {
-            MessageResponse response = postService.deletePost(postId);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(postService.deletePost(postId));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new MessageResponse("Failed to delete post: " + e.getMessage()));
         }
@@ -148,10 +135,76 @@ public class PostController {
             @PathVariable Long postId,
             @RequestParam(required = false) String comment) {
         try {
-            PostResponse response = postService.repostPost(postId, comment);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(postService.repostPost(postId, comment));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new MessageResponse("Failed to repost: " + e.getMessage()));
+        }
+    }
+
+    // ─── FEATURE 3: PIN / UNPIN ──────────────────────────────────────────────
+
+    /** Pin a post to the top of the current user's profile. */
+    @PostMapping("/{postId}/pin")
+    public ResponseEntity<?> pinPost(@PathVariable Long postId) {
+        try {
+            return ResponseEntity.ok(postService.pinPost(postId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+        }
+    }
+
+    /** Unpin a previously pinned post. */
+    @PostMapping("/{postId}/unpin")
+    public ResponseEntity<?> unpinPost(@PathVariable Long postId) {
+        try {
+            return ResponseEntity.ok(postService.unpinPost(postId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+        }
+    }
+
+    /** Get all pinned posts for a specific user's profile page. */
+    @GetMapping("/user/{userId}/pinned")
+    public ResponseEntity<?> getPinnedPosts(@PathVariable Long userId) {
+        try {
+            List<PostResponse> pinned = postService.getPinnedPosts(userId);
+            return ResponseEntity.ok(pinned);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+        }
+    }
+
+    // ─── FEATURE 2: SCHEDULED POSTS ──────────────────────────────────────────
+
+    /** Get all scheduled posts for the current user (management view). */
+    @GetMapping("/scheduled")
+    public ResponseEntity<?> getScheduledPosts() {
+        try {
+            return ResponseEntity.ok(postService.getMyScheduledPosts());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+        }
+    }
+
+    /** Cancel a scheduled post before it goes live. */
+    @DeleteMapping("/{postId}/scheduled")
+    public ResponseEntity<?> cancelScheduledPost(@PathVariable Long postId) {
+        try {
+            return ResponseEntity.ok(postService.cancelScheduledPost(postId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+        }
+    }
+
+    // ─── FEATURE 1: TAGGED PRODUCTS — helper for frontend dropdown ───────────
+
+    /** Returns products/services the current user can tag in a post. */
+    @GetMapping("/taggable-products")
+    public ResponseEntity<?> getTaggableProducts() {
+        try {
+            return ResponseEntity.ok(postService.getMyTaggableProducts());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
     }
 }

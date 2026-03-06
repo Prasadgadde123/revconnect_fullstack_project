@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout/header :: head('Scheduled Posts - RevConnect')}">
+<body>
+<nav th:replace="~{layout/header :: navbar}"></nav>
+
+<div class="container mt-4 mb-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+
+      <!-- Header -->
+      <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+          <h4 class="mb-0 fw-bold">
+            <i class="fas fa-clock me-2" style="color:#ff6b35;"></i>Scheduled Posts
+          </h4>
+          <small class="text-muted">Posts queued to publish automatically</small>
+        </div>
+        <a th:href="@{/posts/create}" class="btn px-3 py-2"
+           style="background-color:#ff6b35;color:white;border:none;border-radius:8px;">
+          <i class="fas fa-plus me-1"></i>New Post
+        </a>
+      </div>
+
+      <!-- Loading state -->
+      <div id="loadingState" class="text-center py-5">
+        <i class="fas fa-spinner fa-spin fa-2x mb-3" style="color:#ff6b35;"></i>
+        <p class="text-muted">Loading scheduled posts…</p>
+      </div>
+
+      <!-- Empty state -->
+      <div id="emptyState" class="text-center py-5" style="display:none;">
+        <i class="fas fa-calendar-times fa-4x mb-3" style="color:#dee2e6;"></i>
+        <h5 class="text-muted">No scheduled posts</h5>
+        <p class="text-muted small">Schedule your next post to reach your audience at the right time.</p>
+        <a th:href="@{/posts/create}" class="btn mt-2 px-4"
+           style="background-color:#ff6b35;color:white;border:none;border-radius:8px;">
+          <i class="fas fa-pen-alt me-1"></i>Create a Post
+        </a>
+      </div>
+
+      <!-- Post cards -->
+      <div id="scheduledList"></div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Cancel confirmation modal -->
+<div class="modal fade" id="cancelModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius:15px;border:none;">
+      <div class="modal-header" style="background-color:#ff6b35;color:white;border-radius:15px 15px 0 0;">
+        <h5 class="modal-title"><i class="fas fa-trash me-2"></i>Cancel Scheduled Post</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body py-4">
+        <p class="mb-0">Are you sure you want to cancel this scheduled post? It will be permanently deleted.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Keep It</button>
+        <button type="button" class="btn btn-danger" id="confirmCancelBtn"
+                style="border-radius:8px;">
+          <i class="fas fa-trash me-1"></i>Cancel Post
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script th:inline="javascript">
+  const ctx = /*[[${@environment.getProperty('spring.mvc.servlet.path', '')}]]*/ '';
+</script>
+
+<script>
+  let pendingCancelId = null;
+
+  async function loadScheduledPosts() {
+      try {
+          const token = getJwtToken();
+          const res = await fetch('/api/posts/scheduled', {
+              headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+          });
+          const posts = await res.json();
+
+          document.getElementById('loadingState').style.display = 'none';
+
+          if (!Array.isArray(posts) || posts.length === 0) {
+              document.getElementById('emptyState').style.display = 'block';
+              return;
+          }
+
+          const list = document.getElementById('scheduledList');
+          posts.forEach(post => list.appendChild(buildCard(post)));
+
+      } catch (e) {
+          document.getElementById('loadingState').style.display = 'none';
+          document.getElementById('emptyState').style.display = 'block';
+      }
+  }
+
+  function buildCard(post) {
+      const card = document.createElement('div');
+      card.id = 'card_' + post.id;
+      card.className = 'card mb-3 shadow-sm';
+      card.style.cssText = 'border-radius:12px;border:none;border-left:4px solid #ff6b35;';
+
+      const schedDate = post.scheduledAt
+          ? new Date(post.scheduledAt).toLocaleString('en-GB', {
+                day:'2-digit', month:'short', year:'numeric',
+                hour:'2-digit', minute:'2-digit'})
+          : '—';
+
+      const productBadges = (post.taggedProducts || []).map(p =>
+          `<span class="badge me-1" style="background:#ffe5d9;color:#ff6b35;border-radius:20px;font-size:.75rem;">
+              <i class="fas fa-tag me-1"></i>${escHtml(p.name)}
+          </span>`
+      ).join('');
+
+      card.innerHTML = `
+          <div class="card-body p-3">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                  <span class="badge" style="background:#fff3cd;color:#856404;border-radius:20px;">
+                      <i class="fas fa-clock me-1"></i>Scheduled for ${escHtml(schedDate)}
+                  </span>
+                  <div class="d-flex gap-2">
+                      <a href="/posts/${post.id}/edit"
+                         class="btn btn-sm"
+                         style="background:#f8f9fa;border:1px solid #dee2e6;border-radius:6px;">
+                          <i class="fas fa-edit" style="color:#ff6b35;"></i>
+                      </a>
+                      <button class="btn btn-sm"
+                              style="background:#fff5f5;border:1px solid #f5c6cb;border-radius:6px;"
+                              onclick="confirmCancel(${post.id})">
+                          <i class="fas fa-trash" style="color:#dc3545;"></i>
+                      </button>
+                  </div>
+              </div>
+
+              <p class="mb-2" style="white-space:pre-wrap;word-break:break-word;">${escHtml(post.content)}</p>
+
+              ${post.hashtagList && post.hashtagList.length
+                  ? `<div class="mb-2">${post.hashtagList.map(h =>
+                      `<span class="me-1" style="color:#ff6b35;font-size:.85rem;">${escHtml(h)}</span>`
+                    ).join('')}</div>`
+                  : ''}
+
+              ${productBadges
+                  ? `<div class="mb-1">${productBadges}</div>`
+                  : ''}
+
+              <div class="text-muted small mt-2">
+                  <i class="fas fa-pencil-alt me-1"></i>Created
+                  ${new Date(post.createdAt).toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'})}
+              </div>
+          </div>`;
+
+      return card;
+  }
+
+  function confirmCancel(postId) {
+      pendingCancelId = postId;
+      const modal = new bootstrap.Modal(document.getElementById('cancelModal'));
+      modal.show();
+  }
+
+  document.getElementById('confirmCancelBtn').addEventListener('click', async () => {
+      if (!pendingCancelId) return;
+      try {
+          const token = getJwtToken();
+          const res = await fetch(`/api/posts/${pendingCancelId}/scheduled`, {
+              method: 'DELETE',
+              headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+          });
+          if (res.ok) {
+              const card = document.getElementById('card_' + pendingCancelId);
+              if (card) card.remove();
+              if (document.getElementById('scheduledList').children.length === 0) {
+                  document.getElementById('emptyState').style.display = 'block';
+              }
+          }
+      } catch (e) { /* handle */ }
+      bootstrap.Modal.getInstance(document.getElementById('cancelModal')).hide();
+      pendingCancelId = null;
+  });
+
+  function escHtml(str) {
+      return String(str).replace(/[&<>"']/g, c =>
+          ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function getJwtToken() {
+      return localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken') || null;
+  }
+
+  loadScheduledPosts();
+</script>
+
+<style>
+  .btn:hover { opacity:.9; transform:translateY(-1px); transition:all .2s ease; }
+</style>
+</body>
+</html>

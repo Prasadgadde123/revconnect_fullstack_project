@@ -1,12 +1,15 @@
 // src/main/java/com/revconnect/model/post/Post.java
 package com.revconnect.model.post;
 
+import com.revconnect.model.user.ProductService;
 import com.revconnect.model.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "posts")
@@ -26,25 +29,25 @@ public class Post {
     private String content;
 
     @Column(name = "hashtags")
-    private String hashtags;          // stored as comma-separated, e.g. "spring,java,revconnect"
+    private String hashtags; // stored as comma-separated, e.g. "spring,java,revconnect"
 
     // ─── Type ───────────────────────────────────────────────
     @Column(name = "post_type")
-    private String postType = "TEXT"; // TEXT | REPOST
+    private String postType = "TEXT"; // TEXT | REPOST | PROMOTIONAL
 
     // ─── Repost fields ──────────────────────────────────────
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "original_post_id")
-    private Post originalPost;        // null if not a repost
+    private Post originalPost;
 
     @Column(name = "repost_comment", columnDefinition = "TEXT")
-    private String repostComment;     // optional comment when reposting
+    private String repostComment;
 
     // ─── Status ─────────────────────────────────────────────
     @Column(name = "status")
-    private String status = "ACTIVE"; // ACTIVE | DELETED
+    private String status = "ACTIVE"; // ACTIVE | DELETED | SCHEDULED
 
-    // ─── Stats (denormalized counters, updated by service) ──
+    // ─── Stats ──────────────────────────────────────────────
     @Column(name = "likes_count")
     private Integer likesCount = 0;
 
@@ -53,6 +56,30 @@ public class Post {
 
     @Column(name = "reposts_count")
     private Integer repostsCount = 0;
+
+    // ─── FEATURE 2: Schedule Posts ──────────────────────────
+    /** When null the post is published immediately (ACTIVE).
+     *  When set and status = 'SCHEDULED', a scheduler job
+     *  flips status to 'ACTIVE' at this time. */
+    @Column(name = "scheduled_at")
+    private LocalDateTime scheduledAt;
+
+    // ─── FEATURE 3: Pin Posts ───────────────────────────────
+    @Column(name = "is_pinned")
+    private Boolean isPinned = false;
+
+    @Column(name = "pinned_at")
+    private LocalDateTime pinnedAt;
+
+    // ─── FEATURE 1: Tagged Products/Services ────────────────
+    /** Many-to-many: a post can tag multiple products/services. */
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "post_tagged_products",
+            joinColumns        = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_service_id")
+    )
+    private Set<ProductService> taggedProducts = new HashSet<>();
 
     // ─── Timestamps ─────────────────────────────────────────
     @Column(name = "created_at")
@@ -63,18 +90,19 @@ public class Post {
 
     // ─── Constructors ────────────────────────────────────────
     public Post() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-        this.likesCount = 0;
+        this.createdAt    = LocalDateTime.now();
+        this.updatedAt    = LocalDateTime.now();
+        this.likesCount   = 0;
         this.commentsCount = 0;
         this.repostsCount = 0;
-        this.status = "ACTIVE";
-        this.postType = "TEXT";
+        this.status       = "ACTIVE";
+        this.postType     = "TEXT";
+        this.isPinned     = false;
     }
 
     public Post(User user, String content) {
         this();
-        this.user = user;
+        this.user    = user;
         this.content = content;
     }
 
@@ -93,8 +121,16 @@ public class Post {
         return "ACTIVE".equals(this.status);
     }
 
+    public boolean isScheduled() {
+        return "SCHEDULED".equals(this.status);
+    }
+
     public boolean isRepost() {
         return "REPOST".equals(this.postType);
+    }
+
+    public boolean isPinnedPost() {
+        return Boolean.TRUE.equals(this.isPinned);
     }
 
     public List<String> getHashtagList() {
@@ -108,7 +144,19 @@ public class Post {
     }
 
     public void softDelete() {
-        this.status = "DELETED";
+        this.status    = "DELETED";
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void pin() {
+        this.isPinned  = true;
+        this.pinnedAt  = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void unpin() {
+        this.isPinned  = false;
+        this.pinnedAt  = null;
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -145,6 +193,18 @@ public class Post {
 
     public Integer getRepostsCount() { return repostsCount; }
     public void setRepostsCount(Integer repostsCount) { this.repostsCount = repostsCount; }
+
+    public LocalDateTime getScheduledAt() { return scheduledAt; }
+    public void setScheduledAt(LocalDateTime scheduledAt) { this.scheduledAt = scheduledAt; }
+
+    public Boolean getIsPinned() { return isPinned; }
+    public void setIsPinned(Boolean isPinned) { this.isPinned = isPinned; }
+
+    public LocalDateTime getPinnedAt() { return pinnedAt; }
+    public void setPinnedAt(LocalDateTime pinnedAt) { this.pinnedAt = pinnedAt; }
+
+    public Set<ProductService> getTaggedProducts() { return taggedProducts; }
+    public void setTaggedProducts(Set<ProductService> taggedProducts) { this.taggedProducts = taggedProducts; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

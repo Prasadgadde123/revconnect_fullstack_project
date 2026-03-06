@@ -4,11 +4,10 @@
 <body>
 <nav th:replace="~{layout/header :: navbar}"></nav>
 
-<div class="container mt-4">
+<div class="container mt-4 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-7">
 
-            <!-- Flash messages -->
             <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
                 <i class="fas fa-exclamation-circle me-2"></i>
                 <span th:text="${error}">Error</span>
@@ -16,42 +15,42 @@
             </div>
 
             <div class="card shadow" style="border-radius:15px;border:none;">
-                <div class="card-header text-white text-center py-3" style="background-color:#ff6b35;border-radius:15px 15px 0 0;">
+                <div class="card-header text-white text-center py-3"
+                     style="background-color:#ff6b35;border-radius:15px 15px 0 0;">
                     <h4 class="mb-0"><i class="fas fa-pen-alt me-2"></i>Create New Post</h4>
                 </div>
                 <div class="card-body p-4">
 
-                    <!-- Author info bar -->
+                    <!-- Author info -->
                     <div class="d-flex align-items-center mb-3">
                         <img th:if="${session.user != null and session.user.profilePicture != null}"
-                             th:src="${session.user.profilePicture}"
-                             class="rounded-circle me-2"
+                             th:src="${session.user.profilePicture}" class="rounded-circle me-2"
                              style="width:44px;height:44px;object-fit:cover;border:2px solid #ff6b35;">
                         <i th:unless="${session.user != null and session.user.profilePicture != null}"
                            class="fas fa-user-circle fa-2x me-2" style="color:#ff6b35;"></i>
                         <div>
                             <div class="fw-bold"
-                                 th:text="${session.user != null ? (session.user.fullName != null ? session.user.fullName : session.user.username) : 'User'}">
-                                User
-                            </div>
+                                 th:text="${session.user != null ? (session.user.fullName != null ? session.user.fullName : session.user.username) : 'User'}">User</div>
                             <small class="text-muted"
                                    th:text="${session.user != null ? '@' + session.user.username : ''}">@username</small>
                         </div>
                     </div>
 
-                    <!-- Post form -->
-                    <form th:action="@{/posts/create}" method="post">
+                    <!--
+                      onsubmit="prepareSubmit()" converts the datetime-local picker value
+                      "yyyy-MM-ddTHH:mm" → "yyyy-MM-ddTHH:mm:ss" before the form posts,
+                      so Spring @DateTimeFormat(iso=DATE_TIME) can parse it correctly.
+                    -->
+                    <form th:action="@{/posts/create}" method="post"
+                          id="createPostForm" onsubmit="prepareSubmit()">
 
                         <!-- Content -->
                         <div class="mb-3">
-              <textarea id="content" name="content"
-                        class="form-control"
-                        rows="5"
-                        maxlength="2000"
-                        placeholder="What's on your mind? Share something with the community..."
-                        required
-                        style="resize:vertical;border-radius:10px;border:1.5px solid #dee2e6;"
-                        oninput="updateCharCount()"></textarea>
+                            <textarea id="content" name="content" class="form-control" rows="5"
+                                      maxlength="2000"
+                                      placeholder="What's on your mind? Share something with the community..."
+                                      required style="resize:vertical;border-radius:10px;border:1.5px solid #dee2e6;"
+                                      oninput="updateCharCount()"></textarea>
                             <div class="d-flex justify-content-between mt-1">
                                 <small class="text-muted">Share your thoughts, ideas, or updates.</small>
                                 <small id="charCount" class="text-muted">0 / 2000</small>
@@ -59,17 +58,65 @@
                         </div>
 
                         <!-- Hashtags -->
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <label for="hashtags" class="form-label fw-semibold">
                                 <i class="fas fa-hashtag me-1" style="color:#ff6b35;"></i>Hashtags
                                 <small class="text-muted fw-normal">(optional, comma-separated)</small>
                             </label>
-                            <input type="text" id="hashtags" name="hashtags"
-                                   class="form-control"
-                                   placeholder="e.g. java, spring, webdev"
-                                   style="border-radius:10px;">
+                            <input type="text" id="hashtags" name="hashtags" class="form-control"
+                                   placeholder="e.g. java, spring, webdev" style="border-radius:10px;">
                             <div id="hashtagPreview" class="mt-2 d-flex flex-wrap gap-1"></div>
                         </div>
+
+                        <!-- ══ FEATURE 1 · TAG PRODUCTS — shown only for BUSINESS/CREATOR ══ -->
+                        <div id="tagProductsSection" class="mb-3" style="display:none;">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-tag me-1" style="color:#ff6b35;"></i>Tag Products / Services
+                                <small class="text-muted fw-normal">(optional)</small>
+                            </label>
+                            <input type="text" id="productSearch" class="form-control mb-2"
+                                   placeholder="Search your products..." style="border-radius:10px;"
+                                   oninput="filterProducts()">
+                            <div id="productList" class="border rounded p-2"
+                                 style="max-height:160px;overflow-y:auto;border-radius:10px;background:#fafafa;">
+                                <div class="text-muted small text-center py-2" id="productListPlaceholder">
+                                    <i class="fas fa-spinner fa-spin me-1"></i>Loading products…
+                                </div>
+                            </div>
+                            <div id="selectedProductsPreview" class="mt-2 d-flex flex-wrap gap-1"></div>
+                            <!--
+                              Hidden inputs injected by syncHiddenInputs().
+                              Each has name="taggedProductIds" — Spring collects them as List<Long>.
+                            -->
+                            <div id="taggedProductInputs"></div>
+                        </div>
+
+                        <!-- ══ FEATURE 2 · SCHEDULE POST ══ -->
+                        <div class="mb-4">
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" id="scheduleToggle"
+                                       onchange="toggleSchedule()">
+                                <label class="form-check-label fw-semibold" for="scheduleToggle">
+                                    <i class="fas fa-clock me-1" style="color:#ff6b35;"></i>Schedule for later
+                                </label>
+                            </div>
+                            <div id="scheduleSection" style="display:none;">
+                                <!--
+                                  The visible picker (datetime-local) gives "yyyy-MM-ddTHH:mm".
+                                  prepareSubmit() appends ":00" into the hidden field so Spring
+                                  receives the full ISO-8601 value it needs: "yyyy-MM-ddTHH:mm:ss".
+                                -->
+                                <input type="datetime-local" id="scheduledAtPicker"
+                                       class="form-control" style="border-radius:10px;">
+                                <input type="hidden" id="scheduledAt" name="scheduledAt">
+                                <small class="text-muted mt-1 d-block">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Post will be published automatically at the selected time.
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- NOTE: Pin toggle removed from here. Pin posts from your profile feed instead. -->
 
                         <!-- Actions -->
                         <div class="d-flex justify-content-between align-items-center">
@@ -79,48 +126,169 @@
                             </a>
                             <button type="submit" class="btn px-4 py-2"
                                     style="background-color:#ff6b35;color:white;border:none;border-radius:8px;">
-                                <i class="fas fa-paper-plane me-1"></i>Publish Post
+                                <i class="fas fa-paper-plane me-1"></i>
+                                <span id="submitLabel">Publish Post</span>
                             </button>
                         </div>
 
                     </form>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
 
 <script>
+    // ── Char counter ─────────────────────────────────────────────────────────────
     function updateCharCount() {
-      const ta = document.getElementById('content');
-      const count = ta.value.length;
-      const el = document.getElementById('charCount');
-      el.textContent = count + ' / 2000';
-      el.style.color = count > 1800 ? '#dc3545' : '#6c757d';
+        const ta = document.getElementById('content');
+        const el = document.getElementById('charCount');
+        const n  = ta.value.length;
+        el.textContent = n + ' / 2000';
+        el.style.color = n > 1800 ? '#dc3545' : '#6c757d';
     }
 
-    // Live hashtag preview
+    // ── Hashtag preview ──────────────────────────────────────────────────────────
     document.getElementById('hashtags').addEventListener('input', function () {
-      const raw = this.value;
-      const preview = document.getElementById('hashtagPreview');
-      preview.innerHTML = '';
-      raw.split(/[,\s]+/).forEach(tag => {
-        tag = tag.replace(/^#+/, '').trim();
-        if (tag) {
-          const span = document.createElement('span');
-          span.className = 'badge';
-          span.style.cssText = 'background-color:#ff6b35;color:white;font-size:.8rem;padding:.4em .7em;border-radius:20px;';
-          span.textContent = '#' + tag.toLowerCase();
-          preview.appendChild(span);
-        }
-      });
+        const preview = document.getElementById('hashtagPreview');
+        preview.innerHTML = '';
+        this.value.split(/[,\s]+/).forEach(tag => {
+            tag = tag.replace(/^#+/, '').trim();
+            if (!tag) return;
+            const s = document.createElement('span');
+            s.className = 'badge';
+            s.style.cssText = 'background-color:#ff6b35;color:white;font-size:.8rem;padding:.4em .7em;border-radius:20px;';
+            s.textContent = '#' + tag.toLowerCase();
+            preview.appendChild(s);
+        });
     });
+
+    // ── FEATURE 2 · Schedule ─────────────────────────────────────────────────────
+    function toggleSchedule() {
+        const on = document.getElementById('scheduleToggle').checked;
+        document.getElementById('scheduleSection').style.display = on ? 'block' : 'none';
+        document.getElementById('scheduledAtPicker').required = on;
+        document.getElementById('submitLabel').textContent = on ? 'Schedule Post' : 'Publish Post';
+        if (on) {
+            const now = new Date(Date.now() + 60000);
+            const p   = n => String(n).padStart(2, '0');
+            document.getElementById('scheduledAtPicker').min =
+                `${now.getFullYear()}-${p(now.getMonth()+1)}-${p(now.getDate())}T${p(now.getHours())}:${p(now.getMinutes())}`;
+        }
+    }
+
+    // Called by onsubmit — must run before the browser sends the form.
+    // datetime-local gives "2026-03-10T14:30"; Spring needs "2026-03-10T14:30:00"
+    function prepareSubmit() {
+        const picker = document.getElementById('scheduledAtPicker');
+        const hidden = document.getElementById('scheduledAt');
+        hidden.value = picker.value ? picker.value + ':00' : '';
+    }
+
+    // ── FEATURE 1 · Tag products ─────────────────────────────────────────────────
+    let allProducts = [];
+    let selectedProductIds = new Set();
+
+    async function loadTaggableProducts() {
+        try {
+            const res = await fetch('/api/posts/taggable-products', { credentials: 'same-origin' });
+            if (!res.ok) return;
+            allProducts = await res.json();
+            if (allProducts.length > 0) {
+                document.getElementById('tagProductsSection').style.display = 'block';
+                renderProductList(allProducts);
+            }
+        } catch (e) { /* personal account — section stays hidden */ }
+    }
+
+    function renderProductList(products) {
+        const container   = document.getElementById('productList');
+        const placeholder = document.getElementById('productListPlaceholder');
+        if (placeholder) placeholder.remove();
+        container.innerHTML = '';
+        if (!products.length) {
+            container.innerHTML = '<div class="text-muted small text-center py-2">No products found.</div>';
+            return;
+        }
+        products.forEach(p => {
+            const row = document.createElement('div');
+            row.className = 'd-flex align-items-center gap-2 p-1 rounded';
+            row.style.cursor = 'pointer';
+            row.innerHTML = `
+                <input type="checkbox" class="form-check-input"
+                       id="prod_${p.id}" value="${p.id}"
+                       onchange="toggleProduct(${p.id}, this.checked)">
+                ${p.imageUrl
+                    ? `<img src="${esc(p.imageUrl)}" style="width:32px;height:32px;object-fit:cover;border-radius:6px;">`
+                    : `<div style="width:32px;height:32px;background:#ffe5d9;border-radius:6px;display:flex;align-items:center;justify-content:center;"><i class="fas fa-box" style="color:#ff6b35;font-size:.75rem;"></i></div>`
+                }
+                <label for="prod_${p.id}" class="mb-0 flex-grow-1" style="cursor:pointer;">
+                    <span class="fw-semibold small">${esc(p.name)}</span>
+                    <span class="badge ms-1" style="background:#ffe5d9;color:#ff6b35;font-size:.7rem;">
+                        ${p.itemType === 'SERVICE' ? 'Service' : 'Product'}
+                    </span>
+                    ${p.price ? `<span class="text-muted small ms-1">${esc(p.price)}</span>` : ''}
+                </label>`;
+            container.appendChild(row);
+        });
+    }
+
+    function filterProducts() {
+        const q = document.getElementById('productSearch').value.toLowerCase();
+        renderProductList(allProducts.filter(p => p.name.toLowerCase().includes(q)));
+    }
+
+    function toggleProduct(id, checked) {
+        checked ? selectedProductIds.add(id) : selectedProductIds.delete(id);
+        renderSelectedChips();
+        syncHiddenInputs();
+    }
+
+    function renderSelectedChips() {
+        const preview = document.getElementById('selectedProductsPreview');
+        preview.innerHTML = '';
+        selectedProductIds.forEach(id => {
+            const p = allProducts.find(x => x.id === id);
+            if (!p) return;
+            const chip = document.createElement('span');
+            chip.className = 'badge d-flex align-items-center gap-1';
+            chip.style.cssText = 'background:#ff6b35;color:white;font-size:.78rem;padding:.4em .7em;border-radius:20px;';
+            chip.innerHTML = `<i class="fas fa-tag"></i> ${esc(p.name)}
+                <span onclick="removeProduct(${id})" style="cursor:pointer;margin-left:4px;opacity:.8;">✕</span>`;
+            preview.appendChild(chip);
+        });
+    }
+
+    function removeProduct(id) {
+        selectedProductIds.delete(id);
+        const cb = document.getElementById('prod_' + id);
+        if (cb) cb.checked = false;
+        renderSelectedChips();
+        syncHiddenInputs();
+    }
+
+    function syncHiddenInputs() {
+        const container = document.getElementById('taggedProductInputs');
+        container.innerHTML = '';
+        selectedProductIds.forEach(id => {
+            const inp = document.createElement('input');
+            inp.type = 'hidden'; inp.name = 'taggedProductIds'; inp.value = id;
+            container.appendChild(inp);
+        });
+    }
+
+    function esc(str) {
+        return String(str).replace(/[&<>"']/g,
+            c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    loadTaggableProducts();
 </script>
 
 <style>
-    textarea:focus, input:focus { border-color: #ff6b35 !important; box-shadow: 0 0 0 .2rem rgba(255,107,53,.15) !important; }
+    textarea:focus, input:focus { border-color:#ff6b35 !important; box-shadow:0 0 0 .2rem rgba(255,107,53,.15) !important; }
     .btn:hover { opacity:.9; transform:translateY(-1px); transition:all .2s ease; }
+    .form-check-input:checked { background-color:#ff6b35; border-color:#ff6b35; }
 </style>
 </body>
 </html>

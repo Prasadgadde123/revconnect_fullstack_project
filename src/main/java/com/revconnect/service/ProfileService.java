@@ -11,7 +11,7 @@ import com.revconnect.model.user.User;
 import com.revconnect.repository.BlockRepository;
 import com.revconnect.repository.FollowRepository;
 import com.revconnect.repository.UserRepository;
-import com.revconnect.security.UserDetailsImpl;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,21 +27,22 @@ public class ProfileService {
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
     private final BlockRepository blockRepository;
-    private final PasswordEncoder passwordEncoder;  // ADD THIS
+    private final PasswordEncoder passwordEncoder;
 
     public ProfileService(UserRepository userRepository,
                           FollowRepository followRepository,
                           BlockRepository blockRepository,
-                          PasswordEncoder passwordEncoder) {  // ADD THIS
+                          @Lazy PasswordEncoder passwordEncoder) {  // @Lazy breaks the circular dependency
         this.userRepository = userRepository;
         this.followRepository = followRepository;
         this.blockRepository = blockRepository;
-        this.passwordEncoder = passwordEncoder;  // ADD THIS
+        this.passwordEncoder = passwordEncoder;
     }
 
     private User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        com.revconnect.security.UserDetailsImpl userDetails =
+                (com.revconnect.security.UserDetailsImpl) authentication.getPrincipal();
         return userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new RuntimeException("Current user not found"));
     }
@@ -54,18 +55,15 @@ public class ProfileService {
         User profileUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
 
-        // Check if profile is blocked
         if (isBlocked(currentUser, profileUser)) {
             throw new RuntimeException("This profile is not available");
         }
 
-        // Increment profile views (only if not viewing own profile)
         if (!currentUser.getId().equals(profileUser.getId())) {
             profileUser.setProfileViews(profileUser.getProfileViews() + 1);
             userRepository.save(profileUser);
         }
 
-        // Update last active
         currentUser.setLastActive(LocalDateTime.now());
         userRepository.save(currentUser);
 
@@ -84,59 +82,22 @@ public class ProfileService {
     public MessageResponse updateProfile(UpdateEnhancedProfileRequest request) {
         User currentUser = getCurrentUser();
 
-        // Update basic info
-        if (request.getFullName() != null) {
-            currentUser.setFullName(request.getFullName());
-        }
-        if (request.getBio() != null) {
-            currentUser.setBio(request.getBio());
-        }
-        if (request.getLocation() != null) {
-            currentUser.setLocation(request.getLocation());
-        }
-        if (request.getWebsite() != null) {
-            currentUser.setWebsite(request.getWebsite());
-        }
-
-        // Update enhanced fields
-        if (request.getOccupation() != null) {
-            currentUser.setOccupation(request.getOccupation());
-        }
-        if (request.getCompany() != null) {
-            currentUser.setCompany(request.getCompany());
-        }
-        if (request.getEducation() != null) {
-            currentUser.setEducation(request.getEducation());
-        }
-        if (request.getSkills() != null) {
-            currentUser.setSkills(request.getSkills());
-        }
-        if (request.getInterests() != null) {
-            currentUser.setInterests(request.getInterests());
-        }
-        if (request.getPhoneNumber() != null) {
-            currentUser.setPhoneNumber(request.getPhoneNumber());
-        }
-        if (request.getTheme() != null) {
-            currentUser.setTheme(request.getTheme());
-        }
-
-        // Update social links
-        if (request.getFacebookUrl() != null) {
-            currentUser.setFacebookUrl(request.getFacebookUrl());
-        }
-        if (request.getTwitterUrl() != null) {
-            currentUser.setTwitterUrl(request.getTwitterUrl());
-        }
-        if (request.getInstagramUrl() != null) {
-            currentUser.setInstagramUrl(request.getInstagramUrl());
-        }
-        if (request.getLinkedinUrl() != null) {
-            currentUser.setLinkedinUrl(request.getLinkedinUrl());
-        }
-        if (request.getGithubUrl() != null) {
-            currentUser.setGithubUrl(request.getGithubUrl());
-        }
+        if (request.getFullName() != null) currentUser.setFullName(request.getFullName());
+        if (request.getBio() != null) currentUser.setBio(request.getBio());
+        if (request.getLocation() != null) currentUser.setLocation(request.getLocation());
+        if (request.getWebsite() != null) currentUser.setWebsite(request.getWebsite());
+        if (request.getOccupation() != null) currentUser.setOccupation(request.getOccupation());
+        if (request.getCompany() != null) currentUser.setCompany(request.getCompany());
+        if (request.getEducation() != null) currentUser.setEducation(request.getEducation());
+        if (request.getSkills() != null) currentUser.setSkills(request.getSkills());
+        if (request.getInterests() != null) currentUser.setInterests(request.getInterests());
+        if (request.getPhoneNumber() != null) currentUser.setPhoneNumber(request.getPhoneNumber());
+        if (request.getTheme() != null) currentUser.setTheme(request.getTheme());
+        if (request.getFacebookUrl() != null) currentUser.setFacebookUrl(request.getFacebookUrl());
+        if (request.getTwitterUrl() != null) currentUser.setTwitterUrl(request.getTwitterUrl());
+        if (request.getInstagramUrl() != null) currentUser.setInstagramUrl(request.getInstagramUrl());
+        if (request.getLinkedinUrl() != null) currentUser.setLinkedinUrl(request.getLinkedinUrl());
+        if (request.getGithubUrl() != null) currentUser.setGithubUrl(request.getGithubUrl());
 
         currentUser.setUpdatedAt(LocalDateTime.now());
         userRepository.save(currentUser);
@@ -148,27 +109,13 @@ public class ProfileService {
     public MessageResponse updatePrivacySettings(PrivacySettingsRequest request) {
         User currentUser = getCurrentUser();
 
-        if (request.getIsPrivate() != null) {
-            currentUser.setIsPrivate(request.getIsPrivate());
-        }
-        if (request.getShowEmail() != null) {
-            currentUser.setShowEmail(request.getShowEmail());
-        }
-        if (request.getShowPhone() != null) {
-            currentUser.setShowPhone(request.getShowPhone());
-        }
-        if (request.getShowLocation() != null) {
-            currentUser.setShowLocation(request.getShowLocation());
-        }
-        if (request.getShowLastActive() != null) {
-            currentUser.setShowLastActive(request.getShowLastActive());
-        }
-        if (request.getAllowMessagesFromAnyone() != null) {
-            currentUser.setAllowMessagesFromAnyone(request.getAllowMessagesFromAnyone());
-        }
-        if (request.getAllowTagging() != null) {
-            currentUser.setAllowTagging(request.getAllowTagging());
-        }
+        if (request.getIsPrivate() != null) currentUser.setIsPrivate(request.getIsPrivate());
+        if (request.getShowEmail() != null) currentUser.setShowEmail(request.getShowEmail());
+        if (request.getShowPhone() != null) currentUser.setShowPhone(request.getShowPhone());
+        if (request.getShowLocation() != null) currentUser.setShowLocation(request.getShowLocation());
+        if (request.getShowLastActive() != null) currentUser.setShowLastActive(request.getShowLastActive());
+        if (request.getAllowMessagesFromAnyone() != null) currentUser.setAllowMessagesFromAnyone(request.getAllowMessagesFromAnyone());
+        if (request.getAllowTagging() != null) currentUser.setAllowTagging(request.getAllowTagging());
 
         userRepository.save(currentUser);
         return new MessageResponse("Privacy settings updated successfully");
@@ -195,13 +142,10 @@ public class ProfileService {
     @Transactional
     public MessageResponse deleteProfile() {
         User currentUser = getCurrentUser();
-
-        // Instead of hard delete, you might want to soft delete or deactivate
         currentUser.setStatus("DELETED");
         currentUser.setEmail("deleted_" + currentUser.getId() + "@deleted.com");
         currentUser.setUsername("deleted_user_" + currentUser.getId());
         currentUser.setUpdatedAt(LocalDateTime.now());
-
         userRepository.save(currentUser);
         return new MessageResponse("Profile deactivated successfully");
     }
@@ -217,27 +161,18 @@ public class ProfileService {
         if (currentUser.getId().equals(targetUser.getId())) {
             return new MessageResponse("You cannot follow yourself");
         }
-
-        // Check if already following
         if (followRepository.existsByFollowerAndFollowing(currentUser, targetUser)) {
             return new MessageResponse("You are already following this user");
         }
-
-        // Check if blocked
         if (isBlocked(currentUser, targetUser)) {
             return new MessageResponse("Cannot follow this user due to block restrictions");
         }
-
-        // Check if target account is private and not following back
         if (targetUser.getIsPrivate() &&
                 !followRepository.existsByFollowerAndFollowing(targetUser, currentUser)) {
-            // Send follow request instead of direct follow (you can implement this later)
             return new MessageResponse("Follow request sent to private account");
         }
 
-        Follow follow = new Follow(currentUser, targetUser);
-        followRepository.save(follow);
-
+        followRepository.save(new Follow(currentUser, targetUser));
         return new MessageResponse("You are now following " + targetUser.getUsername());
     }
 
@@ -246,10 +181,8 @@ public class ProfileService {
         User currentUser = getCurrentUser();
         User targetUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
-
         followRepository.findByFollowerAndFollowing(currentUser, targetUser)
-                .ifPresent(follow -> followRepository.delete(follow));
-
+                .ifPresent(followRepository::delete);
         return new MessageResponse("You have unfollowed " + targetUser.getUsername());
     }
 
@@ -258,10 +191,8 @@ public class ProfileService {
         User currentUser = getCurrentUser();
         User followerUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
-
         followRepository.findByFollowerAndFollowing(followerUser, currentUser)
-                .ifPresent(follow -> followRepository.delete(follow));
-
+                .ifPresent(followRepository::delete);
         return new MessageResponse("Follower removed successfully");
     }
 
@@ -269,10 +200,8 @@ public class ProfileService {
     public List<User> getFollowers(String username, int page, int size) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
-
         org.springframework.data.domain.Pageable pageable =
                 org.springframework.data.domain.PageRequest.of(page, size);
-
         return followRepository.findFollowerUsers(user.getId(), pageable).getContent();
     }
 
@@ -280,10 +209,8 @@ public class ProfileService {
     public List<User> getFollowing(String username, int page, int size) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
-
         org.springframework.data.domain.Pageable pageable =
                 org.springframework.data.domain.PageRequest.of(page, size);
-
         return followRepository.findFollowingUsers(user.getId(), pageable).getContent();
     }
 
@@ -313,20 +240,16 @@ public class ProfileService {
             return new MessageResponse("You cannot block yourself");
         }
 
-        // Remove any follow relationship (both directions)
         followRepository.findByFollowerAndFollowing(currentUser, targetUser)
-                .ifPresent(follow -> followRepository.delete(follow));
+                .ifPresent(followRepository::delete);
         followRepository.findByFollowerAndFollowing(targetUser, currentUser)
-                .ifPresent(follow -> followRepository.delete(follow));
+                .ifPresent(followRepository::delete);
 
-        // Check if already blocked
         if (blockRepository.existsByBlockerAndBlocked(currentUser, targetUser)) {
             return new MessageResponse("User is already blocked");
         }
 
-        Block block = new Block(currentUser, targetUser);
-        blockRepository.save(block);
-
+        blockRepository.save(new Block(currentUser, targetUser));
         return new MessageResponse("User blocked successfully");
     }
 
@@ -335,10 +258,8 @@ public class ProfileService {
         User currentUser = getCurrentUser();
         User targetUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
-
         blockRepository.findByBlockerAndBlocked(currentUser, targetUser)
-                .ifPresent(block -> blockRepository.delete(block));
-
+                .ifPresent(blockRepository::delete);
         return new MessageResponse("User unblocked successfully");
     }
 
@@ -365,22 +286,9 @@ public class ProfileService {
         User owner = userRepository.findByUsername(profileOwnerUsername)
                 .orElseThrow(() -> new RuntimeException("Profile owner not found: " + profileOwnerUsername));
 
-        // Can always view own profile
-        if (viewer.getId().equals(owner.getId())) {
-            return true;
-        }
-
-        // Check if blocked
-        if (isBlocked(viewer, owner)) {
-            return false;
-        }
-
-        // If profile is public, can view
-        if (!owner.getIsPrivate()) {
-            return true;
-        }
-
-        // If profile is private, check if viewer is a follower
+        if (viewer.getId().equals(owner.getId())) return true;
+        if (isBlocked(viewer, owner)) return false;
+        if (!owner.getIsPrivate()) return true;
         return followRepository.existsByFollowerAndFollowing(viewer, owner);
     }
 
@@ -391,17 +299,8 @@ public class ProfileService {
         User receiver = userRepository.findByUsername(receiverUsername)
                 .orElseThrow(() -> new RuntimeException("Receiver not found: " + receiverUsername));
 
-        // Check if blocked
-        if (isBlocked(sender, receiver)) {
-            return false;
-        }
-
-        // Check receiver's messaging preference
-        if (receiver.getAllowMessagesFromAnyone()) {
-            return true;
-        }
-
-        // If not allowing from anyone, must be a follower
+        if (isBlocked(sender, receiver)) return false;
+        if (receiver.getAllowMessagesFromAnyone()) return true;
         return followRepository.existsByFollowerAndFollowing(sender, receiver);
     }
 
@@ -412,13 +311,9 @@ public class ProfileService {
                 blockRepository.existsByBlockerAndBlocked(user2, user1);
     }
 
-    /**
-     * Maps a User to EnhancedProfileResponse (public method for SearchService)
-     */
     public EnhancedProfileResponse mapToEnhancedProfileResponse(User user, User currentUser) {
         EnhancedProfileResponse response = new EnhancedProfileResponse();
 
-        // Basic info
         response.setId(user.getId());
         response.setUsername(user.getUsername());
         response.setEmail(filterByPrivacy(user.getEmail(), user.getShowEmail(), currentUser, user));
@@ -435,7 +330,6 @@ public class ProfileService {
         response.setLastActive(filterLastActive(user, currentUser));
         response.setProfileViews(user.getProfileViews());
 
-        // Enhanced fields
         response.setOccupation(user.getOccupation());
         response.setCompany(user.getCompany());
         response.setEducation(user.getEducation());
@@ -444,7 +338,6 @@ public class ProfileService {
         response.setPhoneNumber(filterByPrivacy(user.getPhoneNumber(), user.getShowPhone(), currentUser, user));
         response.setTheme(user.getTheme());
 
-        // Social links
         response.setFacebookUrl(user.getFacebookUrl());
         response.setTwitterUrl(user.getTwitterUrl());
         response.setInstagramUrl(user.getInstagramUrl());
@@ -452,7 +345,6 @@ public class ProfileService {
         response.setGithubUrl(user.getGithubUrl());
         response.setYoutubeUrl(user.getYoutubeUrl());
 
-        // Privacy settings (only visible to own profile)
         if (currentUser.getId().equals(user.getId())) {
             response.setShowEmail(user.getShowEmail());
             response.setShowPhone(user.getShowPhone());
@@ -462,43 +354,31 @@ public class ProfileService {
             response.setAllowTagging(user.getAllowTagging());
         }
 
-        // Stats
         response.setFollowersCount(followRepository.countByFollowing(user));
         response.setFollowingCount(followRepository.countByFollower(user));
-        response.setPostsCount(0L); // Will be implemented by post module
+        response.setPostsCount(0L);
 
-        // Relationship flags
         response.setIsFollowedByCurrentUser(
                 !currentUser.getId().equals(user.getId()) &&
-                        followRepository.existsByFollowerAndFollowing(currentUser, user)
-        );
+                        followRepository.existsByFollowerAndFollowing(currentUser, user));
         response.setIsFollowingCurrentUser(
                 !currentUser.getId().equals(user.getId()) &&
-                        followRepository.existsByFollowerAndFollowing(user, currentUser)
-        );
+                        followRepository.existsByFollowerAndFollowing(user, currentUser));
         response.setIsBlocked(isBlocked(currentUser, user));
 
         return response;
     }
 
     private String filterByPrivacy(String value, Boolean show, User currentUser, User profileUser) {
-        if (currentUser.getId().equals(profileUser.getId())) {
-            return value; // Own profile - show everything
-        }
-        if (show != null && show) {
-            return value; // User allowed to show this
-        }
-        return null; // Hide the information
+        if (currentUser.getId().equals(profileUser.getId())) return value;
+        if (show != null && show) return value;
+        return null;
     }
 
     private LocalDateTime filterLastActive(User profileUser, User currentUser) {
-        if (currentUser.getId().equals(profileUser.getId())) {
-            return profileUser.getLastActive(); // Own profile - show exact time
-        }
-        if (profileUser.getShowLastActive() != null && profileUser.getShowLastActive()) {
-            return profileUser.getLastActive(); // User allowed to show last active
-        }
-        return null; // Hide last active
+        if (currentUser.getId().equals(profileUser.getId())) return profileUser.getLastActive();
+        if (profileUser.getShowLastActive() != null && profileUser.getShowLastActive()) return profileUser.getLastActive();
+        return null;
     }
 
     // ========== ADDITIONAL UTILITY METHODS ==========
@@ -516,7 +396,6 @@ public class ProfileService {
                 .orElseThrow(() -> new RuntimeException("User not found: " + followerUsername));
         User following = userRepository.findByUsername(followingUsername)
                 .orElseThrow(() -> new RuntimeException("User not found: " + followingUsername));
-
         return followRepository.existsByFollowerAndFollowing(follower, following);
     }
 
@@ -538,50 +417,34 @@ public class ProfileService {
     @Transactional
     public MessageResponse deactivateAccount(String reason) {
         User currentUser = getCurrentUser();
-
-        // Soft delete - mark as deleted but keep in database
         currentUser.setDeleted(true);
         currentUser.setDeactivationReason(reason);
         currentUser.setDeletedAt(LocalDateTime.now());
         currentUser.setStatus("DEACTIVATED");
-
-        // Anonymize email and username to allow re-registration
         currentUser.setEmail("deleted_" + currentUser.getId() + "@deleted.com");
         currentUser.setUsername("user_" + currentUser.getId());
-
         userRepository.save(currentUser);
-
-        // Clear security context to logout the user
         SecurityContextHolder.clearContext();
-
         return new MessageResponse("Account deactivated successfully. Sorry to see you go!");
     }
 
     @Transactional
     public MessageResponse reactivateAccount(String username, String password) {
-        // Find user by original username (before anonymization)
-        // Note: This assumes you have a way to find the user. You might need to use email or another identifier
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (!user.getDeleted()) {
             return new MessageResponse("Account is already active");
         }
-
-        // Verify password
         if (!passwordEncoder.matches(password, user.getPassword())) {
             return new MessageResponse("Invalid password");
         }
 
-        // Reactivate account
         user.setDeleted(false);
         user.setDeactivationReason(null);
         user.setDeletedAt(null);
         user.setStatus("ACTIVE");
-        // Note: You might want to restore original username/email here
-        // This would require storing them somewhere or having a separate reactivation process
         user.setUpdatedAt(LocalDateTime.now());
-
         userRepository.save(user);
 
         return new MessageResponse("Account reactivated successfully! Welcome back!");

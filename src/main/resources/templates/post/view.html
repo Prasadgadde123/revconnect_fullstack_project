@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout/header :: head('Post - RevConnect')}">
+<body>
+<nav th:replace="~{layout/header :: navbar}"></nav>
+
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+
+            <!-- Flash messages -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show mb-3">
+                <i class="fas fa-check-circle me-2"></i><span th:text="${success}">Success</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show mb-3">
+                <i class="fas fa-exclamation-circle me-2"></i><span th:text="${error}">Error</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div th:if="${post != null}">
+
+                <!-- Post Card -->
+                <div class="card shadow mb-4" style="border-radius:15px;border:none;">
+                    <div class="card-body p-4">
+
+                        <!-- Author Header -->
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="d-flex align-items-center">
+                                <img th:if="${post.authorProfilePicture != null}"
+                                     th:src="${post.authorProfilePicture}"
+                                     class="rounded-circle me-3"
+                                     style="width:48px;height:48px;object-fit:cover;border:2px solid #ff6b35;">
+                                <div th:unless="${post.authorProfilePicture != null}"
+                                     class="rounded-circle me-3 d-flex align-items-center justify-content-center"
+                                     style="width:48px;height:48px;background:#ffe5d9;border:2px solid #ff6b35;flex-shrink:0;">
+                                    <i class="fas fa-user" style="color:#ff6b35;"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold"
+                                         th:text="${post.authorFullName != null ? post.authorFullName : post.authorUsername}">Name</div>
+                                    <small class="text-muted">
+                                        @<span th:text="${post.authorUsername}">username</span>
+                                        · <span th:text="${#temporals.format(post.createdAt, 'dd MMM yyyy, HH:mm')}">date</span>
+                                    </small>
+                                    <div th:if="${post.isPinned}" class="mt-1">
+                    <span class="badge" style="background:#fff3cd;color:#856404;font-size:.72rem;border-radius:20px;">
+                      <i class="fas fa-thumbtack me-1"></i>Pinned
+                    </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Post type badge -->
+                            <div class="d-flex align-items-center gap-2">
+                <span th:if="${post.postType == 'PROMOTIONAL'}"
+                      class="badge" style="background-color:#ff6b35;font-size:.72rem;border-radius:20px;">
+                  <i class="fas fa-tag me-1"></i>Promotional
+                </span>
+                                <span th:if="${post.isScheduled}"
+                                      class="badge bg-warning text-dark" style="font-size:.72rem;border-radius:20px;">
+                  <i class="fas fa-clock me-1"></i>Scheduled
+                </span>
+                            </div>
+                        </div>
+
+                        <!-- Post Content -->
+                        <p class="mb-3" style="font-size:1.05rem;line-height:1.6;" th:text="${post.content}">Content</p>
+
+                        <!-- Hashtags -->
+                        <div th:if="${post.hashtagList != null and not #lists.isEmpty(post.hashtagList)}"
+                             class="d-flex flex-wrap gap-1 mb-3">
+                            <a th:each="tag : ${post.hashtagList}"
+                               th:href="@{/posts/hashtag(tag=${tag})}"
+                               th:text="${tag}"
+                               class="badge text-decoration-none"
+                               style="background-color:#fff5f2;color:#ff6b35;border:1px solid #ff6b35;border-radius:20px;font-size:.8rem;padding:.4em .75em;"></a>
+                        </div>
+
+                        <!-- Tagged Products -->
+                        <div th:if="${post.taggedProducts != null and not #lists.isEmpty(post.taggedProducts)}"
+                             class="mb-3">
+                            <div class="small fw-semibold text-muted mb-2">
+                                <i class="fas fa-tag me-1" style="color:#ff6b35;"></i>Tagged Products &amp; Services
+                            </div>
+                            <div class="row g-2">
+                                <div th:each="product : ${post.taggedProducts}" class="col-sm-6">
+                                    <a th:href="${product.purchaseUrl != null ? product.purchaseUrl : '#'}"
+                                       th:target="${product.purchaseUrl != null ? '_blank' : '_self'}"
+                                       class="d-flex align-items-center gap-2 p-2 rounded text-decoration-none"
+                                       style="background:#fff5f2;border:1px solid #ffe0d4;transition:background .2s;">
+                                        <img th:if="${product.imageUrl != null}"
+                                             th:src="${product.imageUrl}"
+                                             style="width:44px;height:44px;object-fit:cover;border-radius:8px;flex-shrink:0;" alt="">
+                                        <div th:unless="${product.imageUrl != null}"
+                                             style="width:44px;height:44px;background:#ffe5d9;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                            <i class="fas fa-box" style="color:#ff6b35;"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="fw-semibold small" style="color:#ff6b35;" th:text="${product.name}">Product</div>
+                                            <div class="d-flex align-items-center gap-1">
+                        <span class="badge" style="background:#ffe5d9;color:#ff6b35;font-size:.68rem;"
+                              th:text="${product.itemType}">PRODUCT</span>
+                                                <span class="text-muted" style="font-size:.78rem;"
+                                                      th:text="${product.price != null ? product.price : 'Contact for pricing'}">Price</span>
+                                            </div>
+                                        </div>
+                                        <i th:if="${product.purchaseUrl != null}"
+                                           class="fas fa-external-link-alt small" style="color:#ff6b35;opacity:.6;flex-shrink:0;"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stats & Actions -->
+                        <div class="d-flex align-items-center gap-3 text-muted small border-top pt-3">
+                            <span><i class="fas fa-heart me-1" style="color:#e74c3c;"></i><span th:text="${post.likesCount}">0</span></span>
+                            <span><i class="fas fa-comment me-1" style="color:#ff6b35;"></i><span th:text="${post.commentsCount}">0</span></span>
+                            <span><i class="fas fa-retweet me-1" style="color:#28a745;"></i><span th:text="${post.repostsCount}">0</span></span>
+
+                            <!-- Own post: edit / delete -->
+                            <div th:if="${isOwnPost}" class="ms-auto d-flex gap-2">
+                                <a th:href="@{/posts/{id}/edit(id=${post.id})}"
+                                   class="btn btn-sm btn-outline-secondary px-3" style="border-radius:8px;">
+                                    <i class="fas fa-edit me-1"></i>Edit
+                                </a>
+                                <form th:action="@{/posts/{id}/delete(id=${post.id})}" method="post"
+                                      onsubmit="return confirm('Delete this post?')">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger px-3" style="border-radius:8px;">
+                                        <i class="fas fa-trash me-1"></i>Delete
+                                    </button>
+                                </form>
+                            </div>
+                            <div th:unless="${isOwnPost}" class="ms-auto">
+                                <form th:action="@{/posts/{id}/repost(id=${post.id})}" method="post">
+                                    <button type="submit" class="btn btn-sm px-3"
+                                            style="background-color:#ff6b35;color:white;border:none;border-radius:8px;">
+                                        <i class="fas fa-retweet me-1"></i>Repost
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Back -->
+                <a th:href="@{/feed}" class="btn btn-outline-secondary px-4" style="border-radius:8px;">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Feed
+                </a>
+
+            </div>
+
+            <!-- Fallback -->
+            <div th:if="${post == null}" class="card shadow text-center p-5" style="border-radius:15px;border:none;">
+                <i class="fas fa-exclamation-circle fa-3x mb-3" style="color:#dc3545;"></i>
+                <h5>Post not found</h5>
+                <a th:href="@{/feed}" class="btn mt-2" style="background-color:#ff6b35;color:white;border:none;border-radius:8px;">
+                    Back to Feed
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    a[href="#"]:hover, a.d-flex:hover { background-color:#ffe5d9 !important; }
+    .form-check-input:checked { background-color:#ff6b35; border-color:#ff6b35; }
+</style>
+</body>
+</html>

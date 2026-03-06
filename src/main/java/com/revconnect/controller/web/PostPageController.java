@@ -1,17 +1,22 @@
 // src/main/java/com/revconnect/controller/web/PostPageController.java
 package com.revconnect.controller.web;
 
+import com.revconnect.dto.request.CreatePostRequest;
+import com.revconnect.dto.request.UpdatePostRequest;
 import com.revconnect.dto.response.PostResponse;
 import com.revconnect.model.user.User;
 import com.revconnect.repository.UserRepository;
 import com.revconnect.service.PostService;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Controller
 public class PostPageController {
@@ -24,15 +29,12 @@ public class PostPageController {
         this.userRepository = userRepository;
     }
 
-    // ─── Guard helper ────────────────────────────────────────────────────────
-
     private boolean notLoggedIn(HttpSession session) {
         return session.getAttribute("user") == null;
     }
 
     // ─── CREATE ──────────────────────────────────────────────────────────────
 
-    /** Show the create-post form */
     @GetMapping("/posts/create")
     public String showCreateForm(HttpSession session, Model model) {
         if (notLoggedIn(session)) return "redirect:/login";
@@ -40,22 +42,31 @@ public class PostPageController {
         return "post/create";
     }
 
-    /** Handle form submission from post/create.html */
     @PostMapping("/posts/create")
     public String handleCreatePost(
             @RequestParam String content,
             @RequestParam(required = false) String hashtags,
+            @RequestParam(value = "taggedProductIds", required = false) List<Long> taggedProductIds,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime scheduledAt,
             HttpSession session,
             RedirectAttributes ra) {
 
         if (notLoggedIn(session)) return "redirect:/login";
-
         try {
-            com.revconnect.dto.request.CreatePostRequest req =
-                    new com.revconnect.dto.request.CreatePostRequest();
+            CreatePostRequest req = new CreatePostRequest();
             req.setContent(content);
             req.setHashtags(hashtags);
+            req.setTaggedProductIds(taggedProductIds);
+            req.setScheduledAt(scheduledAt);
+            req.setPinPost(false);
+
             postService.createPost(req);
+
+            if (scheduledAt != null) {
+                ra.addFlashAttribute("success", "Post scheduled successfully!");
+                return "redirect:/posts/scheduled";
+            }
             ra.addFlashAttribute("success", "Post created successfully!");
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Failed to create post: " + e.getMessage());
@@ -66,13 +77,13 @@ public class PostPageController {
     // ─── VIEW SINGLE POST ────────────────────────────────────────────────────
 
     @GetMapping("/posts/{postId}")
-    public String viewPost(@PathVariable Long postId,
-                           HttpSession session,
-                           Model model) {
+    public String viewPost(@PathVariable Long postId, HttpSession session, Model model) {
         if (notLoggedIn(session)) return "redirect:/login";
         try {
             PostResponse post = postService.getPostById(postId);
+            User sessionUser = (User) session.getAttribute("user");
             model.addAttribute("post", post);
+            model.addAttribute("isOwnPost", post.getAuthorId().equals(sessionUser.getId()));
             model.addAttribute("title", "Post by @" + post.getAuthorUsername());
         } catch (Exception e) {
             return "redirect:/feed?error=postnotfound";
@@ -82,20 +93,14 @@ public class PostPageController {
 
     // ─── EDIT ────────────────────────────────────────────────────────────────
 
-    /** Show the edit-post form */
     @GetMapping("/posts/{postId}/edit")
-    public String showEditForm(@PathVariable Long postId,
-                               HttpSession session,
-                               Model model) {
+    public String showEditForm(@PathVariable Long postId, HttpSession session, Model model) {
         if (notLoggedIn(session)) return "redirect:/login";
-
         User sessionUser = (User) session.getAttribute("user");
         try {
             PostResponse post = postService.getPostById(postId);
-            // Only the author can access the edit form
-            if (!post.getAuthorId().equals(sessionUser.getId())) {
+            if (!post.getAuthorId().equals(sessionUser.getId()))
                 return "redirect:/feed?error=unauthorized";
-            }
             model.addAttribute("post", post);
             model.addAttribute("title", "Edit Post");
         } catch (Exception e) {
@@ -104,34 +109,39 @@ public class PostPageController {
         return "post/edit";
     }
 
-    /** Handle edit form submission */
     @PostMapping("/posts/{postId}/edit")
-    public String handleEditPost(@PathVariable Long postId,
-                                 @RequestParam String content,
-                                 @RequestParam(required = false) String hashtags,
-                                 HttpSession session,
-                                 RedirectAttributes ra) {
+    public String handleEditPost(
+            @PathVariable Long postId,
+            @RequestParam String content,
+            @RequestParam(required = false) String hashtags,
+            @RequestParam(value = "taggedProductIds", required = false) List<Long> taggedProductIds,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime scheduledAt,
+            HttpSession session,
+            RedirectAttributes ra) {
+
         if (notLoggedIn(session)) return "redirect:/login";
         try {
-            com.revconnect.dto.request.UpdatePostRequest req =
-                    new com.revconnect.dto.request.UpdatePostRequest();
+            UpdatePostRequest req = new UpdatePostRequest();
             req.setContent(content);
             req.setHashtags(hashtags);
+            req.setTaggedProductIds(taggedProductIds);
+            req.setScheduledAt(scheduledAt);
+
             postService.updatePost(postId, req);
             ra.addFlashAttribute("success", "Post updated successfully!");
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Failed to update post: " + e.getMessage());
+            return "redirect:/posts/" + postId + "/edit";
         }
-        return "redirect:/posts/" + postId;
+        // FIX: redirect to feed instead of /posts/{id} to avoid missing post/view template
+        return "redirect:/feed";
     }
 
     // ─── DELETE ──────────────────────────────────────────────────────────────
 
-    /** Delete via POST (HTML forms don't support DELETE) */
     @PostMapping("/posts/{postId}/delete")
-    public String handleDeletePost(@PathVariable Long postId,
-                                   HttpSession session,
-                                   RedirectAttributes ra) {
+    public String handleDeletePost(@PathVariable Long postId, HttpSession session, RedirectAttributes ra) {
         if (notLoggedIn(session)) return "redirect:/login";
         try {
             postService.deletePost(postId);
@@ -147,8 +157,7 @@ public class PostPageController {
     @PostMapping("/posts/{postId}/repost")
     public String handleRepost(@PathVariable Long postId,
                                @RequestParam(required = false) String comment,
-                               HttpSession session,
-                               RedirectAttributes ra) {
+                               HttpSession session, RedirectAttributes ra) {
         if (notLoggedIn(session)) return "redirect:/login";
         try {
             postService.repostPost(postId, comment);
@@ -159,49 +168,48 @@ public class PostPageController {
         return "redirect:/feed";
     }
 
-    // ─── FEED PAGE ───────────────────────────────────────────────────────────
+    // ─── FEED ────────────────────────────────────────────────────────────────
 
-    /**
-     * Overrides the stub in PageController — renders real feed with posts.
-     * NOTE: Add this in PageController instead if you prefer one web controller.
-     *       Here it's separate to keep post logic isolated.
-     */
     @GetMapping("/feed")
-    public String feed(@RequestParam(defaultValue = "0")  int page,
+    public String feed(@RequestParam(defaultValue = "0") int page,
                        @RequestParam(defaultValue = "10") int size,
-                       HttpSession session,
-                       Model model) {
+                       HttpSession session, Model model) {
         if (notLoggedIn(session)) return "redirect:/login";
-
         User user = (User) session.getAttribute("user");
         model.addAttribute("username", user.getUsername());
         model.addAttribute("title", "Feed");
-
         try {
             Page<PostResponse> feedPage = postService.getFeedPosts(page, size);
-            model.addAttribute("posts",        feedPage.getContent());
-            model.addAttribute("currentPage",  feedPage.getNumber());
-            model.addAttribute("totalPages",   feedPage.getTotalPages());
-            model.addAttribute("hasNext",      feedPage.hasNext());
-            model.addAttribute("hasPrev",      feedPage.hasPrevious());
-            model.addAttribute("postsCount",   postService.countPostsByUser(user.getId()));
+            model.addAttribute("posts",       feedPage.getContent());
+            model.addAttribute("currentPage", feedPage.getNumber());
+            model.addAttribute("totalPages",  feedPage.getTotalPages());
+            model.addAttribute("hasNext",     feedPage.hasNext());
+            model.addAttribute("hasPrev",     feedPage.hasPrevious());
+            model.addAttribute("postsCount",  postService.countPostsByUser(user.getId()));
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("posts", java.util.Collections.emptyList());
             model.addAttribute("feedError", "Could not load feed: " + e.getMessage());
         }
-
         return "feed/index";
+    }
+
+    // ─── SCHEDULED POSTS PAGE ────────────────────────────────────────────────
+
+    @GetMapping("/posts/scheduled")
+    public String scheduledPostsPage(HttpSession session, Model model) {
+        if (notLoggedIn(session)) return "redirect:/login";
+        model.addAttribute("title", "Scheduled Posts");
+        return "post/scheduled";
     }
 
     // ─── HASHTAG SEARCH ──────────────────────────────────────────────────────
 
     @GetMapping("/posts/hashtag")
     public String searchByHashtag(@RequestParam String tag,
-                                  @RequestParam(defaultValue = "0")  int page,
+                                  @RequestParam(defaultValue = "0") int page,
                                   @RequestParam(defaultValue = "10") int size,
-                                  HttpSession session,
-                                  Model model) {
+                                  HttpSession session, Model model) {
         if (notLoggedIn(session)) return "redirect:/login";
         try {
             Page<PostResponse> results = postService.searchByHashtag(tag, page, size);
