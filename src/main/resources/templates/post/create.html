@@ -1,50 +1,126 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="layout/header :: head('Create Post - RevConnect')">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout/header :: head('Create Post - RevConnect')}">
 <body>
-<nav th:replace="layout/header :: navbar"></nav>
+<nav th:replace="~{layout/header :: navbar}"></nav>
 
-<div class="container">
+<div class="container mt-4">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="fas fa-plus-circle"></i> Create New Post</h5>
+        <div class="col-md-7">
+
+            <!-- Flash messages -->
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <span th:text="${error}">Error</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div class="card shadow" style="border-radius:15px;border:none;">
+                <div class="card-header text-white text-center py-3" style="background-color:#ff6b35;border-radius:15px 15px 0 0;">
+                    <h4 class="mb-0"><i class="fas fa-pen-alt me-2"></i>Create New Post</h4>
                 </div>
-                <div class="card-body">
-                    <form th:action="@{/post/create}" method="post" enctype="multipart/form-data">
+                <div class="card-body p-4">
+
+                    <!-- Author info bar -->
+                    <div class="d-flex align-items-center mb-3">
+                        <img th:if="${session.user != null and session.user.profilePicture != null}"
+                             th:src="${session.user.profilePicture}"
+                             class="rounded-circle me-2"
+                             style="width:44px;height:44px;object-fit:cover;border:2px solid #ff6b35;">
+                        <i th:unless="${session.user != null and session.user.profilePicture != null}"
+                           class="fas fa-user-circle fa-2x me-2" style="color:#ff6b35;"></i>
+                        <div>
+                            <div class="fw-bold"
+                                 th:text="${session.user != null ? (session.user.fullName != null ? session.user.fullName : session.user.username) : 'User'}">
+                                User
+                            </div>
+                            <small class="text-muted"
+                                   th:text="${session.user != null ? '@' + session.user.username : ''}">@username</small>
+                        </div>
+                    </div>
+
+                    <!-- Post form -->
+                    <form th:action="@{/posts/create}" method="post">
+
+                        <!-- Content -->
                         <div class="mb-3">
-                            <label for="content" class="form-label">What's on your mind?</label>
-                            <textarea class="form-control" id="content" name="content" rows="5" required></textarea>
+              <textarea id="content" name="content"
+                        class="form-control"
+                        rows="5"
+                        maxlength="2000"
+                        placeholder="What's on your mind? Share something with the community..."
+                        required
+                        style="resize:vertical;border-radius:10px;border:1.5px solid #dee2e6;"
+                        oninput="updateCharCount()"></textarea>
+                            <div class="d-flex justify-content-between mt-1">
+                                <small class="text-muted">Share your thoughts, ideas, or updates.</small>
+                                <small id="charCount" class="text-muted">0 / 2000</small>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="hashtags" class="form-label">Hashtags</label>
-                            <input type="text" class="form-control" id="hashtags" name="hashtags"
-                                   placeholder="e.g., #technology #coding">
-                            <small class="text-muted">Separate hashtags with spaces</small>
+                        <!-- Hashtags -->
+                        <div class="mb-4">
+                            <label for="hashtags" class="form-label fw-semibold">
+                                <i class="fas fa-hashtag me-1" style="color:#ff6b35;"></i>Hashtags
+                                <small class="text-muted fw-normal">(optional, comma-separated)</small>
+                            </label>
+                            <input type="text" id="hashtags" name="hashtags"
+                                   class="form-control"
+                                   placeholder="e.g. java, spring, webdev"
+                                   style="border-radius:10px;">
+                            <div id="hashtagPreview" class="mt-2 d-flex flex-wrap gap-1"></div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="image" class="form-label">Add Image (Optional)</label>
-                            <input type="file" class="form-control" id="image" name="image" accept="image/*">
-                        </div>
-
-                        <hr>
-
-                        <div class="d-flex justify-content-between">
-                            <a th:href="@{/feed}" class="btn btn-secondary">
-                                <i class="fas fa-times"></i> Cancel
+                        <!-- Actions -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a th:href="@{/feed}" class="btn px-4 py-2"
+                               style="background-color:#6c757d;color:white;border:none;border-radius:8px;">
+                                <i class="fas fa-times me-1"></i>Cancel
                             </a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-paper-plane"></i> Post
+                            <button type="submit" class="btn px-4 py-2"
+                                    style="background-color:#ff6b35;color:white;border:none;border-radius:8px;">
+                                <i class="fas fa-paper-plane me-1"></i>Publish Post
                             </button>
                         </div>
+
                     </form>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
+
+<script>
+    function updateCharCount() {
+      const ta = document.getElementById('content');
+      const count = ta.value.length;
+      const el = document.getElementById('charCount');
+      el.textContent = count + ' / 2000';
+      el.style.color = count > 1800 ? '#dc3545' : '#6c757d';
+    }
+
+    // Live hashtag preview
+    document.getElementById('hashtags').addEventListener('input', function () {
+      const raw = this.value;
+      const preview = document.getElementById('hashtagPreview');
+      preview.innerHTML = '';
+      raw.split(/[,\s]+/).forEach(tag => {
+        tag = tag.replace(/^#+/, '').trim();
+        if (tag) {
+          const span = document.createElement('span');
+          span.className = 'badge';
+          span.style.cssText = 'background-color:#ff6b35;color:white;font-size:.8rem;padding:.4em .7em;border-radius:20px;';
+          span.textContent = '#' + tag.toLowerCase();
+          preview.appendChild(span);
+        }
+      });
+    });
+</script>
+
+<style>
+    textarea:focus, input:focus { border-color: #ff6b35 !important; box-shadow: 0 0 0 .2rem rgba(255,107,53,.15) !important; }
+    .btn:hover { opacity:.9; transform:translateY(-1px); transition:all .2s ease; }
+</style>
 </body>
 </html>
