@@ -8,12 +8,9 @@
   <div class="row justify-content-center">
     <div class="col-md-7">
 
-      <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+      <!-- Flash messages -->
+      <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
         <i class="fas fa-exclamation-circle me-2"></i><span th:text="${error}">Error</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-      <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
-        <i class="fas fa-check-circle me-2"></i><span th:text="${success}">Success</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
       </div>
 
@@ -25,14 +22,15 @@
         <div class="card-body p-4">
 
           <div th:if="${post != null}">
-            <form th:action="@{/posts/{id}/edit(id=${post.id})}" method="post"
-                  id="editPostForm" onsubmit="prepareSubmit()">
+            <form th:action="@{/posts/{id}/edit(id=${post.id})}" method="post" id="editPostForm">
+              <!-- Pass redirectTo so controller knows where to go back after save -->
+              <input type="hidden" name="redirectTo" th:value="${fromProfile ? 'profile' : 'feed'}">
 
-              <!-- Content -->
+              <!-- ── Content ────────────────────────────────────── -->
               <div class="mb-3">
                 <label class="form-label fw-semibold">Post Content <span class="text-danger">*</span></label>
-                <textarea id="content" name="content" class="form-control"
-                          rows="5" maxlength="2000" required
+                <textarea id="content" name="content"
+                          class="form-control" rows="5" maxlength="2000" required
                           style="resize:vertical;border-radius:10px;"
                           oninput="updateCharCount()"
                           th:text="${post.content}"></textarea>
@@ -42,39 +40,51 @@
                 </div>
               </div>
 
-              <!-- Hashtags -->
+              <!-- ── Hashtags ───────────────────────────────────── -->
               <div class="mb-3">
                 <label for="hashtags" class="form-label fw-semibold">
                   <i class="fas fa-hashtag me-1" style="color:#ff6b35;"></i>Hashtags
                   <small class="text-muted fw-normal">(optional, comma-separated)</small>
                 </label>
-                <input type="text" id="hashtags" name="hashtags" class="form-control"
+                <input type="text" id="hashtags" name="hashtags"
+                       class="form-control"
                        th:value="${post.hashtags}"
-                       placeholder="e.g. java, spring, webdev" style="border-radius:10px;">
+                       placeholder="e.g. java, spring, webdev"
+                       style="border-radius:10px;">
                 <div id="hashtagPreview" class="mt-2 d-flex flex-wrap gap-1"></div>
               </div>
 
-              <!-- ══ FEATURE 1 · TAG PRODUCTS ══ -->
+              <!-- ════════════════════════════════════════════════
+                   FEATURE 1 · TAG PRODUCTS / SERVICES
+                   ════════════════════════════════════════════════ -->
               <div id="tagProductsSection" class="mb-3" style="display:none;">
                 <label class="form-label fw-semibold">
                   <i class="fas fa-tag me-1" style="color:#ff6b35;"></i>Tag Products / Services
                   <small class="text-muted fw-normal">(optional)</small>
                 </label>
-                <input type="text" id="productSearch" class="form-control mb-2"
-                       placeholder="Search your products..." style="border-radius:10px;"
+
+                <input type="text" id="productSearch"
+                       class="form-control mb-2"
+                       placeholder="Search your products..."
+                       style="border-radius:10px;"
                        oninput="filterProducts()">
-                <div id="productList" class="border rounded p-2"
+
+                <div id="productList"
+                     class="border rounded p-2"
                      style="max-height:160px;overflow-y:auto;border-radius:10px;background:#fafafa;">
                   <div class="text-muted small text-center py-2" id="productListPlaceholder">
                     <i class="fas fa-spinner fa-spin me-1"></i>Loading products…
                   </div>
                 </div>
+
                 <div id="selectedProductsPreview" class="mt-2 d-flex flex-wrap gap-1"></div>
                 <div id="taggedProductInputs"></div>
               </div>
 
-              <!-- ══ FEATURE 2 · SCHEDULE / RESCHEDULE ══ -->
-              <div class="mb-4">
+              <!-- ════════════════════════════════════════════════
+                   FEATURE 2 · RESCHEDULE POST
+                   ════════════════════════════════════════════════ -->
+              <div class="mb-3">
                 <div class="form-check form-switch mb-2">
                   <input class="form-check-input" type="checkbox" id="scheduleToggle"
                          th:checked="${post.scheduledAt != null}"
@@ -84,6 +94,7 @@
                   </label>
                 </div>
 
+                <!-- Current schedule badge (shown if already scheduled) -->
                 <div th:if="${post.scheduledAt != null}" id="currentScheduleBadge"
                      class="alert alert-warning py-2 px-3 mb-2" style="border-radius:10px;">
                   <i class="fas fa-clock me-1"></i>
@@ -93,37 +104,50 @@
 
                 <div id="scheduleSection"
                      th:style="${post.scheduledAt != null ? '' : 'display:none;'}">
-                  <!-- Visible picker (datetime-local) pre-filled from existing scheduledAt -->
-                  <input type="datetime-local" id="scheduledAtPicker" class="form-control"
-                         th:value="${post.scheduledAt != null
-                             ? #temporals.format(post.scheduledAt, 'yyyy-MM-dd''T''HH:mm')
-                             : ''}"
+                  <input type="datetime-local"
+                         id="scheduledAt"
+                         name="scheduledAt"
+                         class="form-control"
+                         th:value="${post.scheduledAt != null ? #temporals.format(post.scheduledAt, 'yyyy-MM-dd''T''HH:mm') : ''}"
                          style="border-radius:10px;">
-                  <!--
-                    Hidden field posted to server.
-                    Pre-filled with full ISO value (with seconds) by Thymeleaf;
-                    also updated by prepareSubmit() when user changes the picker.
-                  -->
-                  <input type="hidden" id="scheduledAt" name="scheduledAt"
-                         th:value="${post.scheduledAt != null
-                             ? #temporals.format(post.scheduledAt, 'yyyy-MM-dd''T''HH:mm:ss')
-                             : ''}">
-                  <small class="text-muted mt-1 d-block">
-                    <i class="fas fa-info-circle me-1"></i>Toggle off to publish immediately.
+                  <small class="text-muted">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Clear schedule toggle to publish immediately.
                   </small>
                 </div>
               </div>
 
-              <!-- NOTE: Pin removed from edit form — use profile feed to pin/unpin posts. -->
+              <!-- ════════════════════════════════════════════════
+                   FEATURE 3 · PIN / UNPIN
+                   ════════════════════════════════════════════════ -->
+              <div class="mb-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox"
+                         id="pinPost" name="pinPost" value="true"
+                         th:checked="${post.pinned}">
+                  <label class="form-check-label fw-semibold" for="pinPost">
+                    <i class="fas fa-thumbtack me-1" style="color:#ff6b35;"></i>Pin to my profile
+                    <small class="text-muted fw-normal">(max 3 pinned posts)</small>
+                  </label>
+                </div>
+                <!-- Show when pinned -->
+                <div th:if="${post.pinned}" class="mt-1">
+                  <span class="badge" style="background:#fff3cd;color:#856404;border-radius:20px;">
+                    <i class="fas fa-thumbtack me-1"></i>Currently pinned
+                    <span th:if="${post.pinnedAt != null}"
+                          th:text="' since ' + ${#temporals.format(post.pinnedAt, 'dd MMM yyyy')}"></span>
+                  </span>
+                </div>
+              </div>
 
-              <!-- Timestamps -->
+              <!-- ── Timestamps ──────────────────────────────────── -->
               <div class="mb-3 text-muted small">
                 <i class="fas fa-clock me-1"></i>
                 Originally posted:
                 <span th:text="${#temporals.format(post.createdAt, 'dd MMM yyyy, HH:mm')}">date</span>
               </div>
 
-              <!-- Actions -->
+              <!-- ── Actions ─────────────────────────────────────── -->
               <div class="d-flex justify-content-between align-items-center">
                 <a th:href="@{/posts/{id}(id=${post.id})}" class="btn px-4 py-2"
                    style="background-color:#6c757d;color:white;border:none;border-radius:8px;">
@@ -138,6 +162,7 @@
             </form>
           </div>
 
+          <!-- Fallback -->
           <div th:if="${post == null}" class="text-center py-4">
             <i class="fas fa-exclamation-circle fa-3x mb-3" style="color:#dc3545;"></i>
             <h5>Post not found</h5>
@@ -147,16 +172,19 @@
 
         </div>
       </div>
+
     </div>
   </div>
 </div>
 
-<!-- Inject already-tagged product IDs from server into JS -->
+<!--
+  Pass currently-tagged product IDs from Thymeleaf into JS.
+  post.taggedProducts is List<TaggedProductDto> set by PostPageController.
+-->
 <script th:inline="javascript">
-  /*<![CDATA[*/
   const existingTaggedIds = /*[[${post != null && post.taggedProducts != null
-      ? post.taggedProducts.![id] : {}}]]*/ [];
-  /*]]>*/
+      ? post.taggedProducts.![id]
+      : {}}]]*/ [];
 </script>
 
 <script>
@@ -164,68 +192,63 @@
   function updateCharCount() {
       const ta = document.getElementById('content');
       const el = document.getElementById('charCount');
-      const n  = ta.value.length;
-      el.textContent = n + ' / 2000';
-      el.style.color = n > 1800 ? '#dc3545' : '#6c757d';
+      const count = ta.value.length;
+      el.textContent = count + ' / 2000';
+      el.style.color = count > 1800 ? '#dc3545' : '#6c757d';
   }
   window.addEventListener('load', updateCharCount);
 
-  // ── Hashtag preview ──────────────────────────────────────────────────────────
+  // ── Hashtag live preview ─────────────────────────────────────────────────────
   function renderHashtagPreview(raw) {
       const preview = document.getElementById('hashtagPreview');
       preview.innerHTML = '';
       if (!raw) return;
       raw.split(/[,\s]+/).forEach(tag => {
           tag = tag.replace(/^#+/, '').trim();
-          if (!tag) return;
-          const s = document.createElement('span');
-          s.className = 'badge';
-          s.style.cssText = 'background-color:#ff6b35;color:white;font-size:.8rem;padding:.4em .7em;border-radius:20px;';
-          s.textContent = '#' + tag.toLowerCase();
-          preview.appendChild(s);
+          if (tag) {
+              const span = document.createElement('span');
+              span.className = 'badge';
+              span.style.cssText = 'background-color:#ff6b35;color:white;font-size:.8rem;padding:.4em .7em;border-radius:20px;';
+              span.textContent = '#' + tag.toLowerCase();
+              preview.appendChild(span);
+          }
       });
   }
   const hashtagInput = document.getElementById('hashtags');
   hashtagInput.addEventListener('input', () => renderHashtagPreview(hashtagInput.value));
   renderHashtagPreview(hashtagInput.value);
 
-  // ── FEATURE 2 · Schedule ─────────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════════════════
+  // FEATURE 2 · Schedule toggle
+  // ════════════════════════════════════════════════════════════════════════════
   function toggleSchedule() {
       const on = document.getElementById('scheduleToggle').checked;
       document.getElementById('scheduleSection').style.display = on ? 'block' : 'none';
+      document.getElementById('scheduledAt').required = on;
+
       const badge = document.getElementById('currentScheduleBadge');
       if (badge) badge.style.display = on ? 'block' : 'none';
-      if (!on) {
-          // Toggling off = clear schedule so post publishes immediately
-          document.getElementById('scheduledAt').value     = '';
-          document.getElementById('scheduledAtPicker').value = '';
-      } else {
+
+      if (on) {
           const now = new Date(Date.now() + 60000);
-          const p   = n => String(n).padStart(2, '0');
-          document.getElementById('scheduledAtPicker').min =
-              `${now.getFullYear()}-${p(now.getMonth()+1)}-${p(now.getDate())}T${p(now.getHours())}:${p(now.getMinutes())}`;
+          const pad = n => String(n).padStart(2, '0');
+          const minVal = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+          document.getElementById('scheduledAt').min = minVal;
       }
   }
 
-  // Sync picker → hidden ISO field before form posts
-  function prepareSubmit() {
-      const picker = document.getElementById('scheduledAtPicker');
-      const hidden = document.getElementById('scheduledAt');
-      if (document.getElementById('scheduleToggle').checked && picker.value) {
-          hidden.value = picker.value + ':00';
-      } else {
-          hidden.value = '';
-      }
-  }
-
-  // ── FEATURE 1 · Tag products ─────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════════════════
+  // FEATURE 1 · Tag products
+  // ════════════════════════════════════════════════════════════════════════════
   let allProducts = [];
-  // Pre-load IDs already tagged on this post (injected by Thymeleaf above)
-  let selectedProductIds = new Set((existingTaggedIds || []).map(Number));
+  let selectedProductIds = new Set(existingTaggedIds.map(Number));
 
   async function loadTaggableProducts() {
       try {
-          const res = await fetch('/api/posts/taggable-products', { credentials: 'same-origin' });
+          const token = getJwtToken();
+          const res = await fetch('/api/posts/taggable-products', {
+              headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+          });
           if (!res.ok) return;
           allProducts = await res.json();
           if (allProducts.length > 0) {
@@ -234,39 +257,44 @@
               renderSelectedChips();
               syncHiddenInputs();
           }
-      } catch (e) { /* personal account */ }
+      } catch (e) { /* not a business account */ }
   }
 
   function renderProductList(products) {
-      const container   = document.getElementById('productList');
+      const container = document.getElementById('productList');
       const placeholder = document.getElementById('productListPlaceholder');
       if (placeholder) placeholder.remove();
       container.innerHTML = '';
-      if (!products.length) {
+
+      if (products.length === 0) {
           container.innerHTML = '<div class="text-muted small text-center py-2">No products found.</div>';
           return;
       }
+
       products.forEach(p => {
           const isSelected = selectedProductIds.has(p.id);
           const row = document.createElement('div');
-          row.className = 'd-flex align-items-center gap-2 p-1 rounded';
-          row.style.cssText = `cursor:pointer;${isSelected ? 'background:#fff5f2;' : ''}`;
+          row.className = 'd-flex align-items-center gap-2 p-1 rounded product-row';
+          row.style.cssText = `cursor:pointer;transition:background .15s;${isSelected ? 'background:#fff5f2;' : ''}`;
+          row.dataset.id = p.id;
           row.innerHTML = `
-              <input type="checkbox" class="form-check-input"
+              <input type="checkbox" class="form-check-input product-checkbox"
                      id="prod_${p.id}" value="${p.id}"
                      ${isSelected ? 'checked' : ''}
-                     onchange="toggleProduct(${p.id}, this.checked)">
+                     onchange="toggleProduct(${p.id}, '${escHtml(p.name)}', this.checked)">
               ${p.imageUrl
-                  ? `<img src="${esc(p.imageUrl)}" style="width:32px;height:32px;object-fit:cover;border-radius:6px;">`
+                  ? `<img src="${escHtml(p.imageUrl)}" style="width:32px;height:32px;object-fit:cover;border-radius:6px;">`
                   : `<div style="width:32px;height:32px;background:#ffe5d9;border-radius:6px;display:flex;align-items:center;justify-content:center;"><i class="fas fa-box" style="color:#ff6b35;font-size:.75rem;"></i></div>`
               }
               <label for="prod_${p.id}" class="mb-0 flex-grow-1" style="cursor:pointer;">
-                  <span class="fw-semibold small">${esc(p.name)}</span>
+                  <span class="fw-semibold small">${escHtml(p.name)}</span>
                   <span class="badge ms-1" style="background:#ffe5d9;color:#ff6b35;font-size:.7rem;">
                       ${p.itemType === 'SERVICE' ? 'Service' : 'Product'}
                   </span>
-                  ${p.price ? `<span class="text-muted small ms-1">${esc(p.price)}</span>` : ''}
+                  ${p.price ? `<span class="text-muted small ms-1">${escHtml(p.price)}</span>` : ''}
               </label>`;
+          row.addEventListener('mouseenter', () => { if (!selectedProductIds.has(p.id)) row.style.background = '#fff5f2'; });
+          row.addEventListener('mouseleave', () => { row.style.background = selectedProductIds.has(p.id) ? '#fff5f2' : ''; });
           container.appendChild(row);
       });
   }
@@ -276,7 +304,7 @@
       renderProductList(allProducts.filter(p => p.name.toLowerCase().includes(q)));
   }
 
-  function toggleProduct(id, checked) {
+  function toggleProduct(id, name, checked) {
       checked ? selectedProductIds.add(id) : selectedProductIds.delete(id);
       renderSelectedChips();
       syncHiddenInputs();
@@ -291,7 +319,7 @@
           const chip = document.createElement('span');
           chip.className = 'badge d-flex align-items-center gap-1';
           chip.style.cssText = 'background:#ff6b35;color:white;font-size:.78rem;padding:.4em .7em;border-radius:20px;';
-          chip.innerHTML = `<i class="fas fa-tag"></i> ${esc(p.name)}
+          chip.innerHTML = `<i class="fas fa-tag"></i> ${escHtml(p.name)}
               <span onclick="removeProduct(${id})" style="cursor:pointer;margin-left:4px;opacity:.8;">✕</span>`;
           preview.appendChild(chip);
       });
@@ -310,21 +338,30 @@
       container.innerHTML = '';
       selectedProductIds.forEach(id => {
           const inp = document.createElement('input');
-          inp.type = 'hidden'; inp.name = 'taggedProductIds'; inp.value = id;
+          inp.type = 'hidden';
+          inp.name = 'taggedProductIds';
+          inp.value = id;
           container.appendChild(inp);
       });
   }
 
-  function esc(str) {
-      return String(str).replace(/[&<>"']/g,
-          c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  function escHtml(str) {
+      return String(str).replace(/[&<>"']/g, c =>
+          ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function getJwtToken() {
+      return localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken') || null;
   }
 
   loadTaggableProducts();
 </script>
 
 <style>
-  textarea:focus, input:focus { border-color:#ff6b35 !important; box-shadow:0 0 0 .2rem rgba(255,107,53,.15) !important; }
+  textarea:focus, input:focus {
+      border-color: #ff6b35 !important;
+      box-shadow: 0 0 0 .2rem rgba(255,107,53,.15) !important;
+  }
   .btn:hover { opacity:.9; transform:translateY(-1px); transition:all .2s ease; }
   .form-check-input:checked { background-color:#ff6b35; border-color:#ff6b35; }
 </style>
