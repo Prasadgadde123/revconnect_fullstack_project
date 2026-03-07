@@ -94,9 +94,14 @@ public class PostPageController {
     // ─── EDIT ────────────────────────────────────────────────────────────────
 
     @GetMapping("/posts/{postId}/edit")
-    public String showEditForm(@PathVariable Long postId, HttpSession session, Model model) {
+    public String showEditForm(
+            @PathVariable Long postId,
+            @RequestParam(required = false) String from,
+            HttpSession session,
+            Model model) {
         if (notLoggedIn(session)) return "redirect:/login";
         User sessionUser = (User) session.getAttribute("user");
+        model.addAttribute("fromProfile", "profile".equals(from));
         try {
             PostResponse post = postService.getPostById(postId);
             if (!post.getAuthorId().equals(sessionUser.getId()))
@@ -117,6 +122,7 @@ public class PostPageController {
             @RequestParam(value = "taggedProductIds", required = false) List<Long> taggedProductIds,
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime scheduledAt,
+            @RequestParam(required = false) String redirectTo,
             HttpSession session,
             RedirectAttributes ra) {
 
@@ -134,14 +140,18 @@ public class PostPageController {
             ra.addFlashAttribute("error", "Failed to update post: " + e.getMessage());
             return "redirect:/posts/" + postId + "/edit";
         }
-        // FIX: redirect to feed instead of /posts/{id} to avoid missing post/view template
-        return "redirect:/feed";
+        // Redirect back to profile if the edit was triggered from profile page
+        return "profile".equals(redirectTo) ? "redirect:/profile/view" : "redirect:/feed";
     }
 
     // ─── DELETE ──────────────────────────────────────────────────────────────
 
     @PostMapping("/posts/{postId}/delete")
-    public String handleDeletePost(@PathVariable Long postId, HttpSession session, RedirectAttributes ra) {
+    public String handleDeletePost(
+            @PathVariable Long postId,
+            @RequestParam(required = false) String redirectTo,
+            HttpSession session,
+            RedirectAttributes ra) {
         if (notLoggedIn(session)) return "redirect:/login";
         try {
             postService.deletePost(postId);
@@ -149,7 +159,7 @@ public class PostPageController {
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Failed to delete post: " + e.getMessage());
         }
-        return "redirect:/feed";
+        return "profile".equals(redirectTo) ? "redirect:/profile/view" : "redirect:/feed";
     }
 
     // ─── REPOST ──────────────────────────────────────────────────────────────
