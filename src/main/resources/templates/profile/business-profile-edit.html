@@ -97,6 +97,7 @@
                                 <i class="fas fa-link me-1"></i>External Links
                             </button>
                         </li>
+                        <!-- Products & Services tab moved to profile view page -->
                     </ul>
 
                     <div class="tab-content">
@@ -130,512 +131,691 @@
                                 <div class="col-12">
                                     <label class="form-label fw-bold">Detailed Bio</label>
                                     <textarea class="form-control" id="detailedBio" rows="5"
-                                              placeholder="Describe your business or creator brand in detail..."
+                                              placeholder="Describe your business or creator brand in detail — mission, values, what you offer..."
                                               th:text="${businessProfile != null ? businessProfile.detailedBio : ''}"></textarea>
+                                    <small class="text-muted">This is displayed prominently on your public business profile.</small>
                                 </div>
+                            </div>
+                            <div class="d-flex justify-content-end mt-4">
+                                <button type="button" class="btn px-4"
+                                        style="background-color:#ff6b35;color:white;border:none;border-radius:8px;"
+                                        onclick="saveProfile()">
+                                    <i class="fas fa-save me-1"></i>Save Identity
+                                </button>
                             </div>
                         </div>
 
-                        <!-- ── Tab 2: Contact & Social ──────────────── -->
+                        <!-- ── Tab 2: Contact & Social ───────────────── -->
                         <div class="tab-pane fade" id="tabContact">
                             <h6 class="text-muted text-uppercase fw-bold mb-3" style="font-size:.75rem;letter-spacing:.08em;">
                                 Contact Information
                             </h6>
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">Email</label>
-                                    <input type="email" class="form-control" id="contactEmail"
-                                           th:value="${businessProfile != null ? businessProfile.contactEmail : ''}"
-                                           placeholder="business@example.com">
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Contact Email</label>
+                                    <div class="input-group">
+                    <span class="input-group-text bg-white">
+                      <i class="fas fa-envelope" style="color:#ff6b35;"></i>
+                    </span>
+                                        <input type="email" class="form-control" id="contactEmail"
+                                               th:value="${businessProfile != null ? businessProfile.contactEmail : ''}"
+                                               placeholder="contact@yourbusiness.com">
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">Phone</label>
-                                    <input type="tel" class="form-control" id="contactPhone"
-                                           th:value="${businessProfile != null ? businessProfile.contactPhone : ''}"
-                                           placeholder="+1 (555) 000-0000">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Contact Phone</label>
+                                    <div class="input-group">
+                    <span class="input-group-text bg-white">
+                      <i class="fas fa-phone" style="color:#ff6b35;"></i>
+                    </span>
+                                        <input type="tel" class="form-control" id="contactPhone"
+                                               th:value="${businessProfile != null ? businessProfile.contactPhone : ''}"
+                                               placeholder="+91 99999 00000">
+                                    </div>
                                 </div>
-                                <div class="col-12">
-                                    <label class="form-label fw-bold">Website</label>
-                                    <input type="url" class="form-control" id="websiteUrl"
-                                           th:value="${businessProfile != null ? businessProfile.websiteUrl : ''}"
-                                           placeholder="https://yourwebsite.com">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Website URL</label>
+                                    <div class="input-group">
+                    <span class="input-group-text bg-white">
+                      <i class="fas fa-globe" style="color:#ff6b35;"></i>
+                    </span>
+                                        <input type="url" class="form-control" id="websiteUrl"
+                                               th:value="${businessProfile != null ? businessProfile.websiteUrl : ''}"
+                                               placeholder="https://yourbusiness.com">
+                                    </div>
                                 </div>
                             </div>
 
-                            <h6 class="text-muted text-uppercase fw-bold mt-4 mb-3" style="font-size:.75rem;letter-spacing:.08em;">
+                            <h6 class="text-muted text-uppercase fw-bold mb-3" style="font-size:.75rem;letter-spacing:.08em;">
                                 Social Media Links
                             </h6>
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="form-label"><i class="fab fa-facebook me-1"></i>Facebook</label>
-                                    <input type="url" class="form-control" id="facebookUrl"
+                                    <label class="form-label fw-bold">
+                                        <i class="fab fa-facebook me-1" style="color:#1877f2;"></i>Facebook
+                                    </label>
+                                    <input type="text" class="form-control" id="facebookUrl"
                                            th:value="${businessProfile != null ? businessProfile.facebookUrl : ''}"
-                                           placeholder="https://facebook.com/...">
+                                           placeholder="https://facebook.com/yourpage">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label"><i class="fab fa-twitter me-1"></i>Twitter</label>
-                                    <input type="url" class="form-control" id="twitterUrl"
+                                    <label class="form-label fw-bold">
+                                        <i class="fab fa-twitter me-1" style="color:#1da1f2;"></i>Twitter / X
+                                    </label>
+                                    <input type="text" class="form-control" id="twitterUrl"
                                            th:value="${businessProfile != null ? businessProfile.twitterUrl : ''}"
-                                           placeholder="https://twitter.com/...">
+                                           placeholder="https://twitter.com/yourhandle">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label"><i class="fab fa-instagram me-1"></i>Instagram</label>
-                                    <input type="url" class="form-control" id="instagramUrl"
+                                    <label class="form-label fw-bold">
+                                        <i class="fab fa-instagram me-1" style="color:#e1306c;"></i>Instagram
+                                    </label>
+                                    <input type="text" class="form-control" id="instagramUrl"
                                            th:value="${businessProfile != null ? businessProfile.instagramUrl : ''}"
-                                           placeholder="https://instagram.com/...">
+                                           placeholder="https://instagram.com/yourprofile">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label"><i class="fab fa-linkedin me-1"></i>LinkedIn</label>
-                                    <input type="url" class="form-control" id="linkedinUrl"
+                                    <label class="form-label fw-bold">
+                                        <i class="fab fa-linkedin me-1" style="color:#0a66c2;"></i>LinkedIn
+                                    </label>
+                                    <input type="text" class="form-control" id="linkedinUrl"
                                            th:value="${businessProfile != null ? businessProfile.linkedinUrl : ''}"
-                                           placeholder="https://linkedin.com/company/...">
+                                           placeholder="https://linkedin.com/company/yourcompany">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label"><i class="fab fa-youtube me-1"></i>YouTube</label>
-                                    <input type="url" class="form-control" id="youtubeUrl"
+                                    <label class="form-label fw-bold">
+                                        <i class="fab fa-youtube me-1" style="color:#ff0000;"></i>YouTube
+                                    </label>
+                                    <input type="text" class="form-control" id="youtubeUrl"
                                            th:value="${businessProfile != null ? businessProfile.youtubeUrl : ''}"
-                                           placeholder="https://youtube.com/...">
+                                           placeholder="https://youtube.com/@yourchannel">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label"><i class="fab fa-tiktok me-1"></i>TikTok</label>
-                                    <input type="url" class="form-control" id="tiktokUrl"
+                                    <label class="form-label fw-bold">
+                                        <i class="fab fa-tiktok me-1"></i>TikTok
+                                    </label>
+                                    <input type="text" class="form-control" id="tiktokUrl"
                                            th:value="${businessProfile != null ? businessProfile.tiktokUrl : ''}"
-                                           placeholder="https://tiktok.com/@...">
+                                           placeholder="https://tiktok.com/@yourprofile">
                                 </div>
+                            </div>
+                            <div class="d-flex justify-content-end mt-4">
+                                <button type="button" class="btn px-4"
+                                        style="background-color:#ff6b35;color:white;border:none;border-radius:8px;"
+                                        onclick="saveProfile()">
+                                    <i class="fas fa-save me-1"></i>Save Contact &amp; Social
+                                </button>
                             </div>
                         </div>
 
-                        <!-- ── Tab 3: Address & Hours (BUSINESS only) ──────────── -->
+                        <!-- ── Tab 3: Address & Hours (BUSINESS only) ─ -->
                         <div class="tab-pane fade" id="tabAddress" th:if="${profile.userType == 'BUSINESS'}">
                             <h6 class="text-muted text-uppercase fw-bold mb-3" style="font-size:.75rem;letter-spacing:.08em;">
                                 Business Address
                             </h6>
-                            <div class="row g-3">
+                            <div class="row g-3 mb-4">
                                 <div class="col-12">
                                     <label class="form-label fw-bold">Street Address</label>
                                     <input type="text" class="form-control" id="streetAddress"
                                            th:value="${businessProfile != null ? businessProfile.streetAddress : ''}"
-                                           placeholder="123 Main Street, Suite 100">
+                                           placeholder="123 Main Street, Suite 4">
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <label class="form-label fw-bold">City</label>
                                     <input type="text" class="form-control" id="city"
                                            th:value="${businessProfile != null ? businessProfile.city : ''}"
-                                           placeholder="New York">
+                                           placeholder="Chennai">
                                 </div>
                                 <div class="col-md-3">
                                     <label class="form-label fw-bold">State / Province</label>
                                     <input type="text" class="form-control" id="stateProvince"
                                            th:value="${businessProfile != null ? businessProfile.stateProvince : ''}"
-                                           placeholder="NY">
+                                           placeholder="Tamil Nadu">
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-2">
                                     <label class="form-label fw-bold">Postal Code</label>
                                     <input type="text" class="form-control" id="postalCode"
                                            th:value="${businessProfile != null ? businessProfile.postalCode : ''}"
-                                           placeholder="10001">
+                                           placeholder="600001">
                                 </div>
                                 <div class="col-md-3">
                                     <label class="form-label fw-bold">Country</label>
                                     <input type="text" class="form-control" id="country"
                                            th:value="${businessProfile != null ? businessProfile.country : ''}"
-                                           placeholder="United States">
+                                           placeholder="India">
                                 </div>
                             </div>
 
-                            <h6 class="text-muted text-uppercase fw-bold mt-4 mb-3" style="font-size:.75rem;letter-spacing:.08em;">
+                            <h6 class="text-muted text-uppercase fw-bold mb-3" style="font-size:.75rem;letter-spacing:.08em;">
                                 Business Hours
                             </h6>
-
-                            <div class="row g-3 mb-3">
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">Timezone</label>
-                                    <select class="form-control" id="timezone">
-                                        <option value="">Select Timezone</option>
-                                        <option value="UTC" th:selected="${businessProfile != null and businessProfile.timezone == 'UTC'}">UTC</option>
-                                        <option value="America/New_York">Eastern Time</option>
-                                        <option value="America/Chicago">Central Time</option>
-                                        <option value="America/Denver">Mountain Time</option>
-                                        <option value="America/Los_Angeles">Pacific Time</option>
-                                        <option value="Europe/London">London</option>
-                                        <option value="Europe/Paris">Paris</option>
-                                        <option value="Asia/Tokyo">Tokyo</option>
-                                        <option value="Asia/Kolkata">India (IST)</option>
-                                        <option value="Australia/Sydney">Sydney</option>
-                                    </select>
-                                </div>
+                            <div class="row g-2 mb-3" id="hoursGrid">
+                                <!-- Built by JS -->
                             </div>
-
-                            <!-- Business Hours Table -->
-                            <div class="table-responsive">
-                                <table class="table table-bordered">
-                                    <thead class="table-light">
-                                    <tr>
-                                        <th>Day</th>
-                                        <th style="min-width:140px;">Hours</th>
-                                        <th style="width:80px;">Closed</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody id="hoursTable">
-                                    <!-- Generated by JavaScript -->
-                                    </tbody>
-                                </table>
+                            <div class="col-md-5 mt-2">
+                                <label class="form-label fw-bold">Timezone</label>
+                                <input type="text" class="form-control" id="timezone"
+                                       th:value="${businessProfile != null ? businessProfile.timezone : ''}"
+                                       placeholder="e.g. Asia/Kolkata">
+                            </div>
+                            <div class="d-flex justify-content-end mt-4">
+                                <button type="button" class="btn px-4"
+                                        style="background-color:#ff6b35;color:white;border:none;border-radius:8px;"
+                                        onclick="saveProfile()">
+                                    <i class="fas fa-save me-1"></i>Save Address &amp; Hours
+                                </button>
                             </div>
                         </div>
 
-                        <!-- ── Tab 4: External Links ────────────────── -->
+                        <!-- ── Tab 4: External Links ──────────────────── -->
                         <div class="tab-pane fade" id="tabLinks">
-                            <h6 class="text-muted text-uppercase fw-bold mb-3" style="font-size:.75rem;letter-spacing:.08em;">
-                                External Links (Partnerships/Endorsements)
-                            </h6>
-
-                            <div id="linksContainer" class="mb-4">
-                                <!-- Links will be loaded dynamically -->
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <h6 class="text-muted text-uppercase fw-bold mb-0" style="font-size:.75rem;letter-spacing:.08em;">
+                                        External Links
+                                    </h6>
+                                    <small class="text-muted">Endorsements, partnerships, sponsor links, affiliate links</small>
+                                </div>
+                                <button type="button" class="btn btn-sm px-3"
+                                        style="background-color:#ff6b35;color:white;border:none;border-radius:8px;"
+                                        onclick="toggleAddLinkForm()">
+                                    <i class="fas fa-plus me-1"></i>Add Link
+                                </button>
                             </div>
 
-                            <button type="button" class="btn" style="background-color:#ff6b35;color:white;" onclick="toggleAddLinkForm()">
-                                <i class="fas fa-plus me-1"></i>Add Link
-                            </button>
-
-                            <div id="addLinkForm" class="card mt-3 d-none" style="border-radius:10px;">
-                                <div class="card-body">
-                                    <h6 class="fw-bold mb-3">Add New Link</h6>
+                            <!-- Add Link Form -->
+                            <div id="addLinkForm" class="card mb-4 d-none"
+                                 style="border:1.5px solid #ff6b35;border-radius:10px;">
+                                <div class="card-body p-3">
                                     <div class="row g-2">
-                                        <div class="col-md-6">
-                                            <input type="text" class="form-control" id="newLinkLabel" placeholder="Label (e.g. 'Partner Site')">
-                                        </div>
                                         <div class="col-md-4">
-                                            <select class="form-control" id="newLinkType">
-                                                <option value="PARTNERSHIP">Partnership</option>
-                                                <option value="ENDORSEMENT">Endorsement</option>
-                                                <option value="SPONSOR">Sponsor</option>
+                                            <label class="form-label small fw-bold">Label <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control form-control-sm" id="newLinkLabel"
+                                                   placeholder="e.g. Official Merch Store">
+                                        </div>
+                                        <div class="col-md-5">
+                                            <label class="form-label small fw-bold">URL <span class="text-danger">*</span></label>
+                                            <input type="url" class="form-control form-control-sm" id="newLinkUrl"
+                                                   placeholder="https://...">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label small fw-bold">Type</label>
+                                            <select class="form-select form-select-sm" id="newLinkType">
                                                 <option value="OTHER">Other</option>
+                                                <option value="ENDORSEMENT">Endorsement</option>
+                                                <option value="PARTNERSHIP">Partnership</option>
+                                                <option value="SPONSOR">Sponsor</option>
+                                                <option value="AFFILIATE">Affiliate</option>
                                             </select>
                                         </div>
-                                        <div class="col-md-12">
-                                            <input type="url" class="form-control" id="newLinkUrl" placeholder="https://...">
-                                        </div>
-                                        <div class="col-12">
-                                            <button type="button" class="btn btn-success btn-sm" onclick="addLink()">Add</button>
-                                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="toggleAddLinkForm()">Cancel</button>
-                                        </div>
+                                    </div>
+                                    <div class="d-flex gap-2 mt-3">
+                                        <button type="button" class="btn btn-sm px-3"
+                                                style="background-color:#ff6b35;color:white;border:none;"
+                                                onclick="addExternalLink()">
+                                            <i class="fas fa-save me-1"></i>Save Link
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                onclick="toggleAddLinkForm()">Cancel</button>
                                     </div>
                                 </div>
                             </div>
+
+                            <div id="linksList">
+                                <div class="text-center py-3 text-muted small">
+                                    <i class="fas fa-spinner fa-spin me-1"></i>Loading...
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- Products & Services managed on profile view page -->
+
 
                     </div><!-- /tab-content -->
 
-                    <!-- Save Button -->
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <button type="button" class="btn" style="background-color:#ff6b35;color:white;width:100%;"
-                                    onclick="saveProfile()">
-                                <i class="fas fa-save me-1"></i>Save Changes
-                            </button>
-                        </div>
+                    <!-- Bottom navigation -->
+                    <hr class="mt-4">
+                    <div class="d-flex justify-content-between">
+                        <a th:href="@{/profile/view}" class="btn btn-outline-secondary px-4">
+                            <i class="fas fa-arrow-left me-1"></i>Back to Profile
+                        </a>
+                        <a th:href="@{/profile/business/view}" class="btn px-4"
+                           style="background-color:#6c757d;color:white;border:none;border-radius:8px;">
+                            <i class="fas fa-eye me-1"></i>View Public Profile
+                        </a>
                     </div>
 
-                </div>
+                </div><!-- /card-body -->
             </div>
         </div>
     </div>
 </div>
 
+<style>
+    .nav-tabs .nav-link { color:#6c757d; border:none; padding:.6rem 1rem; }
+    .nav-tabs .nav-link.active {
+      color:#ff6b35; font-weight:700;
+      border-bottom:2.5px solid #ff6b35;
+      background:none;
+    }
+    .nav-tabs { border-bottom:1.5px solid #dee2e6; }
+    .form-control:focus, .form-select:focus {
+      border-color:#ff6b35;
+      box-shadow:0 0 0 .2rem rgba(255,107,53,.2);
+    }
+    .input-group-text { border-color:#dee2e6; }
+    .btn:disabled { opacity:.6; cursor:not-allowed; }
+    .hours-row { display:flex; align-items:center; gap:10px;
+                 padding:8px 12px; border-radius:8px; border:1px solid #dee2e6;
+                 margin-bottom:8px; }
+    .hours-row .day-label {
+      width:100px; font-weight:600; text-transform:capitalize;
+      font-size:.88rem; color:#555;
+    }
+    .closed-check { accent-color:#ff6b35; }
+</style>
+
 <script th:inline="javascript">
     /*<![CDATA[*/
-    let linksLoaded = false;
+    const DAYS = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+    const isBusiness = /*[[${profile.userType == 'BUSINESS'}]]*/ false;
+    const existingHoursJson = /*[[${businessProfile != null ? businessProfile.businessHours : null}]]*/ null;
 
     document.addEventListener('DOMContentLoaded', function() {
-        initializeBusinessHours();
-        loadExternalLinks();
+      // Build hours grid (business only)
+      if (isBusiness) {
+        let saved = {};
+        if (existingHoursJson) {
+          try { saved = JSON.parse(existingHoursJson); } catch(e) {}
+        }
+        const grid = document.getElementById('hoursGrid');
+        if (grid) {
+          DAYS.forEach(function(day) {
+            const val    = saved[day] || '';
+            const closed = (val === '' || val.toLowerCase() === 'closed');
+            grid.insertAdjacentHTML('beforeend',
+              '<div class="col-md-6">' +
+                '<div class="hours-row">' +
+                  '<span class="day-label">' + day + '</span>' +
+                  '<input type="text" class="form-control form-control-sm hours-input flex-grow-1" ' +
+                         'data-day="' + day + '" ' +
+                         'value="' + esc(closed ? '' : val) + '" ' +
+                         'placeholder="9:00 - 18:00" ' +
+                         (closed ? 'disabled' : '') + '>' +
+                  '<div class="form-check mb-0 ms-2 d-flex align-items-center gap-1">' +
+                    '<input class="form-check-input closed-check" type="checkbox" ' +
+                           'id="closed_' + day + '" ' + (closed ? 'checked' : '') +
+                           ' onchange="toggleClosed(\'' + day + '\')">' +
+                    '<label class="form-check-label small" for="closed_' + day + '">Closed</label>' +
+                  '</div>' +
+                '</div>' +
+              '</div>');
+          });
+        }
+      }
+
+      // Load links when tab clicked
+      const linksTab = document.querySelector('[data-bs-target="#tabLinks"]');
+      if (linksTab) linksTab.addEventListener('click', loadLinks);
+
     });
 
-    // ────────────────────────────────────────────────────────────
-    // BUSINESS HOURS MANAGEMENT - FIXED VERSION
-    // ────────────────────────────────────────────────────────────
-
-    function initializeBusinessHours() {
-        const existingHours = /*[[${businessProfile != null ? businessProfile.businessHours : null}]]*/ null;
-        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        const table = document.getElementById('hoursTable');
-
-        let hoursData = {};
-        if (existingHours) {
-            try {
-                hoursData = JSON.parse(existingHours);
-            } catch (e) {
-                console.log('Could not parse existing hours');
-            }
-        }
-
-        table.innerHTML = days.map(day => {
-            const dayKey = day.toLowerCase();
-            const existing = hoursData[dayKey] || '9:00 - 18:00';
-            const isClosed = existing === 'Closed' || existing === 'closed';
-
-            return `
-                <tr>
-                    <td><strong>${day}</strong></td>
-                    <td>
-                        <input type="text" class="form-control form-control-sm hours-input"
-                               id="hours-${dayKey}"
-                               value="${isClosed ? '' : existing}"
-                               placeholder="9:00 - 18:00"
-                               ${isClosed ? 'disabled' : ''}>
-                    </td>
-                    <td>
-                        <div class="form-check">
-                            <input class="form-check-input closed-checkbox" type="checkbox"
-                                   id="closed-${dayKey}"
-                                   ${isClosed ? 'checked' : ''}
-                                   onchange="toggleDayStatus('${dayKey}')">
-                        </div>
-                    </td>
-                </tr>
-            `;
-        }).join('');
+    function toggleClosed(day) {
+      const cb    = document.getElementById('closed_' + day);
+      const input = document.querySelector('.hours-input[data-day="' + day + '"]');
+      if (!input) return;
+      input.disabled = cb.checked;
+      if (cb.checked) input.value = '';
     }
 
-    function toggleDayStatus(dayKey) {
-        const checkbox = document.getElementById('closed-' + dayKey);
-        const input = document.getElementById('hours-' + dayKey);
-
-        if (checkbox.checked) {
-            input.disabled = true;
-            input.value = '';
-        } else {
-            input.disabled = false;
-            input.focus();
-        }
-    }
-
-    function getBusinessHoursJSON() {
-        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        const hoursObj = {};
-
-        days.forEach(day => {
-            const dayKey = day.toLowerCase();
-            const checkbox = document.getElementById('closed-' + dayKey);
-            const input = document.getElementById('hours-' + dayKey);
-
-            // IMPORTANT: Only mark as closed if checkbox is actually checked
-            if (checkbox && checkbox.checked) {
-                hoursObj[dayKey] = 'Closed';
-            } else if (input) {
-                hoursObj[dayKey] = input.value || '9:00 - 18:00';
-            }
+    // ── Save all profile data ─────────────────────────────────
+    function saveProfile() {
+      // Only collect hours when the Address & Hours tab is visible (active)
+      // This prevents accidentally overwriting saved hours when saving from other tabs
+      const addressTabActive = document.getElementById('tabAddress') &&
+            document.getElementById('tabAddress').classList.contains('active');
+      let businessHoursValue = null;
+      if (isBusiness && addressTabActive) {
+        const hours = {};
+        document.querySelectorAll('.hours-input').forEach(function(input) {
+          const day = input.getAttribute('data-day');
+          const cb  = document.getElementById('closed_' + day);
+          // FIX: only mark Closed when checkbox IS checked; otherwise use actual typed value
+          // If unchecked but empty, default to placeholder hint (9:00 - 18:00)
+          hours[day] = (cb && cb.checked) ? 'Closed' : (input.value.trim() || '9:00 - 18:00');
         });
+        // Always save hours when on Address tab (even if all-Closed, so the card shows)
+        businessHoursValue = JSON.stringify(hours);
+      }
 
-        return JSON.stringify(hoursObj);
+      const data = {
+        businessName:  getVal('businessName'),
+        category:      getVal('category'),
+        industry:      getVal('industry'),
+        detailedBio:   getVal('detailedBio'),
+        contactEmail:  getVal('contactEmail'),
+        contactPhone:  getVal('contactPhone'),
+        websiteUrl:    getVal('websiteUrl'),
+        facebookUrl:   getVal('facebookUrl'),
+        twitterUrl:    getVal('twitterUrl'),
+        instagramUrl:  getVal('instagramUrl'),
+        linkedinUrl:   getVal('linkedinUrl'),
+        youtubeUrl:    getVal('youtubeUrl'),
+        tiktokUrl:     getVal('tiktokUrl'),
+        streetAddress: getVal('streetAddress'),
+        city:          getVal('city'),
+        stateProvince: getVal('stateProvince'),
+        postalCode:    getVal('postalCode'),
+        country:       getVal('country'),
+        businessHours: businessHoursValue,
+        timezone:      getVal('timezone')
+      };
+
+      // Remove null fields so the API's null-check skips them (preserves DB values)
+      Object.keys(data).forEach(k => { if (data[k] === null) delete data[k]; });
+
+      fetch('/api/business-profile', {
+        method:      'POST',
+        headers:     { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body:        JSON.stringify(data)
+      })
+      .then(r => r.json())
+      .then(d => { showAlert('success', d.message || 'Saved successfully!'); })
+      .catch(() => showAlert('error', 'Failed to save. Please try again.'));
     }
 
-    // ────────────────────────────────────────────────────────────
-    // EXTERNAL LINKS
-    // ────────────────────────────────────────────────────────────
+    // ── Profile picture upload ────────────────────────────────
+    function uploadProfilePicture(input) {
+      if (!input.files || !input.files[0]) return;
+      const status = document.getElementById('uploadStatus');
+      const reader = new FileReader();
+      reader.onload = e => document.getElementById('profileImage').src = e.target.result;
+      reader.readAsDataURL(input.files[0]);
 
-    function loadExternalLinks() {
-        fetch('/api/business-profile/links')
-            .then(r => r.json())
-            .then(links => {
-                const container = document.getElementById('linksContainer');
-                if (!links || links.length === 0) {
-                    container.innerHTML = '<p class="text-muted small">No external links added yet.</p>';
-                    return;
-                }
+      const fd = new FormData();
+      fd.append('file', input.files[0]);
+      status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+      status.style.color = '#ff6b35';
 
-                container.innerHTML = links.map(link => `
-                    <div class="card mb-2" style="border-radius:10px;">
-                        <div class="card-body py-2 px-3">
-                            <div class="row align-items-center g-2">
-                                <div class="col">
-                                    <small><strong>${escapeHtml(link.label)}</strong></small>
-                                    <br>
-                                    <small class="text-muted">${escapeHtml(link.url)}</small>
-                                    <br>
-                                    <span class="badge" style="background-color:#ff6b35;font-size:.65rem;">${link.linkType}</span>
-                                </div>
-                                <div class="col-auto">
-                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteLink(${link.id})">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-                linksLoaded = true;
-            })
-            .catch(e => console.error('Failed to load links:', e));
+      fetch('/api/profiles/picture', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(d => {
+          if (d.message && d.message.includes('successfully')) {
+            status.innerHTML = '<i class="fas fa-check-circle"></i> Updated!';
+            status.style.color = '#28a745';
+          } else {
+            status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Failed';
+            status.style.color = '#dc3545';
+          }
+        })
+        .catch(() => {
+          status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Failed';
+          status.style.color = '#dc3545';
+        });
+    }
+
+    // ── External Links ────────────────────────────────────────
+    let linksLoaded = false;
+    function loadLinks() {
+      if (linksLoaded) return;
+      fetch('/api/business-profile/links')
+        .then(r => r.json())
+        .then(renderLinks)
+        .catch(() => {
+          document.getElementById('linksList').innerHTML =
+            '<p class="text-muted text-center small">Could not load links.</p>';
+        });
+    }
+
+    function renderLinks(links) {
+      linksLoaded = true;
+      const c = document.getElementById('linksList');
+      if (!links || links.length === 0) {
+        c.innerHTML = '<div class="text-center py-4 text-muted">' +
+          '<i class="fas fa-link fa-2x mb-2 d-block" style="color:#dee2e6;"></i>' +
+          'No external links yet. Add your first one above.</div>';
+        return;
+      }
+      c.innerHTML = links.map(function(l) {
+        return '<div class="d-flex align-items-center justify-content-between p-3 mb-2 rounded" ' +
+               'style="border:1px solid #ffe0d4;background:#fff5f2;">' +
+          '<div class="d-flex align-items-center gap-2">' +
+            '<span class="badge" style="background-color:#ff6b35;font-size:.68rem;">' + esc(l.linkType) + '</span>' +
+            '<div>' +
+              '<div class="fw-semibold small">' + esc(l.label) + '</div>' +
+              '<div class="text-muted" style="font-size:.78rem;">' + esc(l.url) + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<button class="btn btn-sm btn-outline-danger" onclick="deleteLink(' + l.id + ')">' +
+            '<i class="fas fa-trash"></i></button>' +
+        '</div>';
+      }).join('');
     }
 
     function toggleAddLinkForm() {
-        document.getElementById('addLinkForm').classList.toggle('d-none');
+      document.getElementById('addLinkForm').classList.toggle('d-none');
+      document.getElementById('newLinkLabel').focus();
     }
 
-    function addLink() {
-        const label = document.getElementById('newLinkLabel').value.trim();
-        const url = document.getElementById('newLinkUrl').value.trim();
-        const type = document.getElementById('newLinkType').value;
+    function addExternalLink() {
+      const label    = document.getElementById('newLinkLabel').value.trim();
+      const url      = document.getElementById('newLinkUrl').value.trim();
+      const linkType = document.getElementById('newLinkType').value;
+      if (!label || !url) { alert('Label and URL are required.'); return; }
 
-        if (!label || !url) {
-            alert('Please fill in all fields');
-            return;
-        }
+      fetch('/api/business-profile/links', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ label, url, linkType })
+      })
+      .then(r => r.json())
+      .then(d => {
+        showAlert('success', d.message || 'Link added!');
+        document.getElementById('addLinkForm').classList.add('d-none');
+        document.getElementById('newLinkLabel').value = '';
+        document.getElementById('newLinkUrl').value   = '';
+        linksLoaded = false;
+        loadLinks();
+      })
+      .catch(() => alert('Failed to add link.'));
+    }
 
-        fetch('/api/business-profile/links', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ label, url, linkType: type })
-        })
+    function deleteLink(id) {
+      if (!confirm('Delete this link?')) return;
+      fetch('/api/business-profile/links/' + id, { method: 'DELETE' })
         .then(r => r.json())
-        .then(d => {
-            showAlert('success', d.message || 'Link added!');
-            document.getElementById('newLinkLabel').value = '';
-            document.getElementById('newLinkUrl').value = '';
-            document.getElementById('addLinkForm').classList.add('d-none');
-            loadExternalLinks();
-        })
-        .catch(e => showAlert('error', 'Failed to add link: ' + e.message));
+        .then(d => { showAlert('success', d.message || 'Deleted!'); linksLoaded = false; loadLinks(); })
+        .catch(() => alert('Failed to delete.'));
     }
 
-    function deleteLink(linkId) {
-        if (!confirm('Delete this link?')) return;
-
-        fetch('/api/business-profile/links/' + linkId, { method: 'DELETE' })
-            .then(r => r.json())
-            .then(d => {
-                showAlert('success', d.message || 'Link deleted!');
-                loadExternalLinks();
-            })
-            .catch(e => showAlert('error', 'Failed to delete link'));
-    }
-
-    // ────────────────────────────────────────────────────────────
-    // PROFILE SAVE - FIXED VALIDATION
-    // ────────────────────────────────────────────────────────────
-
-    function saveProfile() {
-        const userType = /*[[${profile.userType}]]*/ 'BUSINESS';
-        const isBusinessAccount = userType === 'BUSINESS';
-
-        const payload = {
-            businessName:   getVal('businessName'),
-            category:       getVal('category'),
-            industry:       getVal('industry'),
-            detailedBio:    getVal('detailedBio'),
-            contactEmail:   getVal('contactEmail'),
-            contactPhone:   getVal('contactPhone'),
-            websiteUrl:     getVal('websiteUrl'),
-            facebookUrl:    getVal('facebookUrl'),
-            twitterUrl:     getVal('twitterUrl'),
-            instagramUrl:   getVal('instagramUrl'),
-            linkedinUrl:    getVal('linkedinUrl'),
-            youtubeUrl:     getVal('youtubeUrl'),
-            tiktokUrl:      getVal('tiktokUrl')
-        };
-
-        // Business-only fields
-        if (isBusinessAccount) {
-            payload.streetAddress   = getVal('streetAddress');
-            payload.city            = getVal('city');
-            payload.stateProvince   = getVal('stateProvince');
-            payload.postalCode      = getVal('postalCode');
-            payload.country         = getVal('country');
-            payload.timezone        = getVal('timezone');
-            payload.businessHours   = getBusinessHoursJSON();
-        }
-
-        fetch('/api/business-profile', {
-            method:  'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify(payload)
-        })
+    // ── Products & Services ───────────────────────────────────
+    let productsLoaded = false;
+    function loadProducts() {
+      if (productsLoaded) return;
+      fetch('/api/business-profile/products/me')
         .then(r => r.json())
-        .then(d => {
-            showAlert('success', d.message || 'Profile updated successfully!');
-            setTimeout(() => location.reload(), 1500);
-        })
-        .catch(e => showAlert('error', 'Failed to save: ' + e.message));
+        .then(renderProducts)
+        .catch(() => {
+          document.getElementById('productsList').innerHTML =
+            '<p class="text-muted text-center small">Could not load items.</p>';
+        });
     }
 
-    // ────────────────────────────────────────────────────────────
-    // UTILITIES
-    // ────────────────────────────────────────────────────────────
+    function renderProducts(items) {
+      productsLoaded = true;
+      const c = document.getElementById('productsList');
+      if (!items || items.length === 0) {
+        c.innerHTML = '<div class="text-center py-4 text-muted">' +
+          '<i class="fas fa-box-open fa-2x mb-2 d-block" style="color:#dee2e6;"></i>' +
+          'No products or services yet. Add your first one above.</div>';
+        return;
+      }
+      const statusColor = s => s === 'ACTIVE' ? '#28a745' : s === 'OUT_OF_STOCK' ? '#dc3545' : '#6c757d';
+      c.innerHTML = '<div class="row g-3">' +
+        items.map(function(item) {
+          return '<div class="col-md-6" id="product-card-' + item.id + '">' +
+            '<div class="card h-100" style="border-radius:10px;border:1px solid #ffe0d4;">' +
+              '<div class="card-body p-3">' +
+                '<div class="d-flex justify-content-between align-items-start mb-2">' +
+                  '<span class="badge" style="background-color:#ff6b35;font-size:.68rem;">' + esc(item.itemType) + '</span>' +
+                  '<span class="badge bg-light border" style="color:' + statusColor(item.status) + ';font-size:.68rem;">' + esc(item.status) + '</span>' +
+                '</div>' +
+                '<h6 class="fw-bold mb-1">' + esc(item.name) + '</h6>' +
+                '<p class="text-muted small mb-2" style="font-size:.82rem;">' + esc(item.description || '') + '</p>' +
+                (item.price ? '<div class="fw-bold mb-2" style="color:#ff6b35;font-size:.9rem;">' + esc(item.currency) + ' ' + item.price + '</div>' : '<div class="text-muted small mb-2">Contact for pricing</div>') +
+                // ── Inline edit form (hidden by default) ──────────────────────────
+                '<div id="edit-form-' + item.id + '" class="d-none mb-2 p-2 rounded" style="background:#fff5f2;border:1px solid #ffe0d4;">' +
+                  '<div class="row g-2">' +
+                    '<div class="col-12"><input type="text" class="form-control form-control-sm" id="edit-name-' + item.id + '" value="' + esc(item.name) + '" placeholder="Name"></div>' +
+                    '<div class="col-12"><textarea class="form-control form-control-sm" id="edit-desc-' + item.id + '" rows="2" placeholder="Description">' + esc(item.description || '') + '</textarea></div>' +
+                    '<div class="col-6"><input type="number" step="0.01" min="0" class="form-control form-control-sm" id="edit-price-' + item.id + '" value="' + (item.price || '') + '" placeholder="Price"></div>' +
+                    '<div class="col-6"><input type="text" class="form-control form-control-sm" id="edit-currency-' + item.id + '" value="' + esc(item.currency || 'INR') + '" placeholder="Currency"></div>' +
+                    '<div class="col-12"><input type="url" class="form-control form-control-sm" id="edit-imageUrl-' + item.id + '" value="' + esc(item.imageUrl || '') + '" placeholder="Image URL"></div>' +
+                    '<div class="col-12"><input type="url" class="form-control form-control-sm" id="edit-purchaseUrl-' + item.id + '" value="' + esc(item.purchaseUrl || '') + '" placeholder="Purchase URL"></div>' +
+                  '</div>' +
+                  '<div class="d-flex gap-2 mt-2">' +
+                    '<button class="btn btn-sm px-3" style="background:#ff6b35;color:white;border:none;font-size:.78rem;" onclick="saveEditProduct(' + item.id + ')"><i class="fas fa-save me-1"></i>Save</button>' +
+                    '<button class="btn btn-sm btn-outline-secondary" style="font-size:.78rem;" onclick="cancelEditProduct(' + item.id + ')">Cancel</button>' +
+                  '</div>' +
+                '</div>' +
+                // ── Action buttons ────────────────────────────────────────────────
+                '<div class="d-flex gap-2">' +
+                  '<button class="btn btn-sm btn-outline-secondary" style="font-size:.78rem;" ' +
+                    'onclick="editProduct(' + item.id + ')">' +
+                    '<i class="fas fa-edit me-1"></i>Edit' +
+                  '</button>' +
+                  '<button class="btn btn-sm btn-outline-secondary" style="font-size:.78rem;" ' +
+                    'onclick="toggleProductStatus(' + item.id + ', \'' + item.status + '\')">' +
+                    (item.status === 'ACTIVE' ? '<i class="fas fa-pause me-1"></i>Deactivate' : '<i class="fas fa-play me-1"></i>Activate') +
+                  '</button>' +
+                  '<button class="btn btn-sm btn-outline-danger ms-auto" ' +
+                    'onclick="deleteProduct(' + item.id + ')">' +
+                    '<i class="fas fa-trash"></i></button>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        }).join('') +
+      '</div>';
+    }
 
+    function toggleAddProductForm() {
+      document.getElementById('addProductForm').classList.toggle('d-none');
+      document.getElementById('newItemName').focus();
+    }
+
+    function addProductService() {
+      const name = document.getElementById('newItemName').value.trim();
+      if (!name) { alert('Name is required.'); return; }
+      const priceVal = document.getElementById('newItemPrice').value;
+
+      fetch('/api/business-profile/products', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          itemType:    document.getElementById('newItemType').value,
+          description: document.getElementById('newItemDescription').value || null,
+          price:       priceVal ? parseFloat(priceVal) : null,
+          currency:    document.getElementById('newItemCurrency').value || 'INR',
+          imageUrl:    document.getElementById('newItemImageUrl').value   || null,
+          purchaseUrl: document.getElementById('newItemPurchaseUrl').value || null
+        })
+      })
+      .then(r => r.json())
+      .then(d => {
+        showAlert('success', d.message || 'Item added!');
+        document.getElementById('addProductForm').classList.add('d-none');
+        ['newItemName','newItemPrice','newItemDescription','newItemImageUrl','newItemPurchaseUrl']
+          .forEach(id => document.getElementById(id).value = '');
+        productsLoaded = false;
+        loadProducts();
+      })
+      .catch(() => alert('Failed to add item.'));
+    }
+
+    function toggleProductStatus(id, currentStatus) {
+      const newStatus = currentStatus === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+      fetch('/api/business-profile/products/' + id, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      })
+      .then(r => r.json())
+      .then(d => { showAlert('success', d.message || 'Updated!'); productsLoaded = false; loadProducts(); })
+      .catch(() => alert('Failed to update.'));
+    }
+
+    function editProduct(id) {
+      // Show this card's edit form, hide any other open ones
+      document.querySelectorAll('[id^="edit-form-"]').forEach(el => el.classList.add('d-none'));
+      const form = document.getElementById('edit-form-' + id);
+      if (form) form.classList.remove('d-none');
+    }
+
+    function cancelEditProduct(id) {
+      const form = document.getElementById('edit-form-' + id);
+      if (form) form.classList.add('d-none');
+    }
+
+    function saveEditProduct(id) {
+      const name        = document.getElementById('edit-name-' + id).value.trim();
+      const description = document.getElementById('edit-desc-' + id).value.trim();
+      const priceVal    = document.getElementById('edit-price-' + id).value;
+      const currency    = document.getElementById('edit-currency-' + id).value.trim();
+      const imageUrl    = document.getElementById('edit-imageUrl-' + id).value.trim();
+      const purchaseUrl = document.getElementById('edit-purchaseUrl-' + id).value.trim();
+
+      if (!name) { alert('Name is required.'); return; }
+
+      fetch('/api/business-profile/products/' + id, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          description: description || null,
+          price:       priceVal ? parseFloat(priceVal) : null,
+          currency:    currency  || 'INR',
+          imageUrl:    imageUrl  || null,
+          purchaseUrl: purchaseUrl || null
+        })
+      })
+      .then(r => r.json())
+      .then(d => {
+        showAlert('success', d.message || 'Updated!');
+        productsLoaded = false;
+        loadProducts();
+      })
+      .catch(() => alert('Failed to save changes.'));
+    }
+
+    function deleteProduct(id) {
+      if (!confirm('Delete this product/service? This cannot be undone.')) return;
+      fetch('/api/business-profile/products/' + id, { method: 'DELETE' })
+        .then(r => r.json())
+        .then(d => { showAlert('success', d.message || 'Deleted!'); productsLoaded = false; loadProducts(); })
+        .catch(() => alert('Failed to delete.'));
+    }
+
+    // ── Utilities ─────────────────────────────────────────────
     function getVal(id) {
-        const el = document.getElementById(id);
-        return el ? (el.value.trim() || null) : null;
+      const el = document.getElementById(id);
+      return el ? (el.value.trim() || null) : null;
     }
-
-    function escapeHtml(text) {
-        if (!text) return '';
-        const div = document.createElement('div');
-        div.textContent = String(text);
-        return div.innerHTML;
+    function esc(t) {
+      if (t === null || t === undefined) return '';
+      const d = document.createElement('div'); d.textContent = String(t); return d.innerHTML;
     }
-
     function showAlert(type, msg) {
-        const alertId = type === 'success' ? 'successAlert' : 'errorAlert';
-        const msgId   = type === 'success' ? 'successMessage' : 'errorMessage';
-        document.getElementById(msgId).textContent = msg;
-        const el = document.getElementById(alertId);
-        el.classList.remove('d-none');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        setTimeout(() => el.classList.add('d-none'), 5000);
-    }
-
-    async function uploadProfilePicture(input) {
-        const file = input.files[0];
-        if (!file) return;
-
-        const formData = new FormData();
-        formData.append('file', file);
-
-        const statusEl = document.getElementById('uploadStatus');
-        statusEl.textContent = 'Uploading...';
-
-        try {
-            const response = await fetch('/api/users/upload-profile-picture', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                document.getElementById('profileImage').src = data.profilePicture || data.path;
-                statusEl.textContent = '✓ Uploaded';
-                setTimeout(() => { statusEl.textContent = ''; }, 3000);
-            } else {
-                statusEl.textContent = 'Upload failed';
-            }
-        } catch (e) {
-            statusEl.textContent = 'Error uploading';
-        }
+      const alertId = type === 'success' ? 'successAlert' : 'errorAlert';
+      const msgId   = type === 'success' ? 'successMessage' : 'errorMessage';
+      document.getElementById(msgId).textContent = msg;
+      const el = document.getElementById(alertId);
+      el.classList.remove('d-none');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(() => el.classList.add('d-none'), 4000);
     }
     /*]]>*/
 </script>
-
-<style>
-    .nav-tabs .nav-link {
-        color: #666;
-        border-bottom: 2px solid transparent;
-        border-radius: 0;
-    }
-
-    .nav-tabs .nav-link:hover {
-        border-bottom: 2px solid #ff6b35;
-    }
-
-    .nav-tabs .nav-link.active {
-        color: #ff6b35;
-        border-bottom: 3px solid #ff6b35;
-    }
-
-    .hours-input:disabled {
-        background-color: #f5f5f5;
-    }
-</style>
-
 </body>
 </html>
