@@ -1,4 +1,4 @@
-package dto;
+package com.revconnect.dto;
 
 import jakarta.validation.constraints.Size;
 import lombok.*;
