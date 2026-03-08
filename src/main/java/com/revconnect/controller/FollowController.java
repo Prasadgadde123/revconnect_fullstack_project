@@ -3,6 +3,7 @@ package com.revconnect.controller;
 import com.revconnect.entity.User;
 import com.revconnect.enums.NotificationType;
 import com.revconnect.service.NotificationService;
+import com.revconnect.enums.NotificationType;
 import com.revconnect.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
