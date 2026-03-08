@@ -33,6 +33,7 @@ class ProductServiceTest {
         businessUser = userService.register(RegisterDTO.builder()
                 .username("business_test").email("biz_test@test.com")
                 .password("pass").confirmPassword("pass")
+                .securityQuestion("Question").securityAnswer("Answer")
                 .role(UserRole.BUSINESS).build());
     }
 

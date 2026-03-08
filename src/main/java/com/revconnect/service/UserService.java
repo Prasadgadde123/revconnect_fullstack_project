@@ -55,7 +55,7 @@ public class UserService implements UserDetailsService {
                 .displayName(dto.getDisplayName())
                 .role(dto.getRole() != null ? dto.getRole() : UserRole.PERSONAL)
                 .securityQuestion(dto.getSecurityQuestion())
-                .securityAnswer(passwordEncoder.encode(dto.getSecurityAnswer().toLowerCase().trim()))
+                .securityAnswer(dto.getSecurityAnswer() != null ? passwordEncoder.encode(dto.getSecurityAnswer().toLowerCase().trim()) : null)
                 .build();
 
         User saved = userRepository.save(user);

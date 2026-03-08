@@ -5,10 +5,8 @@ import com.revconnect.entity.Comment;
 import com.revconnect.entity.Post;
 import com.revconnect.entity.SharedPost;
 import com.revconnect.entity.User;
-import com.revconnect.entity.SharedPost;
 import com.revconnect.enums.NotificationType;
 import com.revconnect.enums.PostType;
-import com.revconnect.repository.SharedPostRepository;
 import com.revconnect.exception.ResourceNotFoundException;
 import com.revconnect.repository.CommentRepository;
 import com.revconnect.repository.PostRepository;
@@ -79,7 +77,7 @@ public class PostService {
 
     public void deletePost(Long postId, User currentUser) {
         Post post = getPostById(postId);
-        if (!post.getAuthor().equals(currentUser) && !currentUser.getRole().name().equals("ADMIN")) {
+        if (!post.getAuthor().getId().equals(currentUser.getId()) && currentUser.getRole() != com.revconnect.enums.UserRole.ADMIN) {
             throw new IllegalArgumentException("Unauthorized");
         }
         post.setDeleted(true);
@@ -346,4 +344,3 @@ public class PostService {
         return analytics;
     }
 }
-    

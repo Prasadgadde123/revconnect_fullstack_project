@@ -1,5 +1,4 @@
 package com.revconnect.entity;
-
 import com.revconnect.enums.PostType;
 import jakarta.persistence.*;
 import lombok.*;

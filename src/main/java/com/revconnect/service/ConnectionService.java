@@ -5,6 +5,7 @@ import com.revconnect.entity.User;
 import com.revconnect.enums.ConnectionStatus;
 import com.revconnect.enums.NotificationType;
 import com.revconnect.repository.ConnectionRepository;
+import com.revconnect.enums.NotificationType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
