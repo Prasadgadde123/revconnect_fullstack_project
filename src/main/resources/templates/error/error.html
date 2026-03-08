@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Error | RevConnect</title><link rel="stylesheet" th:href="@{/css/main.css}"/></head>
+<body>
+<div class="page-container">
+    <div class="error-page">
+        <div class="error-code">⚠️</div>
+        <h2>Something went wrong</h2>
+        <p th:text="${message}">An unexpected error occurred.</p>
+        <a th:href="@{/feed}" class="btn btn-primary">Go to Feed</a>
+    </div>
+</div>
+</body>
+</html>
