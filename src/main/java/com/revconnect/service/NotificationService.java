@@ -2,7 +2,6 @@ package com.revconnect.service;
 
 import com.revconnect.entity.Notification;
 import com.revconnect.entity.User;
-import com.revconnect.enums.NotificationType;
 import com.revconnect.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
