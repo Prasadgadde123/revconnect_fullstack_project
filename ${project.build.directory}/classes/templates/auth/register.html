@@ -6,9 +6,11 @@
 <div class="auth-container">
     <div class="auth-card">
         <div class="auth-brand">
-            <span class="brand-icon-large">⚡</span>
-            <h1>Create Account</h1>
-            <p>Join RevConnect today</p>
+            <img th:src="@{/images/logo.png}" alt="RevConnect" class="brand-logo-img brand-logo-auth"/>
+            <div class="auth-brand-text">
+                <h1>Create Account</h1>
+                <p>Join RevConnect today</p>
+            </div>
         </div>
 
         <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>

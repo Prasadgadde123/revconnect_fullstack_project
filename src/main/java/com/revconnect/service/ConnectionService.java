@@ -3,6 +3,7 @@ package com.revconnect.service;
 import com.revconnect.entity.Connection;
 import com.revconnect.entity.User;
 import com.revconnect.enums.ConnectionStatus;
+import com.revconnect.enums.NotificationType;
 import com.revconnect.repository.ConnectionRepository;
 import com.revconnect.enums.NotificationType;
 import lombok.RequiredArgsConstructor;
