@@ -1,5 +1,6 @@
 package com.revconnect.entity;
 
+import com.revconnect.enums.NotificationType;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;

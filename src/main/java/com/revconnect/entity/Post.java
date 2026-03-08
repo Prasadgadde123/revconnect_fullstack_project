@@ -1,5 +1,6 @@
 package com.revconnect.entity;
 
+import com.revconnect.enums.PostType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -83,9 +84,19 @@ public class Post {
     public void preUpdate() { this.updatedAt = LocalDateTime.now(); }
 
     public int getLikeCount() { return likes.size(); }
-    public int getCommentCount() { return (int) comments.stream().filter(c -> !c.isDeleted()).count(); }
-    public int getRepostCount() { return reposts != null ? (int) reposts.stream().filter(r -> !r.isDeleted()).count() : 0; }
+    public int getCommentCount() {
+        return (int) comments.stream()
+                .filter(c -> !c.isDeleted())
+                .count();
+    }
 
+    public int getRepostCount() {
+        return reposts != null
+                ? (int) reposts.stream()
+                .filter(r -> !r.isDeleted())
+                .count()
+                : 0;
+    }
     public boolean isLikedBy(User user) {
         return likes.contains(user);
     }
