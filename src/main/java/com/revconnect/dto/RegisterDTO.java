@@ -1,4 +1,4 @@
-package dto;
+package com.revconnect.dto;
 
 import com.revconnect.enums.UserRole;
 import jakarta.validation.constraints.*;
