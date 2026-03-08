@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('My Connections')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+<div class="page-container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="form-page">
+        <h2>🤝 My Connections</h2>
+
+        <!-- Pending Requests Received -->
+        <div th:if="${!pendingReceived.empty}" class="settings-card">
+            <h3>📬 Pending Requests (<span th:text="${pendingReceived.size()}">0</span>)</h3>
+            <div th:each="conn : ${pendingReceived}" class="connection-item">
+                <div class="connection-avatar">
+                    <img th:if="${conn.requester.profilePicture != null}" th:src="${conn.requester.profilePicture}" alt="Avatar" class="avatar-img-sm"/>
+                    <div th:if="${conn.requester.profilePicture == null}" class="avatar-placeholder-sm"
+                         th:text="${conn.requester.displayNameOrUsername.substring(0,1).toUpperCase()}">U</div>
+                </div>
+                <div class="connection-info">
+                    <a th:href="@{/profile/{u}(u=${conn.requester.username})}"
+                       th:text="${conn.requester.displayNameOrUsername}" class="connection-name">Name</a>
+                    <span th:text="'@' + ${conn.requester.username}" class="connection-username">@user</span>
+                </div>
+                <div class="connection-actions">
+                    <form th:action="@{/connections/accept/{id}(id=${conn.id})}" method="post" style="display:inline">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button class="btn btn-primary btn-sm">✓ Accept</button>
+                    </form>
+                    <form th:action="@{/connections/reject/{id}(id=${conn.id})}" method="post" style="display:inline">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button class="btn btn-outline btn-sm">✕ Reject</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sent Pending -->
+        <div th:if="${!pendingSent.empty}" class="settings-card">
+            <h3>📤 Sent Requests (<span th:text="${pendingSent.size()}">0</span>)</h3>
+            <div th:each="conn : ${pendingSent}" class="connection-item">
+                <div class="connection-avatar">
+                    <div class="avatar-placeholder-sm"
+                         th:text="${conn.receiver.displayNameOrUsername.substring(0,1).toUpperCase()}">U</div>
+                </div>
+                <div class="connection-info">
+                    <a th:href="@{/profile/{u}(u=${conn.receiver.username})}"
+                       th:text="${conn.receiver.displayNameOrUsername}" class="connection-name">Name</a>
+                    <span th:text="'@' + ${conn.receiver.username}" class="connection-username">@user</span>
+                </div>
+                <span class="btn btn-outline btn-sm disabled">⏳ Pending</span>
+            </div>
+        </div>
+
+        <!-- Connections List -->
+        <div class="settings-card">
+            <h3>👥 Connections (<span th:text="${connections.size()}">0</span>)</h3>
+            <div th:if="${connections.empty}" class="empty-state-sm">
+                <p>No connections yet. <a th:href="@{/explore}">Explore users</a> to get started.</p>
+            </div>
+            <div th:each="u : ${connections}" class="connection-item">
+                <div class="connection-avatar">
+                    <img th:if="${u.profilePicture != null}" th:src="${u.profilePicture}" alt="Avatar" class="avatar-img-sm"/>
+                    <div th:if="${u.profilePicture == null}" class="avatar-placeholder-sm"
+                         th:text="${u.displayNameOrUsername.substring(0,1).toUpperCase()}">U</div>
+                </div>
+                <div class="connection-info">
+                    <a th:href="@{/profile/{un}(un=${u.username})}"
+                       th:text="${u.displayNameOrUsername}" class="connection-name">Name</a>
+                    <span th:text="'@' + ${u.username}" class="connection-username">@user</span>
+                    <span th:if="${u.bio != null}" th:text="${u.bio}" class="connection-bio"></span>
+                </div>
+                <div class="connection-actions">
+                    <a th:href="@{/profile/{un}(un=${u.username})}" class="btn btn-outline btn-sm">View</a>
+                    <form th:action="@{/connections/remove/{id}(id=${u.id})}" method="post" style="display:inline"
+                          onsubmit="return confirm('Remove this connection?')">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button class="btn btn-danger-outline btn-sm">Remove</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

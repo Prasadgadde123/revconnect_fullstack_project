@@ -60,6 +60,10 @@ public class User implements UserDetails {
     private String contactEmail;
     private String contactPhone;
 
+    // Security Questions
+    private String securityQuestion;
+    private String securityAnswer;
+
     @Column(updatable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();

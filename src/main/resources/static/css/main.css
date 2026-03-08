@@ -36,6 +36,57 @@
     --radius-full: 9999px;
 }
 
+/* ============================================================
+   BRAND LOGO STYLES
+   ============================================================ */
+.brand-logo-img {
+    display: block;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+.brand-logo-img:hover {
+    transform: scale(1.05);
+}
+.brand-logo-nav {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+.brand-logo-auth {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary-light);
+    box-shadow: 0 4px 12px rgba(110, 52, 130, 0.15);
+}
+
+.auth-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 32px;
+    text-align: left;
+    flex-wrap: wrap;
+}
+
+.auth-brand-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-brand h1 {
+    margin: 0;
+    line-height: 1;
+}
+
+.auth-brand p {
+    margin-top: 4px;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
 [data-theme='dark'] {
     --bg: #15202b;
     --bg-white: #15202b;
@@ -1469,8 +1520,8 @@ small { font-size: 12px; color: var(--text-muted); display: block; margin-top: 4
    NOTIFICATIONS (GLASS THEME)
    ============================================================ */
 .notification-item {
-    display: flex; 
-    align-items: flex-start; 
+    display: flex;
+    align-items: flex-start;
     gap: 16px;
     padding: 16px;
     margin-bottom: 12px;
@@ -1537,27 +1588,27 @@ small { font-size: 12px; color: var(--text-muted); display: block; margin-top: 4
 }
 
 .notif-body { flex: 1; min-width: 0; }
-.notif-actor-name { 
-    font-weight: 700; 
-    font-size: 15px; 
-    color: var(--text-primary); 
+.notif-actor-name {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text-primary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
-.notif-message { 
-    font-size: 14px; 
-    color: var(--text-secondary); 
-    margin: 4px 0; 
+.notif-message {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 4px 0;
     line-height: 1.5;
 }
-.notif-time { 
-    font-size: 11px; 
-    color: var(--text-muted); 
+.notif-time {
+    font-size: 11px;
+    color: var(--text-muted);
     font-weight: 500;
 }
 .notif-actions { display: flex; align-items: center; gap: 12px; }
-.unread-dot { 
-    color: var(--primary); 
+.unread-dot {
+    color: var(--primary);
     font-size: 14px;
     animation: pulseNotif 2s infinite;
 }
@@ -1791,4 +1842,3 @@ hr { border: none; border-top: 1px solid var(--border); }
     background: var(--primary-light);
     color: var(--primary);
 }
-

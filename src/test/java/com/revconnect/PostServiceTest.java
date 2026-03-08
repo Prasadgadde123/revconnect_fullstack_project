@@ -38,14 +38,17 @@ class PostServiceTest {
         postAuthor = userService.register(RegisterDTO.builder()
                 .username("post_author").email("pauthor@test.com")
                 .password("pass").confirmPassword("pass")
+                .securityQuestion("Question").securityAnswer("Answer")
                 .role(UserRole.PERSONAL).build());
         postOther = userService.register(RegisterDTO.builder()
                 .username("post_other").email("pother@test.com")
                 .password("pass").confirmPassword("pass")
+                .securityQuestion("Question").securityAnswer("Answer")
                 .role(UserRole.PERSONAL).build());
         postAdmin = userService.register(RegisterDTO.builder()
                 .username("post_admin").email("padmin@test.com")
                 .password("pass").confirmPassword("pass")
+                .securityQuestion("Question").securityAnswer("Answer")
                 .role(UserRole.ADMIN).build());
     }
 
@@ -138,10 +141,12 @@ class PostServiceTest {
 
     @Test
     void testSearchByHashtag() {
-        postService.createPost(postAuthor, PostCreateDTO.builder().content("p1").hashtags("java").build());
-        postService.createPost(postOther, PostCreateDTO.builder().content("p2").hashtags("spring").build());
-        List<Post> results = postService.searchByHashtag("java");
+        // Use a unique tag to avoid collisions with other tests
+        postService.createPost(postAuthor, PostCreateDTO.builder().content("p1").hashtags("unique_java_test").build());
+        postService.createPost(postOther, PostCreateDTO.builder().content("p2").hashtags("unique_spring_test").build());
+        List<Post> results = postService.searchByHashtag("unique_java_test");
         assertEquals(1, results.size());
+        assertEquals("p1", results.get(0).getContent());
     }
 
     @Test
