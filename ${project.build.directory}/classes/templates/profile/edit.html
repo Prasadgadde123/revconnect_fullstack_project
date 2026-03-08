@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Edit Profile')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+<div class="page-container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="form-page">
+        <h2>⚙️ Edit Profile</h2>
+
+        <!-- Profile Picture -->
+        <div class="settings-card">
+            <h3>Profile Picture</h3>
+            <div class="picture-upload-row">
+                <div class="current-avatar">
+                    <img th:if="${user.profilePicture != null}" th:src="${user.profilePicture}" alt="Avatar" class="avatar-img-lg"/>
+                    <div th:if="${user.profilePicture == null}" class="avatar-placeholder-lg"
+                         th:text="${user.displayNameOrUsername.substring(0,1).toUpperCase()}">U</div>
+                </div>
+                <form th:action="@{/profile/picture}" method="post" enctype="multipart/form-data">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <input type="file" name="file" accept="image/*" class="form-control"/>
+                    <button type="submit" class="btn btn-primary btn-sm mt-1">Upload</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Profile Info -->
+        <div class="settings-card">
+            <h3>Profile Information</h3>
+            <form th:action="@{/profile/edit}" th:object="${profileDTO}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Display Name</label>
+                        <input type="text" th:field="*{displayName}" class="form-control" placeholder="Your display name"/>
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" th:field="*{location}" class="form-control" placeholder="City, Country"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Bio</label>
+                    <textarea th:field="*{bio}" class="form-control" rows="3" placeholder="Tell people about yourself..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Website</label>
+                    <input type="url" th:field="*{website}" class="form-control" placeholder="https://yourwebsite.com"/>
+                </div>
+
+                <div class="form-group">
+                    <label>Other External Links</label>
+                    <div id="links-container">
+                        <div th:each="link, iterStat : *{externalLinks}" class="link-input-row" style="display:flex; gap:8px; margin-bottom:8px;">
+                            <input type="text" th:field="*{externalLinks[__${iterStat.index}__]}" class="form-control" placeholder="e.g. GitHub::https://github.com/user"/>
+                            <button type="button" class="btn btn-outline btn-sm remove-link-btn" onclick="this.parentElement.remove()">✕</button>
+                        </div>
+                        <!-- empty slot for first link if list is empty -->
+                        <div th:if="${profileDTO.externalLinks == null or profileDTO.externalLinks.empty}" class="link-input-row" style="display:flex; gap:8px; margin-bottom:8px;">
+                            <input type="text" name="externalLinks[0]" class="form-control" placeholder="e.g. GitHub::https://github.com/user"/>
+                            <button type="button" class="btn btn-outline btn-sm remove-link-btn" onclick="this.parentElement.remove()">✕</button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-outline btn-sm mt-1" id="add-link-btn">+ Add Link</button>
+                    <small class="text-muted d-block mt-1">Format: Title::URL (e.g. GitHub::https://github.com...)</small>
+                </div>
+
+                <!-- Creator/Business extra fields -->
+                <div th:if="${user.role.name() == 'CREATOR' or user.role.name() == 'BUSINESS'}">
+                    <hr/>
+                    <h4 th:text="${user.role.name() == 'BUSINESS' ? '🏢 Business Details' : '🎨 Creator Details'}">Details</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Category / Industry</label>
+                            <input type="text" th:field="*{category}" class="form-control" placeholder="e.g. Technology, Fashion..."/>
+                        </div>
+                        <div class="form-group">
+                            <label>Contact Email</label>
+                            <input type="email" th:field="*{contactEmail}" class="form-control"/>
+                        </div>
+                    </div>
+                    <div th:if="${user.role.name() == 'BUSINESS'}" class="form-row">
+                        <div class="form-group">
+                            <label>Business Address</label>
+                            <input type="text" th:field="*{businessAddress}" class="form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label>Business Hours</label>
+                            <input type="text" th:field="*{businessHours}" class="form-control" placeholder="Mon-Fri 9AM-6PM"/>
+                        </div>
+                    </div>
+                </div>
+
+                <hr/>
+                <h4>🔒 Privacy</h4>
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" th:field="*{privateProfile}"/>
+                        Private Account (only connections can see your posts)
+                    </label>
+                </div>
+
+                <hr/>
+                <h4>🔔 Notification Preferences</h4>
+                <div class="notification-prefs">
+                    <label class="checkbox-label">
+                        <input type="checkbox" th:field="*{notifyConnectionRequests}"/> Connection Requests
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" th:field="*{notifyLikes}"/> Post Likes
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" th:field="*{notifyComments}"/> Comments
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" th:field="*{notifyFollowers}"/> New Followers
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" th:field="*{notifyShares}"/> Post Shares
+                    </label>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <a th:href="@{/profile/{u}(u=${user.username})}" class="btn btn-outline">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const addBtn = document.getElementById('add-link-btn');
+        const container = document.getElementById('links-container');
+        if (addBtn && container) {
+            addBtn.addEventListener('click', () => {
+                const index = container.querySelectorAll('.link-input-row').length;
+                const row = document.createElement('div');
+                row.className = 'link-input-row';
+                row.style = 'display:flex; gap:8px; margin-bottom:8px;';
+                row.innerHTML = `
+                    <input type="text" name="externalLinks[${index}]" class="form-control" placeholder="e.g. GitHub::https://github.com/user"/>
+                    <button type="button" class="btn btn-outline btn-sm remove-link-btn" onclick="this.parentElement.remove()">✕</button>
+                `;
+                container.appendChild(row);
+            });
+        }
+    });
+</script>
+</body>
+</html>
