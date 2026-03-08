@@ -3,6 +3,7 @@ package com.revconnect.service;
 import com.revconnect.dto.PostCreateDTO;
 import com.revconnect.entity.Comment;
 import com.revconnect.entity.Post;
+import com.revconnect.entity.SharedPost;
 import com.revconnect.entity.User;
 import com.revconnect.entity.SharedPost;
 import com.revconnect.enums.NotificationType;
@@ -11,6 +12,7 @@ import com.revconnect.repository.SharedPostRepository;
 import com.revconnect.exception.ResourceNotFoundException;
 import com.revconnect.repository.CommentRepository;
 import com.revconnect.repository.PostRepository;
+import com.revconnect.repository.SharedPostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -77,7 +79,7 @@ public class PostService {
 
     public void deletePost(Long postId, User currentUser) {
         Post post = getPostById(postId);
-        if (!post.getAuthor().equals(currentUser) && currentUser.getRole().name().equals("ADMIN")) {
+        if (!post.getAuthor().equals(currentUser) && !currentUser.getRole().name().equals("ADMIN")) {
             throw new IllegalArgumentException("Unauthorized");
         }
         post.setDeleted(true);

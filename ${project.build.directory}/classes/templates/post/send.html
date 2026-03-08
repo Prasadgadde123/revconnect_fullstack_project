@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Send Post')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+<div class="page-container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div style="max-width: 600px; margin: 0 auto;">
+        <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 20px;">📨 Send Post</h2>
+
+        <!-- Preview of the post being sent -->
+        <div class="post-card" style="margin-bottom: 24px; pointer-events: none; opacity: 0.85;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                <img th:src="${post.author.profilePicture != null ? post.author.profilePicture : 'https://i.pinimg.com/736x/d7/b9/48/d7b948ff970f7d92ee265072da06fd07.jpg'}" alt="Avatar" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;"/>
+                <div>
+                    <strong th:text="${post.author.displayNameOrUsername}">Author</strong>
+                    <span th:text="'@' + ${post.author.username}" style="color: var(--text-muted); font-size: 13px;"></span>
+                </div>
+            </div>
+            <p th:text="${#strings.abbreviate(post.content, 200)}" style="color: var(--text-primary); font-size: 15px;"></p>
+        </div>
+
+        <!-- Send form -->
+        <form th:action="@{/post/{id}/send(id=${post.id})}" method="post" class="settings-card">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+            <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">Select connections to send to:</h3>
+
+            <div th:if="${connections == null or connections.empty}" style="text-align: center; padding: 20px; color: var(--text-muted);">
+                <p>No connections found. Connect with people to share posts with them.</p>
+            </div>
+
+            <div th:each="conn : ${connections}" style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border-light);">
+                <input type="checkbox" name="userIds" th:value="${conn.id}" th:id="'conn-' + ${conn.id}" style="width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer;"/>
+                <label th:for="'conn-' + ${conn.id}" style="display: flex; align-items: center; gap: 10px; cursor: pointer; flex: 1;">
+                    <img th:src="${conn.profilePicture != null ? conn.profilePicture : 'https://i.pinimg.com/736x/d7/b9/48/d7b948ff970f7d92ee265072da06fd07.jpg'}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"/>
+                    <div>
+                        <div th:text="${conn.displayNameOrUsername}" style="font-weight: 600; font-size: 15px;"></div>
+                        <div th:text="'@' + ${conn.username}" style="font-size: 13px; color: var(--text-muted);"></div>
+                    </div>
+                </label>
+            </div>
+
+            <div style="margin-top: 16px;">
+                <label for="message" style="font-size: 14px; font-weight: 600; margin-bottom: 6px; display: block;">Add a message (optional):</label>
+                <textarea name="message" id="message" class="form-control" rows="2" placeholder="Say something about this post..." style="resize: none;"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 16px;" th:disabled="${connections == null or connections.empty}">
+                📨 Send Post
+            </button>
+        </form>
+    </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

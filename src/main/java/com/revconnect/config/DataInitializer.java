@@ -12,10 +12,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import com.revconnect.repository.UserRepository;
 
 @Component
+@Profile("!test")
 @RequiredArgsConstructor
 @Slf4j
 public class DataInitializer implements CommandLineRunner {
@@ -103,6 +105,8 @@ public class DataInitializer implements CommandLineRunner {
                 .confirmPassword(password)
                 .displayName(displayName)
                 .role(role)
+                .securityQuestion("Default Question")
+                .securityAnswer("Default Answer")
                 .build();
         return userService.register(dto);
     }
