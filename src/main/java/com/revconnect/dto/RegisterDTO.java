@@ -28,4 +28,10 @@ public class RegisterDTO {
     @NotNull(message = "Account type is required")
     @Builder.Default
     private UserRole role = UserRole.PERSONAL;
+
+    @NotBlank(message = "Security question is required")
+    private String securityQuestion;
+
+    @NotBlank(message = "Security answer is required")
+    private String securityAnswer;
 }

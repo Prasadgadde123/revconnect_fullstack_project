@@ -1,5 +1,6 @@
 package com.revconnect.service;
 
+import com.revconnect.dto.ForgotPasswordResetDTO;
 import com.revconnect.dto.ProfileUpdateDTO;
 import com.revconnect.dto.RegisterDTO;
 import com.revconnect.entity.User;
@@ -34,6 +35,8 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 
+
+
     public User register(RegisterDTO dto) {
         if (userRepository.existsByUsername(dto.getUsername())) {
             throw new IllegalArgumentException("Username already taken");
@@ -51,11 +54,37 @@ public class UserService implements UserDetailsService {
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .displayName(dto.getDisplayName())
                 .role(dto.getRole() != null ? dto.getRole() : UserRole.PERSONAL)
+                .securityQuestion(dto.getSecurityQuestion())
+                .securityAnswer(passwordEncoder.encode(dto.getSecurityAnswer().toLowerCase().trim()))
                 .build();
 
         User saved = userRepository.save(user);
         log.info("New user registered: {}", saved.getUsername());
         return saved;
+    }
+
+    public String getSecurityQuestion(String usernameOrEmail) {
+        User user = (User) loadUserByUsername(usernameOrEmail);
+        if (user.getSecurityQuestion() == null) {
+            throw new IllegalArgumentException("Security question not set for this account");
+        }
+        return user.getSecurityQuestion();
+    }
+
+    public void resetPasswordWithSecurityAnswer(ForgotPasswordResetDTO dto) {
+        User user = (User) loadUserByUsername(dto.getUsernameOrEmail());
+
+        if (!passwordEncoder.matches(dto.getSecurityAnswer().toLowerCase().trim(), user.getSecurityAnswer())) {
+            throw new IllegalArgumentException("Incorrect security answer");
+        }
+
+        if (!dto.getNewPassword().equals(dto.getConfirmPassword())) {
+            throw new IllegalArgumentException("Passwords do not match");
+        }
+
+        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        userRepository.save(user);
+        log.info("Password reset successful for user: {}", user.getUsername());
     }
 
     public User findById(Long id) {
@@ -88,7 +117,7 @@ public class UserService implements UserDetailsService {
         user.setNotifyComments(dto.isNotifyComments());
         user.setNotifyFollowers(dto.isNotifyFollowers());
         user.setNotifyShares(dto.isNotifyShares());
-        
+
         if (dto.getExternalLinks() != null) {
             user.getExternalLinks().clear();
             for (String link : dto.getExternalLinks()) {
@@ -97,7 +126,7 @@ public class UserService implements UserDetailsService {
                 }
             }
         }
-        
+
         return userRepository.save(user);
     }
 

@@ -27,6 +27,11 @@ public class AuthController {
         return "auth/login";
     }
 
+    @GetMapping("/forgot-password")
+    public String forgotPasswordPage() {
+        return "auth/forgot-password";
+    }
+
     @GetMapping("/register")
     public String registerPage(Model model) {
         model.addAttribute("registerDTO", new RegisterDTO());
