@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Chat with ' + targetUser.displayNameOrUsername)}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+<div class="page-container">
+    <div class="settings-card" style="max-width: 600px; margin: 40px auto; text-align: center; padding: 60px;">
+        <div style="font-size: 64px; margin-bottom: 20px;">💬</div>
+        <h2 th:text="'Chatting with ' + ${targetUser.displayNameOrUsername}">Chat</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 30px;">This is a placeholder for the RevConnect messaging system. Stay tuned for real-time updates!</p>
+        <a th:href="@{/profile/{u}(u=${targetUser.username})}" class="btn-profile-v2" style="display: inline-block; width: auto; padding: 15px 40px;">Back to Profile</a>
+    </div>
+</div>
+</body>
+</html>

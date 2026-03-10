@@ -30,6 +30,7 @@ public class User implements UserDetails {
     private String password;
 
     private String displayName;
+    
     private String bio;
     private String profilePicture;
     private String location;
@@ -38,7 +39,7 @@ public class User implements UserDetails {
     // Multiple external links (title → url)
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_links", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "link_entry")
+    @Column(name = "link_entry", length = 2048)
     @Builder.Default
     private List<String> externalLinks = new ArrayList<>(); // Format: "Title::https://url"
 
@@ -52,6 +53,9 @@ public class User implements UserDetails {
 
     @Builder.Default
     private boolean enabled = true;
+
+    @Builder.Default
+    private boolean verified = false;
 
     // Business/Creator specific
     private String category;
@@ -94,6 +98,13 @@ public class User implements UserDetails {
     @ManyToMany(mappedBy = "following", fetch = FetchType.LAZY)
     @Builder.Default
     private Set<User> followers = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_bookmarks",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "bookmark_id"))
+    @Builder.Default
+    private Set<User> bookmarkedUsers = new HashSet<>();
 
     @OneToMany(mappedBy = "recipient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default

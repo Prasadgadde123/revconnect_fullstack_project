@@ -1,6 +1,7 @@
 package com.revconnect.controller;
 
 import com.revconnect.entity.User;
+import com.revconnect.service.AnalyticsService;
 import com.revconnect.service.NotificationService;
 import com.revconnect.service.PostService;
 import com.revconnect.service.UserService;
@@ -19,21 +20,30 @@ public class FeedController {
     private final PostService postService;
     private final UserService userService;
     private final NotificationService notificationService;
+    private final AnalyticsService analyticsService;
 
-    @GetMapping({"/", "/feed"})
+    @GetMapping("/feed")
     public String feed(@AuthenticationPrincipal User currentUser,
                        @RequestParam(defaultValue = "0") int page,
                        @RequestParam(required = false) String filterType,
                        @RequestParam(required = false) String filterRole,
                        Model model) {
+        if (currentUser != null && currentUser.getRole() == com.revconnect.enums.UserRole.ADMIN) return "redirect:/admin";
         Page<Post> feedPage = postService.getFeedPosts(currentUser, page, filterType, filterRole);
         model.addAttribute("posts", feedPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", feedPage.getTotalPages());
         model.addAttribute("trendingHashtags", postService.getTrendingHashtags());
         model.addAttribute("unreadCount", notificationService.getUnreadCount(currentUser));
+        model.addAttribute("stats", analyticsService.getUserAnalytics(currentUser));
+        
+        // Add counts for the profile card widget
+        model.addAttribute("currentUserFollowerCount", userService.getFollowers(currentUser).size());
+        model.addAttribute("currentUserPostCount", postService.getPostCountByUser(currentUser));
+
         model.addAttribute("suggestedUsers", userService.searchUsers("").stream()
-                .filter(u -> !u.equals(currentUser)).limit(5).toList());
+                .filter(u -> u != null && !u.getUsername().equals(currentUser.getUsername()))
+                .limit(5).toList());
 
         model.addAttribute("activeFilterType", filterType);
         model.addAttribute("activeFilterRole", filterRole);

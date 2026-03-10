@@ -46,6 +46,7 @@ public class ProfileController {
         model.addAttribute("connected", connected);
         model.addAttribute("pendingSent", pendingSent);
         model.addAttribute("isFollowing", isFollowing);
+        model.addAttribute("isBookmarked", currentUser != null && !isSelf && userService.isBookmarked(currentUser, profileUser));
         model.addAttribute("canViewContent", canViewContent);
         model.addAttribute("unreadCount", notificationService.getUnreadCount(currentUser));
         model.addAttribute("followerCount", userService.getFollowers(profileUser).size());

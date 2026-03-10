@@ -2,7 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/layout :: head('Feed')}"></head>
-<body>
+<link rel="stylesheet" th:href="@{/css/dashboard.css}">
+<body class="dashboard-theme">
 
 <div th:replace="~{fragments/layout :: navbar}"></div>
 
@@ -15,6 +16,21 @@
 
         <!-- Main feed -->
         <div class="feed-main">
+            <!-- SaaS Stats Grid -->
+            <div class="stat-grid fade-in" style="margin-bottom: 24px;">
+                <div class="stat-card" style="padding: 16px;">
+                    <span class="stat-label" style="font-size: 10px;">Followers</span>
+                    <span class="stat-value" style="font-size: 1.5rem;" th:text="${stats.totalFollowers}">0</span>
+                </div>
+                <div class="stat-card" style="padding: 16px;">
+                    <span class="stat-label" style="font-size: 10px;">Engagement</span>
+                    <span class="stat-value" style="font-size: 1.5rem;" th:text="${stats.engagementRate} + '%'">0%</span>
+                </div>
+                <div class="stat-card" style="padding: 16px;">
+                    <span class="stat-label" style="font-size: 10px;">Total Likes</span>
+                    <span class="stat-value" style="font-size: 1.5rem;" th:text="${stats.totalLikes}">0</span>
+                </div>
+            </div>
 
             <!-- Filter Chips -->
             <div class="feed-filters">
@@ -60,48 +76,7 @@
         </div>
 
         <!-- Right sidebar -->
-        <div class="sidebar-right">
-
-            <!-- Trending hashtags -->
-            <div class="sidebar-card">
-                <h3>🔥 Trending</h3>
-                <div class="trending-tags">
-                    <a th:each="entry : ${trendingHashtags}"
-                       th:href="@{/explore(hashtag=${entry.key})}"
-                       class="trending-tag">
-                        <span class="trending-header">Trending</span>
-                        <span class="tag-name" th:text="'#' + ${entry.key}">tag</span>
-                        <span class="tag-count" th:text="${entry.value} + ' posts'">0 posts</span>
-                    </a>
-                    <div th:if="${trendingHashtags == null or trendingHashtags.empty}" style="padding: 12px; color: var(--text-secondary); font-size: 14px;">
-                        No trends at the moment.
-                    </div>
-                </div>
-            </div>
-
-            <!-- Suggested users -->
-            <div class="sidebar-card">
-                <h3>👥 Suggested</h3>
-                <div th:if="${suggestedUsers != null and !suggestedUsers.empty}">
-                    <div th:each="u : ${suggestedUsers}" class="suggested-user">
-                        <div class="suggested-avatar">
-                            <img th:if="${u.profilePicture != null}" th:src="${u.profilePicture}" alt="pic" class="avatar-img-sm"/>
-                            <div th:if="${u.profilePicture == null}" class="avatar-placeholder-sm"
-                                 th:text="${u.displayNameOrUsername.substring(0,1).toUpperCase()}">U</div>
-                        </div>
-                        <div class="suggested-info">
-                            <a th:href="@{/profile/{un}(un=${u.username})}" class="suggested-name"
-                               th:text="${u.displayNameOrUsername}">Name</a>
-                            <span class="suggested-role" th:text="'@' + ${u.username}">@user</span>
-                        </div>
-                        <a th:href="@{/profile/{un}(un=${u.username})}" class="btn btn-sm btn-outline">View</a>
-                    </div>
-                </div>
-                <div th:if="${suggestedUsers == null or suggestedUsers.empty}" style="padding: 12px; color: var(--text-secondary); font-size: 14px;">
-                    No suggestions yet.
-                </div>
-            </div>
-        </div>
+        <div th:replace="~{fragments/layout :: rightSidebar}"></div>
     </div>
 </div>
 

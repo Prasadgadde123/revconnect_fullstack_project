@@ -75,7 +75,7 @@ public class Post {
     // Tagged products/services (for creator/business posts)
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "post_tagged_products", joinColumns = @JoinColumn(name = "post_id"))
-    @Column(name = "product_name")
+    @Column(name = "product_name", length = 500)
     @Builder.Default
     private List<String> taggedProducts = new ArrayList<>();
 

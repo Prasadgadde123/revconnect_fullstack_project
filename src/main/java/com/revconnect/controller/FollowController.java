@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
@@ -19,9 +18,9 @@ public class FollowController {
     private final NotificationService notificationService;
 
     @PostMapping("/{userId}")
-    public String follow(@PathVariable Long userId,
-                          @AuthenticationPrincipal User currentUser,
-                          RedirectAttributes ra) {
+    @ResponseBody
+    public java.util.Map<String, Object> follow(@PathVariable Long userId,
+            @AuthenticationPrincipal User currentUser) {
         User target = userService.findById(userId);
         if (!userService.isFollowing(currentUser, target)) {
             userService.follow(currentUser, target);
@@ -29,20 +28,25 @@ public class FollowController {
                     target, currentUser,
                     NotificationType.NEW_FOLLOWER,
                     currentUser.getDisplayNameOrUsername() + " started following you",
-                    "/profile/" + currentUser.getUsername()
-            );
-            ra.addFlashAttribute("success", "Following " + target.getDisplayNameOrUsername());
+                    "/profile/" + currentUser.getUsername());
         }
-        return "redirect:/profile/" + target.getUsername();
+        return java.util.Map.of(
+                "success", true,
+                "followerCount", userService.getFollowers(target).size(),
+                "followingCount", userService.getFollowing(target).size(),
+                "isFollowing", true);
     }
 
     @PostMapping("/unfollow/{userId}")
-    public String unfollow(@PathVariable Long userId,
-                            @AuthenticationPrincipal User currentUser,
-                            RedirectAttributes ra) {
+    @ResponseBody
+    public java.util.Map<String, Object> unfollow(@PathVariable Long userId,
+            @AuthenticationPrincipal User currentUser) {
         User target = userService.findById(userId);
         userService.unfollow(currentUser, target);
-        ra.addFlashAttribute("success", "Unfollowed " + target.getDisplayNameOrUsername());
-        return "redirect:/profile/" + target.getUsername();
+        return java.util.Map.of(
+                "success", true,
+                "followerCount", userService.getFollowers(target).size(),
+                "followingCount", userService.getFollowing(target).size(),
+                "isFollowing", false);
     }
 }

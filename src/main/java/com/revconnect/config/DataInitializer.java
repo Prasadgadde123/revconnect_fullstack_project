@@ -30,7 +30,8 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (userRepository.count() > 0) return;
+        if (userRepository.count() > 0)
+            return;
 
         log.info("Seeding demo data...");
 
@@ -46,8 +47,8 @@ public class DataInitializer implements CommandLineRunner {
 
         // Personal users
         User alice = registerUser("alice", "alice@example.com", "password", "Alice Johnson", UserRole.PERSONAL);
-        User bob   = registerUser("bob",   "bob@example.com",   "password", "Bob Smith",    UserRole.PERSONAL);
-        User carol = registerUser("carol", "carol@example.com", "password", "Carol White",  UserRole.PERSONAL);
+        User bob = registerUser("bob", "bob@example.com", "password", "Bob Smith", UserRole.PERSONAL);
+        User carol = registerUser("carol", "carol@example.com", "password", "Carol White", UserRole.PERSONAL);
 
         // Creator
         User creator = registerUser("techcreator", "creator@example.com", "password", "Tech Vibes", UserRole.CREATOR);
@@ -64,15 +65,42 @@ public class DataInitializer implements CommandLineRunner {
         userRepository.save(business);
 
         // Posts
-        createPost(alice, "Hey everyone! Just joined RevConnect 👋 Excited to connect!", "hello,introduction", PostType.REGULAR);
-        createPost(alice, "Beautiful morning today. Grateful for every moment. ☀️", "morning,gratitude", PostType.REGULAR);
-        createPost(bob, "Just finished reading an amazing book on productivity. Highly recommend!", "books,productivity", PostType.REGULAR);
-        createPost(bob, "Working on a new project. Can't share details yet but it's exciting! 🔥", "project,work", PostType.REGULAR);
-        createPost(carol, "Spring is here! Time to go outside and enjoy the sunshine 🌸", "spring,nature", PostType.REGULAR);
-        createPost(creator, "🚀 Top 5 AI tools you NEED in 2024. Thread below 👇", "ai,technology,tools", PostType.REGULAR);
-        createPost(creator, "Hot take: React is still the best frontend framework. Change my mind 💬", "react,javascript,webdev", PostType.REGULAR);
-        createPost(business, "🛍️ MEGA SALE — Up to 50% off this weekend only!", "sale,deals,shopping", PostType.PROMOTIONAL);
-        createPost(business, "Introducing our NEW Summer Collection! Shop now 🌊", "new,summer,fashion", PostType.PROMOTIONAL);
+        createPost(alice, "Hey everyone! Just joined RevConnect 👋 Excited to connect!", "hello,introduction",
+                PostType.REGULAR);
+        createPost(alice, "Beautiful morning today. Grateful for every moment. ☀️", "morning,gratitude",
+                PostType.REGULAR);
+        createPost(bob, "Just finished reading an amazing book on productivity. Highly recommend!",
+                "books,productivity", PostType.REGULAR);
+        createPost(bob, "Working on a new project. Can't share details yet but it's exciting! 🔥", "project,work",
+                PostType.REGULAR);
+        createPost(carol, "Spring is here! Time to go outside and enjoy the sunshine 🌸", "spring,nature",
+                PostType.REGULAR);
+        createPost(creator, "🚀 Top 5 AI tools you NEED in 2024. Thread below 👇", "ai,technology,tools",
+                PostType.REGULAR);
+        createPost(creator, "Hot take: React is still the best frontend framework. Change my mind 💬",
+                "react,javascript,webdev", PostType.REGULAR);
+        createPost(business, "🛍️ MEGA SALE — Up to 50% off this weekend only!", "sale,deals,shopping",
+                PostType.PROMOTIONAL);
+        createPost(business, "Introducing our NEW Summer Collection! Shop now 🌊", "new,summer,fashion,premium",
+                PostType.PROMOTIONAL);
+
+        // Targeted Hashtag Posts
+        createPost(creator, "Innovation is not just about technology; it's about a new way of seeing the world. 💡",
+                "innovation,tech,future", PostType.REGULAR);
+        createPost(alice, "Obsessed with the new #lavender theme on RevConnect! It looks so premium. ✨",
+                "lavender,revconnect,premium", PostType.REGULAR);
+        createPost(bob, "RevConnect is changing the game for social media. Clean UI, great features! 🚀",
+                "revconnect,socialmedia,ux", PostType.REGULAR);
+        createPost(business, "Scale your business effortlessly with our new SaaS integration tools. 📈",
+                "saas,business,productivity", PostType.PROMOTIONAL);
+        createPost(creator, "The future of social media is here. Connect deeply, create freely. 🌐",
+                "socialmedia,innovation,revconnect", PostType.REGULAR);
+        createPost(alice, "Just discovered the #premium features of RevConnect. Definitely worth it! 💎",
+                "premium,revconnect,deals", PostType.REGULAR);
+        createPost(bob, "Building the next big thing in SaaS. Stay tuned! 🏗️", "saas,innovation,startup",
+                PostType.REGULAR);
+        createPost(carol, "This #lavender aesthetic is everything. My feed looks so much better now. 💜",
+                "lavender,aesthetic,revconnect", PostType.REGULAR);
 
         // Connections
         try {

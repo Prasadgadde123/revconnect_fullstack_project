@@ -35,8 +35,6 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 
-
-
     public User register(RegisterDTO dto) {
         if (userRepository.existsByUsername(dto.getUsername())) {
             throw new IllegalArgumentException("Username already taken");
@@ -102,15 +100,24 @@ public class UserService implements UserDetailsService {
     }
 
     public User updateProfile(User user, ProfileUpdateDTO dto) {
-        if (dto.getDisplayName() != null) user.setDisplayName(dto.getDisplayName());
-        if (dto.getBio() != null) user.setBio(dto.getBio());
-        if (dto.getLocation() != null) user.setLocation(dto.getLocation());
-        if (dto.getWebsite() != null) user.setWebsite(dto.getWebsite());
-        if (dto.getCategory() != null) user.setCategory(dto.getCategory());
-        if (dto.getBusinessAddress() != null) user.setBusinessAddress(dto.getBusinessAddress());
-        if (dto.getBusinessHours() != null) user.setBusinessHours(dto.getBusinessHours());
-        if (dto.getContactEmail() != null) user.setContactEmail(dto.getContactEmail());
-        if (dto.getContactPhone() != null) user.setContactPhone(dto.getContactPhone());
+        if (dto.getDisplayName() != null)
+            user.setDisplayName(dto.getDisplayName());
+        if (dto.getBio() != null)
+            user.setBio(dto.getBio());
+        if (dto.getLocation() != null)
+            user.setLocation(dto.getLocation());
+        if (dto.getWebsite() != null)
+            user.setWebsite(dto.getWebsite());
+        if (dto.getCategory() != null)
+            user.setCategory(dto.getCategory());
+        if (dto.getBusinessAddress() != null)
+            user.setBusinessAddress(dto.getBusinessAddress());
+        if (dto.getBusinessHours() != null)
+            user.setBusinessHours(dto.getBusinessHours());
+        if (dto.getContactEmail() != null)
+            user.setContactEmail(dto.getContactEmail());
+        if (dto.getContactPhone() != null)
+            user.setContactPhone(dto.getContactPhone());
         user.setPrivateProfile(dto.isPrivateProfile());
         user.setNotifyConnectionRequests(dto.isNotifyConnectionRequests());
         user.setNotifyLikes(dto.isNotifyLikes());
@@ -137,6 +144,26 @@ public class UserService implements UserDetailsService {
 
     public List<User> searchUsers(String query) {
         return userRepository.searchUsers(query);
+    }
+
+    public List<User> adminSearchUsers(String query) {
+        if (query == null || query.isBlank())
+            return getAllUsers();
+        return userRepository.adminSearchUsers(query.trim());
+    }
+
+    public void deleteUser(Long userId) {
+        log.warn("Admin deleting user ID: {}", userId);
+        userRepository.deleteById(userId);
+    }
+
+    public void adminUpdateUser(Long userId, String displayName, String email, boolean enabled) {
+        User user = findById(userId);
+        user.setDisplayName(displayName);
+        user.setEmail(email);
+        user.setEnabled(enabled);
+        userRepository.save(user);
+        log.info("Admin updated user: {}", user.getUsername());
     }
 
     public void follow(User follower, User target) {
@@ -169,6 +196,10 @@ public class UserService implements UserDetailsService {
         return userRepository.findFollowing(user.getId());
     }
 
+    public List<User> getUsersByRole(UserRole role) {
+        return userRepository.findByRole(role);
+    }
+
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -177,5 +208,22 @@ public class UserService implements UserDetailsService {
         User user = findById(userId);
         user.setEnabled(!user.isEnabled());
         userRepository.save(user);
+    }
+
+    public void toggleBookmark(User user, User target) {
+        User freshUser = userRepository.findByIdWithBookmarks(user.getId())
+                .orElse(user);
+        if (userRepository.isBookmarked(user.getId(), target.getId())) {
+            freshUser.getBookmarkedUsers().remove(target);
+            log.info("{} unbookmarked {}", user.getUsername(), target.getUsername());
+        } else {
+            freshUser.getBookmarkedUsers().add(target);
+            log.info("{} bookmarked {}", user.getUsername(), target.getUsername());
+        }
+        userRepository.save(freshUser);
+    }
+
+    public boolean isBookmarked(User user, User target) {
+        return userRepository.isBookmarked(user.getId(), target.getId());
     }
 }

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple-Level Premium Profile | RevConnect</title>
+    
+    <!-- Modern Typography: Inter & Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark: #050510;
+            --primary-glow: #6366f1;
+            --secondary-glow: #a855f7;
+            --accent-glow: #ec4899;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: var(--bg-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+
+        /* --- Animated Background Blobs --- */
+        .background-blobs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            filter: blur(100px);
+            background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #050510 100%);
+        }
+
+        .blob {
+            position: absolute;
+            width: 350px;
+            height: 350px;
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: float-blobs 25s infinite alternate ease-in-out;
+        }
+
+        .blob-1 { background: var(--primary-glow); top: -10%; left: 10%; animation-delay: 0s; }
+        .blob-2 { background: var(--secondary-glow); bottom: -10%; right: 10%; animation-delay: -5s; }
+        .blob-3 { background: var(--accent-glow); top: 40%; left: 50%; width: 200px; height: 200px; animation-delay: -10s; }
+
+        @keyframes float-blobs {
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(150px, 150px) scale(1.2); }
+        }
+
+        /* --- Main Profile Card Section --- */
+        .card-perspective {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .profile-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            padding: 3.5rem;
+            gap: 4rem;
+            position: relative;
+            box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.7);
+            transition: transform 0.1s ease-out, box-shadow 0.3s ease;
+            transform-style: preserve-3d;
+        }
+
+        /* Animated Glowing Border */
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 42px;
+            padding: 2px;
+            background: linear-gradient(45deg, transparent, var(--primary-glow), var(--secondary-glow), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0.4;
+            animation: border-glow 6s linear infinite;
+        }
+
+        @keyframes border-glow {
+            0% { filter: hue-rotate(0deg); opacity: 0.4; }
+            50% { opacity: 0.7; }
+            100% { filter: hue-rotate(360deg); opacity: 0.4; }
+        }
+
+        /* Left Section: Visuals */
+        .card-left {
+            flex: 0 0 240px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform: translateZ(50px);
+        }
+
+        .avatar-container {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            padding: 10px;
+            background: linear-gradient(135deg, var(--glass-border), transparent);
+            position: relative;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #fff;
+            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .avatar-container::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 2px solid var(--primary-glow);
+            animation: pulse-ring 3s infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+
+        /* Right Section: Content */
+        .card-right {
+            flex: 1;
+            transform: translateZ(30px);
+        }
+
+        h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            background: linear-gradient(to right, #fff, var(--primary-glow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .pro-title {
+            font-size: 1.1rem;
+            color: var(--secondary-glow);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .bio-text {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        /* Stats Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            padding: 1.2rem;
+            border-radius: 20px;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-5px);
+            border-color: var(--primary-glow);
+        }
+
+        .stat-val {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Metas */
+        .meta-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .meta-item i {
+            margin-right: 0.5rem;
+            color: var(--primary-glow);
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn-premium {
+            padding: 1rem 2rem;
+            border-radius: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.4s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-glow), var(--secondary-glow));
+            color: white;
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.5);
+            letter-spacing: 0.5px;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #fff;
+        }
+
+        /* Social Icons */
+        .social-bar {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .social-item {
+            color: var(--text-muted);
+            font-size: 1.4rem;
+            transition: 0.4s;
+            text-decoration: none;
+        }
+
+        .social-item:hover {
+            color: var(--primary-glow);
+            transform: translateY(-5px);
+            text-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        /* --- Mobile Response --- */
+        @media (max-width: 850px) {
+            body { padding: 1rem; overflow-y: auto; }
+            .profile-card {
+                flex-direction: column;
+                padding: 2.5rem 1.5rem;
+                text-align: center;
+                gap: 2rem;
+            }
+            .card-left { flex: none; width: 100%; }
+            .avatar-container { width: 160px; height: 160px; }
+            h1 { font-size: 2.2rem; }
+            .button-group { flex-direction: column; }
+            .stats-grid { gap: 0.5rem; }
+            .social-bar { justify-content: center; }
+            .meta-info { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="card-perspective" id="perspective-area">
+        <div class="profile-card" id="tilt-card">
+            
+            <div class="card-left">
+                <div class="avatar-container">
+                    <img src="https://i.pinimg.com/736x/a5/09/43/a50943da79659822b74be4199249856b.jpg" alt="Profile" class="avatar-img">
+                </div>
+                <div class="social-bar">
+                    <a href="#" class="social-item"><i class="fa-brands fa-dribbble"></i></a>
+                    <a href="#" class="social-item"><i class="fa-brands fa-github"></i></a>
+                    <a href="#" class="social-item"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#" class="social-item"><i class="fa-brands fa-instagram"></i></a>
+                </div>
+            </div>
+
+            <div class="card-right">
+                <span class="pro-title">Senior Creative Lead</span>
+                <h1>Alex Sterling</h1>
+                <p class="bio-text"> Architecting future-proof digital experiences at the intersection of design, technology, and philosophy. I build clean, minimalist, and "jaw-dropping" interfaces for visionaries.</p>
+
+                <div class="meta-info">
+                    <div class="meta-item"><i class="fa-solid fa-location-dot"></i> Berlin, Germany</div>
+                    <div class="meta-item"><i class="fa-solid fa-envelope"></i> alex@revconnect.ai</div>
+                    <div class="meta-item"><i class="fa-solid fa-calendar-check"></i> Joined Dec 2024</div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-val">2.8k</span>
+                        <span class="stat-label">Followers</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-val">142</span>
+                        <span class="stat-label">Projects</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-val">900+</span>
+                        <span class="stat-label">Contributions</span>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-premium btn-primary">
+                        <i class="fa-solid fa-user-edit"></i> Edit My Domain
+                    </button>
+                    <button class="btn-premium btn-secondary">
+                        <i class="fa-solid fa-eye"></i> View Portfolio
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Apple-Style 3D Tilt Script -->
+    <script>
+        const card = document.getElementById('tilt-card');
+        const area = document.getElementById('perspective-area');
+
+        area.addEventListener('mousemove', (e) => {
+            const rect = area.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateX = (centerY - y) / 25;
+            const rotateY = (x - centerX) / 25;
+            
+            card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+
+        area.addEventListener('mouseleave', () => {
+            card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+        });
+    </script>
+</body>
+</html>

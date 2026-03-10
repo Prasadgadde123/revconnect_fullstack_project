@@ -13,7 +13,7 @@
         <!-- Preview of the post being sent -->
         <div class="post-card" style="margin-bottom: 24px; pointer-events: none; opacity: 0.85;">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-                <img th:src="${post.author.profilePicture != null ? post.author.profilePicture : 'https://i.pinimg.com/736x/d7/b9/48/d7b948ff970f7d92ee265072da06fd07.jpg'}" alt="Avatar" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;"/>
+                <img th:src="${post.author.profilePicture != null ? post.author.profilePicture : 'https://i.pinimg.com/736x/a5/09/43/a50943da79659822b74be4199249856b.jpg'}" alt="Avatar" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;"/>
                 <div>
                     <strong th:text="${post.author.displayNameOrUsername}">Author</strong>
                     <span th:text="'@' + ${post.author.username}" style="color: var(--text-muted); font-size: 13px;"></span>
@@ -35,7 +35,7 @@
             <div th:each="conn : ${connections}" style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border-light);">
                 <input type="checkbox" name="userIds" th:value="${conn.id}" th:id="'conn-' + ${conn.id}" style="width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer;"/>
                 <label th:for="'conn-' + ${conn.id}" style="display: flex; align-items: center; gap: 10px; cursor: pointer; flex: 1;">
-                    <img th:src="${conn.profilePicture != null ? conn.profilePicture : 'https://i.pinimg.com/736x/d7/b9/48/d7b948ff970f7d92ee265072da06fd07.jpg'}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"/>
+                    <img th:src="${conn.profilePicture != null ? conn.profilePicture : 'https://i.pinimg.com/736x/a5/09/43/a50943da79659822b74be4199249856b.jpg'}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"/>
                     <div>
                         <div th:text="${conn.displayNameOrUsername}" style="font-weight: 600; font-size: 15px;"></div>
                         <div th:text="'@' + ${conn.username}" style="font-size: 13px; color: var(--text-muted);"></div>

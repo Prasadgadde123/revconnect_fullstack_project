@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'light');</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | RevConnect</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 for Grid Utilities -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <style>
+        /* Tooltip and dropdown overrides for dashboard */
+        .dash-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 2px solid var(--dash-border);
+        }
+    </style>
+</head>
+
+<body class="dashboard-theme">
+
+    <div class="dash-wrapper">
+        <!-- LEFT SIDEBAR -->
+        <aside class="dash-sidebar">
+            <div class="dash-brand">
+                RevConnect<span style="color:var(--dash-text-main)">.</span>
+            </div>
+
+            <nav class="dash-nav">
+                <a th:href="@{/dashboard}" class="dash-nav-item active">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    Overview
+                </a>
+                <a th:href="@{/feed}" class="dash-nav-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    Feed
+                </a>
+                <a th:href="@{/profile/{u}(u=${user.username})}" class="dash-nav-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    My Profile
+                </a>
+                <a th:href="@{/notifications}" class="dash-nav-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    Notifications
+                    <span th:if="${unreadCount != null and unreadCount > 0}"
+                        class="badge bg-danger rounded-pill ms-auto" th:text="${unreadCount}">5</span>
+                </a>
+
+                <div
+                    style="margin: 32px 0 16px 16px; font-size: 11px; font-weight: 700; color: var(--dash-text-muted); text-transform: uppercase; letter-spacing: 0.1em;">
+                    Management
+                </div>
+                <a th:href="@{/profile/edit}" class="dash-nav-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path
+                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                        </path>
+                    </svg>
+                    Settings
+                </a>
+            </nav>
+
+            <div
+                style="position: absolute; bottom: 0; left: 0; right: 0; padding: 24px; border-top: 1px solid var(--dash-border);">
+                <div class="d-flex align-items-center gap-3">
+                    <img th:if="${user.profilePicture}" th:src="${user.profilePicture}" class="dash-avatar" alt="User">
+                    <div th:unless="${user.profilePicture}"
+                        class="dash-avatar bg-primary d-flex align-items-center justify-content-center fw-bold"
+                        th:text="${user.username.substring(0,1).toUpperCase()}">U</div>
+                    <div style="overflow: hidden;">
+                        <div class="fw-bold text-truncate" th:text="${user.displayNameOrUsername}">John Doe</div>
+                        <div class="text-xs text-muted text-truncate" th:text="'@' + ${user.username}">@john</div>
+                    </div>
+                </div>
+                <form th:action="@{/logout}" method="post" class="mt-3">
+                    <button type="submit" class="dash-nav-item w-100 border-0"
+                        style="background:transparent; padding-left:0;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        Logout
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- HEADER & MAIN CONTENT -->
+        <main class="dash-main">
+            <header class="dash-header">
+                <div class="d-flex align-items-center gap-3">
+                    <h4 class="mb-0 fw-bold">Dashboard Overview</h4>
+                    <span
+                        class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill"
+                        style="font-size: 11px;">PRO VERSION</span>
+                </div>
+
+                <div class="d-flex align-items-center gap-4">
+                    <form th:action="@{/explore}" method="get" class="search-form-pill">
+                        <input type="text" name="search" placeholder="Search people..." class="search-input-pill">
+                        <button type="submit" class="search-btn-pill">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </button>
+                    </form>
+                    <div class="dash-nav-item" style="padding: 8px; margin-bottom: 0;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--dash-text-muted)"
+                            stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                    </div>
+                    <a th:href="@{/profile/edit}" class="btn btn-primary rounded-pill px-4 shadow-sm"
+                        style="font-weight: 600; font-size: 14px;">+ Create Post</a>
+                </div>
+            </header>
+
+            <!-- STATS GRID -->
+            <div class="stat-grid fade-in">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between">
+                        <span class="stat-label">Total Followers</span>
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-2" style="line-height: 0;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--dash-primary)"
+                                stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="stat-value" th:text="${stats.totalFollowers}">1,284</span>
+                    <div class="stat-trend trend-up">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="3">
+                            <polyline points="18 15 12 9 6 15"></polyline>
+                        </svg>
+                        12% increase
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between">
+                        <span class="stat-label">Engagement Rate</span>
+                        <div class="rounded-circle bg-accent bg-opacity-10 p-2"
+                            style="line-height: 0; background-color: rgba(139, 92, 246, 0.1);">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--dash-accent)"
+                                stroke-width="2">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="stat-value" th:text="${stats.engagementRate} + '%'">4.8%</span>
+                    <div class="stat-trend trend-up">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="3">
+                            <polyline points="18 15 12 9 6 15"></polyline>
+                        </svg>
+                        3.2% increase
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between">
+                        <span class="stat-label">Total Likes</span>
+                        <div class="rounded-circle bg-success bg-opacity-10 p-2"
+                            style="line-height: 0; background-color: rgba(16, 185, 129, 0.1);">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--dash-success)"
+                                stroke-width="2">
+                                <path
+                                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                </path>
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="stat-value" th:text="${stats.totalLikes}">8,492</span>
+                    <div class="stat-trend trend-up">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="3">
+                            <polyline points="18 15 12 9 6 15"></polyline>
+                        </svg>
+                        0.8% increase
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between">
+                        <span class="stat-label">Total Posts</span>
+                        <div class="rounded-circle bg-warning bg-opacity-10 p-2"
+                            style="line-height: 0; background-color: rgba(245, 158, 11, 0.1);">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b"
+                                stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="stat-value" th:text="${stats.totalPosts}">142</span>
+                    <div class="stat-trend" style="color: var(--dash-text-muted)">
+                        Steady activity
+                    </div>
+                </div>
+            </div>
+
+            <div class="dash-content-grid">
+                <!-- MAIN COLUMN -->
+                <div class="fade-in" style="animation-delay: 0.1s;">
+                    <!-- Engagement Chart Placeholder -->
+                    <div class="dash-card">
+                        <div class="card-title">
+                            Engagement Metrics
+                            <select class="form-select form-select-sm border-0 bg-transparent text-muted w-auto"
+                                style="box-shadow: none;">
+                                <option>Last 7 Days</option>
+                                <option>Last 30 Days</option>
+                            </select>
+                        </div>
+                        <div
+                            style="height: 200px; width: 100%; display: flex; align-items: flex-end; gap: 12px; padding: 20px 0;">
+                            <div th:each="i : ${#numbers.sequence(1, 15)}"
+                                th:style="|flex:1; background: var(--dash-primary); height: 100px; border-radius: 4px; opacity: 0.8;|"
+                                class="engagement-bar"></div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2 text-muted"
+                            style="font-size: 10px; font-weight: 600; text-transform: uppercase;">
+                            <span>Mar 01</span>
+                            <span>Mar 05</span>
+                            <span>Mar 10</span>
+                            <span>Mar 15</span>
+                        </div>
+                    </div>
+
+                    <!-- Recent Posts -->
+                    <div class="dash-card">
+                        <div class="card-title">
+                            Recent Content Performance
+                            <a th:href="@{/profile/{u}(u=${user.username})}" class="text-primary text-decoration-none"
+                                style="font-size: 13px;">View All</a>
+                        </div>
+                        <div th:if="${recentPosts.empty}" class="text-center py-4 text-muted">
+                            No posts found.
+                        </div>
+                        <div th:each="post : ${recentPosts}" class="dash-post">
+                            <div class="post-content-preview">
+                                <div class="fw-bold mb-1 text-truncate" th:text="${post.content}">Post content
+                                    snippet...</div>
+                                <div class="text-muted" style="font-size: 12px;"
+                                    th:text="${#temporals.format(post.createdAt, 'MMM dd, yyyy')}">Mar 10, 2026</div>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="text-center">
+                                    <div class="fw-bold fs-6" th:text="${post.likeCount}">12</div>
+                                    <div class="text-xs text-muted">Likes</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="fw-bold fs-6" th:text="${post.commentCount}">3</div>
+                                    <div class="text-xs text-muted">Comments</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN -->
+                <div class="fade-in" style="animation-delay: 0.2s;">
+                    <!-- Trending Section -->
+                    <div class="dash-card">
+                        <div class="card-title">Trending Hashtags</div>
+                        <div th:each="entry : ${trendingTags}"
+                            class="mb-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="fw-bold" th:text="'#' + ${entry.key}">#innovation</div>
+                                <div class="text-xs text-muted" th:text="${entry.value} + ' posts'">245 posts</div>
+                            </div>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--dash-text-muted)"
+                                stroke-width="2">
+                                <polyline points="13 17 18 12 13 7"></polyline>
+                                <polyline points="6 17 11 12 6 7"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Suggested Connections -->
+                    <div class="dash-card">
+                        <div class="card-title">Suggest Connections</div>
+                        <div class="d-flex overflow-auto gap-3 pb-3"
+                            style="scrollbar-width: none; -ms-overflow-style: none;">
+                            <style>
+                                .d-flex::-webkit-scrollbar {
+                                    display: none;
+                                }
+                            </style>
+                            <div th:each="suggest : ${suggestions}" style="min-width: 220px;">
+                                <div
+                                    th:replace="~{fragments/profile_cards :: sophieModernCard(user=${suggest}, variant='glass')}">
+                                </div>
+                            </div>
+                        </div>
+                        <a th:href="@{/explore}"
+                            class="text-primary text-decoration-none w-100 text-center d-block mt-2"
+                            style="font-size: 13px;">Discover More</a>
+                    </div>
+
+                    <!-- Recent Notifications -->
+                    <div class="dash-card">
+                        <div class="card-title">Recent Activity</div>
+                        <div th:each="note : ${notifications}" class="activity-item">
+                            <img th:if="${note.actor.profilePicture}" th:src="${note.actor.profilePicture}"
+                                class="activity-user">
+                            <div th:unless="${note.actor.profilePicture}"
+                                class="activity-user bg-primary d-flex align-items-center justify-content-center fw-bold"
+                                th:text="${note.actor.username.substring(0,1).toUpperCase()}">A</div>
+                            <div>
+                                <span class="fw-bold" th:text="${note.actor.displayNameOrUsername}">Actor</span>
+                                <span th:text="${note.message.replace(note.actor.displayNameOrUsername, '')}">did
+                                    something</span>
+                                <div class="text-xs text-muted mt-1"
+                                    th:text="${#temporals.format(note.createdAt, 'HH:mm')}">10 mins ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Micro-interactions for engagement bars
+        document.querySelectorAll('.engagement-bar').forEach(bar => {
+            bar.addEventListener('mouseover', () => {
+                bar.style.opacity = '1';
+                bar.style.transform = 'scaleX(1.1)';
+            });
+            bar.addEventListener('mouseout', () => {
+                bar.style.opacity = bar.getAttribute('style').match(/opacity: ([0-9.]+)/)[1];
+                bar.style.transform = 'scaleX(1)';
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,181 +1,236 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="~{fragments/layout :: head(${profileUser.displayNameOrUsername})}"></head>
-<body>
-<div th:replace="~{fragments/layout :: navbar}"></div>
-<div class="page-container">
-    <div th:replace="~{fragments/layout :: flash}"></div>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-    <div class="profile-layout">
-        <!-- Profile Card -->
-        <div class="glassy-profile-card">
-            <div class="glassy-cover" style="background: url('https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=2000&auto=format&fit=crop') center/cover;">
+<head
+    th:replace="~{fragments/layout :: head(title=${profileUser.displayNameOrUsername} + ' (@' + ${profileUser.username} + ')') }">
+</head>
+<link rel="stylesheet" th:href="@{/css/dashboard.css}">
 
-                <div class="glassy-actions" th:if="${!isSelf}">
-                    <!-- Connect button (personal only) -->
-                    <div th:if="${profileUser.role.name() == 'PERSONAL'}" style="display:inline-block;">
-                        <form th:if="${!connected and !pendingSent}"
-                              th:action="@{/connections/request/{id}(id=${profileUser.id})}" method="post" style="display:inline;">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                            <button class="glassy-btn">🤝 Connect</button>
-                        </form>
-                        <span th:if="${pendingSent}" class="glassy-btn disabled" style="opacity:0.7; pointer-events: none;">⏳ Pending</span>
-                        <form th:if="${connected}"
-                              th:action="@{/connections/remove/{id}(id=${profileUser.id})}" method="post" style="display:inline;">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                            <button class="glassy-btn" style="color:#ef4444;">✓ Connected</button>
-                        </form>
+<body class="dashboard-theme pb-5">
+    <!-- Navbar -->
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <main class="container-fluid py-4 min-vh-100 mt-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-10 col-xl-9">
+
+                <!-- Profile Header Fragment -->
+                <div th:replace="~{fragments/profile_cards :: luxuryHeroHeader(
+                    user=${profileUser}, 
+                    isOwner=${isSelf}, 
+                    isFollowing=${isFollowing}, 
+                    followerCount=${followerCount}, 
+                    followingCount=${followingCount}, 
+                    postCount=${posts != null ? posts.size() : 0}
+                )}"></div>
+
+                <!-- Tabs & Content Section -->
+                <div class="card premium-hero-header profile-tabs-container border-0 shadow-sm overflow-hidden">
+                    <div class="card-header bg-transparent border-bottom-0 pt-3 px-4">
+                        <ul class="nav nav-tabs border-0" id="profileTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active fw-bold px-4 py-3" id="posts-tab" data-bs-toggle="tab"
+                                    data-bs-target="#posts" type="button" role="tab">Posts</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link fw-bold px-4 py-3" id="about-tab" data-bs-toggle="tab"
+                                    data-bs-target="#about" type="button" role="tab">About</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link fw-bold px-4 py-3" id="reposts-tab" data-bs-toggle="tab"
+                                    data-bs-target="#reposts-content" type="button" role="tab">Reposted Posts</button>
+                            </li>
+                        </ul>
                     </div>
-                    <!-- Follow/Unfollow -->
-                    <form th:if="${!isFollowing}"
-                          th:action="@{/follow/{id}(id=${profileUser.id})}" method="post" style="display:inline;">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                        <button class="glassy-btn">+ Follow</button>
-                    </form>
-                    <form th:if="${isFollowing}"
-                          th:action="@{/follow/unfollow/{id}(id=${profileUser.id})}" method="post" style="display:inline;">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                        <button class="glassy-btn">✓ Following</button>
-                    </form>
-                </div>
-                <div class="glassy-actions" th:if="${isSelf}">
-                    <a th:href="@{/profile/edit}" class="glassy-btn">✏️ Edit Profile</a>
-                </div>
 
-                <div class="glassy-avatar-container">
-                    <img th:src="${profileUser.profilePicture != null ? profileUser.profilePicture : 'https://i.pinimg.com/736x/d7/b9/48/d7b948ff970f7d92ee265072da06fd07.jpg'}" alt="Avatar"/>
-                </div>
-
-                <div class="glassy-bottom-bar">
-                    <div class="glassy-bar-left">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
-                            <div>
-                                <h2 class="glassy-name">
-                                    <span th:text="${profileUser.displayNameOrUsername}">Name</span>
-                                    <span th:if="${profileUser.role.name() == 'BUSINESS'}" class="role-badge business" style="font-size:12px; padding:2px 8px; margin:0;">Business</span>
-                                    <span th:if="${profileUser.role.name() == 'CREATOR'}" class="role-badge creator" style="font-size:12px; padding:2px 8px; margin:0;">Creator</span>
-                                    <span th:if="${profileUser.privateProfile}" class="role-badge private" style="font-size:12px; padding:2px 8px; margin:0; background: rgba(255,255,255,0.8); color: #374151; border: none;">Private</span>
-                                </h2>
-                                <span class="glassy-username" th:text="'@' + ${profileUser.username}">@username</span>
+                    <div class="card-body p-4">
+                        <div class="tab-content" id="profileTabsContent">
+                            <!-- Posts Tab -->
+                            <div class="tab-pane fade show active" id="posts" role="tabpanel">
+                                <div th:if="${profileUser.privateProfile and !isSelf and !isFollowing}"
+                                    class="text-center py-5">
+                                    <div class="mb-3 text-muted">
+                                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="1.5">
+                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                        </svg>
+                                    </div>
+                                    <h4 class="fw-bold">This account is private</h4>
+                                    <p class="text-muted">Follow this account to see their posts and photos.</p>
+                                </div>
+                                <div th:unless="${profileUser.privateProfile and !isSelf and !isFollowing}">
+                                    <div th:if="${posts == null or posts.empty}" class="text-center py-5 text-muted">
+                                        <p class="mb-0">No posts yet.</p>
+                                    </div>
+                                    <div th:each="post : ${posts}">
+                                        <div
+                                            th:replace="~{fragments/layout :: postCard(post=${post}, currentUser=${#authentication.principal})}">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="glassy-stats">
-                                <div class="glassy-stat">
-                                    <span class="glassy-stat-value" th:text="${followerCount}">0</span>
-                                    <span class="glassy-stat-label">Followers</span>
+                            <!-- About Tab -->
+                            <div class="tab-pane fade" id="about" role="tabpanel">
+                                <div class="max-w-700 mx-auto py-3">
+                                    <div class="glass-panel">
+                                        <section class="mb-4">
+                                            <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2">
+                                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                                    <circle cx="12" cy="7" r="4"></circle>
+                                                </svg>
+                                                Biography
+                                            </h5>
+                                            <p class="text-secondary leading-relaxed"
+                                                th:text="${profileUser.bio ?: 'No biography provided.'}">Bio text...</p>
+                                        </section>
+
+                                        <hr class="my-4 opacity-50">
+
+                                        <!-- Business Info Section -->
+                                        <section
+                                            th:if="${profileUser.role.name() == 'BUSINESS' or profileUser.role.name() == 'CREATOR'}"
+                                            class="mb-4">
+                                            <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2">
+                                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                                </svg>
+                                                Business Information
+                                            </h5>
+                                            <ul class="list-unstyled d-flex flex-column gap-3 text-secondary">
+                                                <li th:if="${profileUser.category}"
+                                                    class="d-flex align-items-center gap-2">
+                                                    <span
+                                                        class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill"
+                                                        th:text="${profileUser.category}">Category</span>
+                                                </li>
+                                                <li th:if="${profileUser.businessHours}"
+                                                    class="d-flex align-items-start gap-3">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                        stroke="var(--primary)" stroke-width="2"
+                                                        style="margin-top: 2px;">
+                                                        <circle cx="12" cy="12" r="10"></circle>
+                                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                                    </svg>
+                                                    <span><strong class="text-body">Hours:</strong> <span
+                                                            th:text="${profileUser.businessHours}">Mon-Fri:
+                                                            9AM-5PM</span></span>
+                                                </li>
+                                                <li th:if="${profileUser.businessAddress}"
+                                                    class="d-flex align-items-start gap-3">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                        stroke="var(--primary)" stroke-width="2"
+                                                        style="margin-top: 2px;">
+                                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"></path>
+                                                        <circle cx="12" cy="10" r="3"></circle>
+                                                    </svg>
+                                                    <span><strong class="text-body">Address:</strong> <span
+                                                            th:text="${profileUser.businessAddress}">123 Business
+                                                            Lane</span></span>
+                                                </li>
+                                            </ul>
+                                        </section>
+
+                                        <hr th:if="${profileUser.role.name() == 'BUSINESS' or profileUser.role.name() == 'CREATOR'}"
+                                            class="my-4 opacity-50">
+
+                                        <section>
+                                            <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2">
+                                                    <circle cx="12" cy="12" r="10"></circle>
+                                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                                </svg>
+                                                Contact Information
+                                            </h5>
+                                            <ul class="list-unstyled d-flex flex-column gap-3 text-secondary mt-3">
+                                                <li class="d-flex align-items-center gap-3">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                        stroke="var(--primary)" stroke-width="2">
+                                                        <path
+                                                            d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                                        </path>
+                                                        <polyline points="22,6 12,13 2,6"></polyline>
+                                                    </svg>
+                                                    <span th:text="${profileUser.email}">email@example.com</span>
+                                                </li>
+                                                <li th:if="${profileUser.location}"
+                                                    class="d-flex align-items-center gap-3">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                        stroke="var(--primary)" stroke-width="2">
+                                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"></path>
+                                                        <circle cx="12" cy="10" r="3"></circle>
+                                                    </svg>
+                                                    <span th:text="${profileUser.location}">Location</span>
+                                                </li>
+                                                <li th:if="${profileUser.website}"
+                                                    class="d-flex align-items-center gap-3">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                        stroke="var(--primary)" stroke-width="2">
+                                                        <circle cx="12" cy="12" r="10"></circle>
+                                                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                                                        <path
+                                                            d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                                                        </path>
+                                                    </svg>
+                                                    <a th:href="${profileUser.website.startsWith('http') ? profileUser.website : 'https://' + profileUser.website}"
+                                                        target="_blank" th:text="${profileUser.website}"
+                                                        class="text-decoration-none text-primary fw-medium text-truncate"
+                                                        style="max-width: 250px;">website.com</a>
+                                                </li>
+                                                <th:block th:each="link : ${profileUser.externalLinks}">
+                                                    <li class="d-flex align-items-center gap-3">
+                                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                            stroke="var(--primary)" stroke-width="2">
+                                                            <path
+                                                                d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71">
+                                                            </path>
+                                                            <path
+                                                                d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71">
+                                                            </path>
+                                                        </svg>
+                                                        <th:block th:with="parts=${#strings.arraySplit(link, '::')}">
+                                                            <a th:href="${parts[1].startsWith('http') ? parts[1] : 'https://' + parts[1]}"
+                                                                target="_blank" th:text="${parts[0]}"
+                                                                class="text-decoration-none text-primary fw-medium text-truncate"
+                                                                style="max-width: 250px;">Link Title</a>
+                                                        </th:block>
+                                                    </li>
+                                                </th:block>
+                                            </ul>
+                                        </section>
+                                    </div>
                                 </div>
-                                <div class="glassy-stat">
-                                    <span class="glassy-stat-value" th:text="${followingCount}">0</span>
-                                    <span class="glassy-stat-label">Following</span>
+                            </div>
+
+                            <!-- Reposted Posts Tab -->
+                            <div class="tab-pane fade" id="reposts-content" role="tabpanel">
+                                <div th:if="${reposts == null or reposts.empty}" class="text-center py-5 text-muted">
+                                    <p class="mb-0">No reposted posts yet.</p>
+                                </div>
+                                <div th:each="repost : ${reposts}">
+                                    <div
+                                        th:replace="~{fragments/layout :: postCard(post=${repost}, currentUser=${#authentication.principal})}">
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
-                        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 14px;">
-                            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                                <div class="glassy-location">
-                                    📍 <span th:text="${profileUser.location != null and !profileUser.location.isEmpty() ? profileUser.location : 'Hyderabad, India'}"></span>
-                                </div>
-                                <div class="glassy-location">
-                                    🔗 <a th:href="${profileUser.website != null and !profileUser.website.isEmpty() ? profileUser.website : '#'}" target="_blank" th:text="${profileUser.website != null and !profileUser.website.isEmpty() ? profileUser.website.replace('https://','').replace('http://','') : 'google.com'}" style="color: inherit; text-decoration: none;"></a>
-                                </div>
-                            </div>
-
-                            <div style="display: flex; gap: 16px; flex-wrap: wrap;">
-                                <span th:if="${profileUser.externalLinks != null and !profileUser.externalLinks.empty}" th:each="link : ${profileUser.externalLinks}">
-                                    🔗 <a th:if="${link.contains('::')}" th:href="${link.split('::')[1]}" target="_blank" th:text="${link.split('::')[0]}" style="color: #6366f1; font-size: 14px; font-weight: 600;">Link</a>
-                                    <a th:if="${!link.contains('::')}" th:href="${link}" target="_blank" th:text="${link}" style="color: #6366f1; font-size: 14px; font-weight: 600;">Link</a>
-                                </span>
-                                <span th:if="${profileUser.externalLinks == null or profileUser.externalLinks.empty}">
-                                    🔗 <a href="#" target="_blank" style="color: #6366f1; font-size: 14px; font-weight: 600;">https://github.com/</a>
-                                </span>
-                            </div>
-                        </div>
-
-                        <p th:if="${profileUser.bio != null}" th:text="${profileUser.bio}" style="margin: 12px 0 0 0; font-size: 14px; color: #4b5563; max-width: 500px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"></p>
                     </div>
                 </div>
             </div>
         </div>
+    </main>
 
-        <!-- Products Showcase -->
-        <div th:if="${products != null and not #lists.isEmpty(products)}" class="profile-products" style="margin-bottom: 30px;">
-            <h3>🛍️ Featured Products & Services</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-top: 16px;">
-                <div th:each="p : ${products}" class="settings-card" style="padding: 16px; display: flex; flex-direction: column;">
-                    <div style="width: 100%; height: 160px; border-radius: 8px; overflow: hidden; background: var(--bg-light); margin-bottom: 12px;">
-                        <img th:if="${p.imageUrl != null}" th:src="${p.imageUrl}" style="width: 100%; height: 100%; object-fit: cover;"/>
-                        <div th:if="${p.imageUrl == null}" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 48px;">📦</div>
-                    </div>
-                    <div style="flex-grow: 1;">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                            <h4 th:text="${p.name}" style="margin: 0; font-size: 16px; color: var(--text-main);">Product</h4>
-                            <span th:if="${p.price != null}" th:text="'$' + ${p.price}" style="font-weight: 700; color: var(--primary);"></span>
-                        </div>
-                        <span th:if="${p.category != null}" th:text="${p.category}" style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 8px;"></span>
-                        <p th:text="${p.description}" style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;"></p>
-                    </div>
-                    <a th:if="${p.productUrl != null and !p.productUrl.isEmpty()}" th:href="${p.productUrl}" target="_blank" class="btn btn-primary" style="text-align: center; width: 100%;">View Details</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Posts / Reposts Tabs -->
-        <div class="profile-posts">
-            <div class="profile-tabs">
-                <button class="profile-tab active" onclick="switchProfileTab('posts', this)" id="tab-posts">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                    Posts
-                    <span class="tab-count" th:text="${posts != null ? #lists.size(posts) : 0}">0</span>
-                </button>
-                <button class="profile-tab" onclick="switchProfileTab('reposts', this)" id="tab-reposts">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
-                    Reposts
-                    <span class="tab-count" th:text="${reposts != null ? #lists.size(reposts) : 0}">0</span>
-                </button>
-            </div>
-
-            <div th:if="${!canViewContent}" class="private-notice">
-                <div class="private-icon">🔒</div>
-                <h4>This account is private</h4>
-                <p>Connect with this user to see their posts.</p>
-            </div>
-
-            <div th:if="${canViewContent}">
-                <!-- Posts Panel -->
-                <div id="panel-posts" class="profile-tab-panel" style="min-height: 400px; padding-bottom: 60px;">
-                    <div th:if="${posts == null or posts.empty}" class="empty-state" style="margin-top: 40px;">
-                        <p style="font-size: 18px; color: var(--text-secondary);">No posts yet.</p>
-                    </div>
-                    <div th:each="post : ${posts}">
-                        <div th:replace="~{fragments/layout :: postCard(${post}, ${#authentication.principal})}"></div>
-                    </div>
-                </div>
-
-                <!-- Reposts Panel -->
-                <div id="panel-reposts" class="profile-tab-panel" style="display: none; min-height: 400px; padding-bottom: 60px;">
-                    <div th:if="${reposts == null or reposts.empty}" class="empty-state" style="margin-top: 40px;">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 12px;"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
-                        <p style="font-size: 18px; color: var(--text-secondary);">No reposts yet.</p>
-                    </div>
-                    <div th:each="repost : ${reposts}">
-                        <div th:replace="~{fragments/layout :: postCard(${repost}, ${#authentication.principal})}"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <script>
-            function switchProfileTab(tab, btn) {
-                document.querySelectorAll('.profile-tab-panel').forEach(p => p.style.display = 'none');
-                document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
-                document.getElementById('panel-' + tab).style.display = 'block';
-                btn.classList.add('active');
-            }
-        </script>
-    </div>
-</div>
-<script th:src="@{/js/main.js}"></script>
+    <!-- Scripts -->
+    <script th:src="@{/js/main.js}"></script>
 </body>
+
 </html>

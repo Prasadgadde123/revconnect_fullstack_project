@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+    <!-- 1. COMPACT LIST CARD (For Sidebars / Lists) -->
+    <div th:fragment="compactCard(user)"
+        class="compact-profile-card d-flex align-items-center p-2 rounded-3 border-0 transition-all hover-bg">
+        <div class="position-relative me-3">
+            <img th:if="${user.profilePicture}" th:src="${user.profilePicture}"
+                class="avatar-img rounded-circle border shadow-sm hover-zoom" alt="Avatar">
+            <div th:unless="${user.profilePicture}" class="avatar-placeholder rounded-circle shadow-sm"
+                th:text="${#strings.substring(user.displayNameOrUsername,0,1)}">U</div>
+            <span th:if="${user.privateProfile}"
+                class="position-absolute bottom-0 end-0 theme-bg-pill rounded-circle shadow-sm p-1"
+                style="line-height: 0;">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+            </span>
+        </div>
+        <div class="flex-grow-1 min-w-0">
+            <div class="d-flex align-items-center gap-1">
+                <a th:href="@{/profile/{username}(username=${user.username})}"
+                    class="fw-bold theme-text-header text-decoration-none text-truncate fs-7"
+                    th:text="${user.displayNameOrUsername}">Name</a>
+                <svg th:if="${user.role.name() == 'BUSINESS'}" width="12" height="12" viewBox="0 0 24 24"
+                    fill="currentColor" class="text-primary">
+                    <path d="M12 2L3 7v10l9 5 9-5V7l-9-5z"></path>
+                </svg>
+            </div>
+            <div class="text-muted fs-8 text-truncate">@<span th:text="${user.username}">username</span></div>
+        </div>
+        <button class="btn btn-sm btn-primary rounded-pill px-3 ms-2 follow-btn-ajax"
+            th:data-user-id="${user.id}">Follow</button>
+    </div>
+
+    <!-- 2. MEDIUM GRID CARD (For Search / Discover) -->
+    <div th:fragment="mediumCard(user)"
+        class="medium-profile-card card border-0 shadow-sm rounded-4 overflow-hidden text-center hover-up transition-all h-100">
+        <div class="card-banner bg-gradient-primary"
+            style="height: 80px; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);"></div>
+        <div class="card-body pt-0 mt-n5 position-relative">
+            <div class="avatar-wrapper mx-auto mb-3" style="width: 100px; height: 100px;">
+                <img th:if="${user.profilePicture}" th:src="${user.profilePicture}"
+                    class="w-100 h-100 rounded-circle border border-4 theme-border-avatar shadow-sm hover-zoom object-cover"
+                    alt="Avatar">
+                <div th:unless="${user.profilePicture}"
+                    class="avatar-placeholder w-100 h-100 rounded-circle border border-4 theme-border-avatar shadow-sm fs-2"
+                    th:text="${#strings.substring(user.displayNameOrUsername,0,1)}">U</div>
+                <span th:if="${user.privateProfile}"
+                    class="position-absolute top-0 end-0 theme-bg-pill rounded-circle shadow-sm p-2 translate-middle mt-4 me-n1">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </span>
+            </div>
+            <h5 class="fw-bold mb-0">
+                <a th:href="@{/profile/{username}(username=${user.username})}"
+                    class="theme-text-header text-decoration-none" th:text="${user.displayNameOrUsername}">Name</a>
+                <svg th:if="${user.role.name() == 'BUSINESS'}" width="14" height="14" viewBox="0 0 24 24"
+                    fill="currentColor" class="text-primary align-middle ms-1">
+                    <path d="M12 2L3 7v10l9 5 9-5V7l-9-5z"></path>
+                </svg>
+            </h5>
+            <p class="text-muted small mb-3">@<span th:text="${user.username}">username</span></p>
+            <p class="card-text fs-7 text-secondary mb-3 px-2 line-clamp-2"
+                th:text="${user.bio ?: 'No bio available...'}">Short bio goes here...</p>
+
+            <div class="d-flex justify-content-center gap-4 mb-4 border-top border-bottom py-2 mx-n2">
+                <div class="text-center">
+                    <div class="fw-bold fs-7" th:text="${(user.posts != null ? user.posts.size() : 0)}">0</div>
+                    <div class="text-muted fs-9 tracking-widest text-uppercase">Posts</div>
+                </div>
+                <div class="text-center border-start border-end px-4">
+                    <div class="fw-bold fs-7"
+                        th:text="${followerCount ?: (user.followers != null ? user.followers.size() : 0)}">0</div>
+                    <div class="text-muted fs-9 tracking-widest text-uppercase">Followers</div>
+                </div>
+                <div class="text-center">
+                    <div class="fw-bold fs-7"
+                        th:text="${followingCount ?: (user.following != null ? user.following.size() : 0)}">0</div>
+                    <div class="text-muted fs-9 tracking-widest text-uppercase">Following</div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button class="btn btn-primary rounded-pill follow-btn-ajax"
+                    th:data-user-id="${user.id}">Follow</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. FULL PROFILE HEADER (Already exists, but adding premium variant below) -->
+    <div th:fragment="fullHeader(user, isOwner, isFollowing, followerCount, followingCount, postCount)"
+        class="full-profile-header card shadow-sm border-0 rounded-4 overflow-hidden mb-4 profile-header-card">
+        <!-- ... existing fullHeader content ... -->
+        <div class="profile-banner-container position-relative overflow-hidden" style="height: 200px;">
+            <img src="https://i.pinimg.com/736x/a5/09/43/a50943da79659822b74be4199249856b.jpg"
+                class="w-100 h-100 object-cover profile-banner-img" alt="Banner">
+        </div>
+
+        <div class="card-body position-relative pb-0">
+            <div class="row align-items-end mb-4 px-3" style="margin-top: -85px;">
+                <div class="col-auto position-relative profile-avatar-wrapper">
+                    <img th:if="${user.profilePicture}" th:src="${user.profilePicture}"
+                        class="rounded-circle border border-5 theme-border-avatar shadow object-cover"
+                        style="width: 170px; height: 170px;" alt="Profile Picture">
+                    <div th:unless="${user.profilePicture}"
+                        class="avatar-placeholder rounded-circle border border-5 theme-border-avatar shadow fs-1 d-flex align-items-center justify-content-center"
+                        style="width: 170px; height: 170px; background: linear-gradient(135deg, var(--primary), var(--secondary));">
+                        <span th:text="${#strings.substring(user.displayNameOrUsername,0,1)}">Y</span>
+                    </div>
+                </div>
+                <div class="col pb-2">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+                        <div>
+                            <h2 class="fw-black mb-0 d-flex align-items-center gap-2">
+                                <span th:text="${user.displayNameOrUsername}">Name</span>
+                                <svg th:if="${user.role.name() == 'BUSINESS'}" width="20" height="20"
+                                    viewBox="0 0 24 24" fill="currentColor" class="text-primary">
+                                    <path d="M12 2L3 7v10l9 5 9-5V7l-9-5z"></path>
+                                </svg>
+                            </h2>
+                            <p class="text-muted fs-6 mb-2">@<span th:text="${user.username}">username</span></p>
+                        </div>
+
+                        <div class="d-flex gap-2 mb-2">
+                            <a th:if="${isOwner}" th:href="@{/profile/edit}" class="btn btn-primary rounded-pill px-4">
+                                Edit Profile
+                            </a>
+                            <div th:unless="${isOwner}" class="d-flex gap-2">
+                                <button class="btn btn-primary rounded-pill px-4 follow-btn-ajax"
+                                    th:data-user-id="${user.id}"
+                                    th:text="${isFollowing ? 'Following' : 'Follow'}">Follow</button>
+                                <button class="btn btn-outline-secondary rounded-pill px-4">Message</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-3 fs-7 text-secondary mt-1">
+                        <span th:if="${user.location}" class="d-flex align-items-center gap-1">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            <span th:text="${user.location}">Location</span>
+                        </span>
+                        <span th:if="${user.privateProfile}"
+                            class="d-flex align-items-center gap-1 text-warning fw-semibold">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            Private Account
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-4 border-top border-bottom py-3 mb-0 px-3">
+                <div class="text-center">
+                    <div class="fw-bold fs-5" th:text="${postCount}">0</div>
+                    <div class="text-muted fs-8 tracking-widest text-uppercase">Posts</div>
+                </div>
+                <div class="text-center border-start border-end px-5">
+                    <div class="fw-bold fs-5" th:text="${followerCount}">0</div>
+                    <div class="text-muted fs-8 tracking-widest text-uppercase">Followers</div>
+                </div>
+                <div class="text-center">
+                    <div class="fw-bold fs-5" th:text="${followingCount}">0</div>
+                    <div class="text-muted fs-8 tracking-widest text-uppercase">Following</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         ULTRA-PREMIUM LUXURY VARIANTS
+         ============================================================ -->
+
+    <!-- 1. PREMIUM COMPACT LIST (72px horizontal) -->
+    <div th:fragment="premiumCompactCard(user)" class="premium-compact-card">
+        <div class="premium-avatar-container" style="width: 50px; height: 50px; padding: 2px;">
+            <div class="premium-avatar-glow"></div>
+            <img th:src="${user.profilePicture ?: 'https://i.pinimg.com/736x/a5/09/43/a50943da79659822b74be4199249856b.jpg'}"
+                class="premium-avatar-img" alt="pic">
+        </div>
+
+        <div class="ms-3 flex-grow-1 overflow-hidden">
+            <div class="d-flex align-items-center">
+                <span class="fw-bolder theme-text-header text-truncate" style="font-size: 0.95rem;"
+                    th:text="${user.displayNameOrUsername}">User Name</span>
+                <span th:if="${user.role.name() == 'BUSINESS' || user.role.name() == 'CREATOR'}"
+                    class="premium-verified" title="Verified Creator">âœ“</span>
+            </div>
+            <div class="text-muted small text-truncate">@<span th:text="${user.username}">username</span></div>
+        </div>
+
+        <div class="ms-2 d-flex align-items-center gap-2">
+            <span th:if="${user.privateProfile}" class="premium-privacy" title="Private Account">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+            </span>
+            <button class="btn premium-btn-shimmer btn-sm px-3 follow-btn-ajax"
+                th:data-user-id="${user.id}">Follow</button>
+        </div>
+    </div>
+
+    <!-- 2. PREMIUM MEDIUM GRID (200px Discovery) -->
+    <div th:fragment="premiumMediumCard(user)" class="premium-grid-card">
+        <div class="position-absolute top-0 end-0 p-3 z-3">
+            <span th:if="${user.privateProfile}" class="premium-privacy shadow-sm bg-white bg-opacity-75">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+            </span>
+            <span th:unless="${user.privateProfile}" class="premium-privacy shadow-sm bg-white bg-opacity-75"
+                title="Public Profile">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path
+                        d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                    </path>
+                </svg>
+            </span>
+        </div>
+
+        <div
+            style="height: 70px; background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); opacity: 0.8;">
+        </div>
+
+        <div class="px-3 pb-4 text-center" style="margin-top: -35px;">
+            <div class="premium-avatar-container mx-auto mb-3" style="width: 76px; height: 76px;">
+                <div class="premium-avatar-glow" style="opacity: 0.3;"></div>
+                <img th:src="${user.profilePicture ?: 'https://i.pinimg.com/736x/a5/09/43/a50943da79659822b74be4199249856b.jpg'}"
+                    class="premium-avatar-img border border-3 border-white shadow-sm" alt="pic">
+            </div>
+
+            <h6 class="fw-black mb-0 theme-text-header">
+                <span th:text="${user.displayNameOrUsername}">User Name</span>
+                <span th:if="${user.role.name() == 'BUSINESS' || user.role.name() == 'CREATOR'}"
+                    class="premium-verified">âœ“</span>
+            </h6>
+            <div class="text-muted small mb-2">@<span th:text="${user.username}">user</span></div>
+
+            <div class="premium-bio mb-3 px-1">
+                <span
+                    th:text="${user.bio ?: 'Discover the story behind ' + user.displayNameOrUsername + '...'}">Bio...</span>
+                <div class="premium-bio-mask"></div>
+            </div>
+
+            <div class="d-flex justify-content-center gap-2 mb-3">
+                <div class="premium-stat-pill" style="padding: 4px 10px; min-width: 60px;">
+                    <span class="premium-stat-val" style="font-size: 0.9rem;"
+                        th:text="${user.followers != null ? user.followers.size() : 0}">0</span>
+                    <span class="premium-stat-label" style="font-size: 0.5rem;">Followers</span>
+                </div>
+                <div class="premium-stat-pill" style="padding: 4px 10px; min-width: 60px;">
+                    <span class="premium-stat-val" style="font-size: 0.9rem;"
+                        th:text="${user.posts != null ? user.posts.size() : 0}">0</span>
+                    <span class="premium-stat-label" style="font-size: 0.5rem;">Posts</span>
+                </div>
+            </div>
+
+            <button class="btn premium-btn-shimmer w-100 py-2 follow-btn-ajax" th:data-user-id="${user.id}">Follow
+                Creator</button>
+        </div>
+    </div>
+
+    <!-- 3. PREMIUM HERO HEADER (Apple-Level v2 - Expanded Profile Preview) -->
+    <div th:fragment="premiumHeroHeader(user, isOwner, isFollowing, followerCount, followingCount, postCount)"
+        class="premium-hero-header-v2">
+        <!-- Animated Background Blobs inside the container -->
+        <div class="apple-blobs">
+            <div class="apple-blob apple-blob-1"></div>
+            <div class="apple-blob apple-blob-2"></div>
+        </div>
+
+        <div class="card premium-hero-header premium-glow-border border-0 shadow-lg" id="tilt-card">
+            <!-- Banner Section -->
+            <div class="profile-banner-v2"
+                style="height: 200px; position: relative; overflow: hidden; border-radius: 32px 32px 0 0;">
+                <img src="https://i.pinimg.com/736x/a5/09/43/a50943da79659822b74be4199249856b.jpg"
+                    class="w-100 h-100 object-cover" style="filter: brightness(0.7);" alt="banner">
+                <div class="position-absolute bottom-0 start-0 w-100 p-4"
+                    style="background: linear-gradient(to top, rgba(0,0,0,0.4), transparent);"></div>
+            </div>
+
+            <div class="card-body p-4 p-md-5">
+                <div class="d-md-flex align-items-end gap-5" style="margin-top: -100px;">
+                    <!-- 3D Avatar Area -->
+                    <div class="premium-avatar-container shadow-2xl"
+                        style="width: 160px; height: 160px; padding: 6px; transform: translateZ(60px);">
+                        <div class="premium-avatar-glow" style="opacity: 0.6;"></div>
+                        <img th:src="${user.profilePicture ?: 'https://i.pinimg.com/736x/a5/09/43/a50943da79659822b74be4199249856b.jpg'}"
+                            class="premium-avatar-img border border-4 border-white shadow-lg" alt="pic">
+                    </div>
+
+                    <div class="flex-grow-1 mt-4 mt-md-0 pb-2" style="transform: translateZ(40px);">
+                        <div class="d-flex align-items-center gap-3">
+                            <h1 class="fw-900 mb-0 premium-name-text" th:text="${user.displayNameOrUsername}">User Name
+                            </h1>
+                            <span th:if="${user.role.name() == 'BUSINESS' || user.role.name() == 'CREATOR'}"
+                                class="premium-verified" style="width: 28px; height: 28px; font-size: 16px;">âœ“</span>
+                        </div>
+                        <div class="text-white-50 fw-600 fs-5 mt-1">@<span th:text="${user.username}">username</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-3 mt-4 mt-md-0 pb-2" style="transform: translateZ(50px);">
+                        <a th:if="${isOwner}" th:href="@{/profile/edit}"
+                            class="btn premium-btn-shimmer px-4 py-3 rounded-pill fw-bold">Edit My Domain</a>
+                        <div th:unless="${isOwner}" class="d-flex gap-3">
+                            <button class="btn premium-btn-shimmer px-4 py-3 rounded-pill fw-bold follow-btn-ajax"
+                                th:data-user-id="${user.id}"
+                                th:text="${isFollowing ? 'Requested' : 'Connect'}">Connect</button>
+                            <button class="btn btn-outline-secondary px-4 py-3 rounded-pill fw-bold"
+                                style="backdrop-filter: blur(10px); background: rgba(0,0,0,0.05); color: #111; border-color: rgba(0,0,0,0.1);">Message</button>
+                            <button class="btn btn-outline-danger px-4 py-3 rounded-pill fw-bold"
+                                th:onclick="'openReportModal(\'USER\', ' + ${user.id} + ')'"
+                                style="backdrop-filter: blur(10px); background: rgba(239, 68, 68, 0.05); color: #ef4444; border-color: rgba(239, 68, 68, 0.2);">Report</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats and Bio Grid -->
+                <div class="mt-5 row g-4 align-items-center" style="transform: translateZ(30px);">
+                    <div class="col-md-7">
+                        <p class="premium-bio-text leading-relaxed mb-4"
+                            th:text="${user.bio ?: 'Architecting digital experiences on RevConnect.'}">Bio expanded...
+                        </p>
+                        <div class="d-flex gap-4 text-white-50" style="font-size: 0.95rem;">
+                            <span th:if="${user.location}" class="d-flex align-items-center gap-2">ðŸ“ <span
+                                    th:text="${user.location}">Earth</span></span>
+                            <span th:if="${user.website}" class="d-flex align-items-center gap-2">ðŸŒ <a
+                                    th:href="${user.website}" class="text-white text-decoration-none fw-bold"
+                                    th:text="${user.website}">website.com</a></span>
+                        </div>
+                    </div>
+                    <div class="col-md-5 d-flex justify-content-md-end gap-3">
+                        <div class="premium-stat-pill p-3 px-4 rounded-4 text-center">
+                            <span class="premium-stat-val d-block fs-3" th:text="${followerCount}">0</span>
+                            <span class="premium-stat-label text-white-50 fs-9">Followers</span>
+                        </div>
+                        <div class="premium-stat-pill p-3 px-4 rounded-4 text-center">
+                            <span class="premium-stat-val d-block fs-3" th:text="${followingCount}">0</span>
+                            <span class="premium-stat-label text-white-50 fs-9">Following</span>
+                        </div>
+                        <div class="premium-stat-pill p-3 px-4 rounded-4 text-center">
+                            <span class="premium-stat-val d-block fs-3" th:text="${postCount}">0</span>
+                            <span class="premium-stat-label text-white-50 fs-9">Content</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. SOPHIE MODERN CARD (Ultra-Premium Grid Card) -->
+        <!-- variant: 'light', 'dark', 'glass' -->
+        <div th:fragment="sophieModernCard(user, variant)" th:class="|sophie-card sophie-card-${variant}|">
+
+            <a th:href="@{/profile/{username}(username=${user.username})}"
+                style="text-decoration: none; color: inherit; display: contents;">
+                <div class="sophie-card-img-wrapper">
+                    <img th:src="${user.profilePicture ?: 'https://i.pinimg.com/736x/a5/09/43/a50943da79659822b74be4199249856b.jpg'}"
+                        class="sophie-card-img" alt="Profile">
+                </div>
+
+                <div class="sophie-card-content">
+                    <h3 class="sophie-card-name">
+                        <span th:text="${user.displayNameOrUsername}">Sophie Bennett</span>
+                        <span th:if="${user.role.name() == 'BUSINESS' || user.role.name() == 'CREATOR'}"
+                            style="color: #22c55e;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                            </svg>
+                        </span>
+                    </h3>
+
+                    <p class="sophie-card-bio"
+                        th:text="${user.bio ?: 'Modern designer focused on intuitive and beautiful digital experiences.'}">
+                        Product Designer who focuses on simplicity &amp; usability.
+                    </p>
+
+                    <div class="sophie-card-stats">
+                        <div class="sophie-stat-item">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <span th:text="${user.followers != null ? user.followers.size() : 0}">312</span>
+                        </div>
+                        <div class="sophie-stat-item">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="9" y1="3" x2="9" y2="21"></line>
+                            </svg>
+                            <span th:text="${user.posts != null ? user.posts.size() : 0}">42</span>
+                        </div>
+
+                        style="max-width: 1000px; margin: 0 auto; flex-direction: row; min-height: 400px; align-items:
+                        stretch;">
+
+                        <div class="sophie-card-img-wrapper" style="width: 400px; padding: 1.5rem;">
+                            <img th:src="${user.profilePicture ?: 'https://i.pinimg.com/736x/a5/09/43/a50943da79659822b74be4199249856b.jpg'}"
+                                class="sophie-card-img w-100 h-100" style="aspect-ratio: auto;" alt="Profile">
+                        </div>
+
+                        <div class="sophie-card-content d-flex flex-column justify-content-center"
+                            style="padding: 3rem;">
+                            <h1 class="sophie-card-name" style="font-size: 3.5rem; margin-bottom: 1rem;">
+                                <span th:text="${user.displayNameOrUsername}">Sophie Bennett</span>
+                                <span th:if="${user.role.name() == 'BUSINESS' || user.role.name() == 'CREATOR'}"
+                                    style="color: #22c55e;">
+                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+                                        <path
+                                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                                    </svg>
+                                </span>
+                            </h1>
+
+                            <p class="sophie-card-bio fs-4 mb-4" style="-webkit-line-clamp: 3; line-clamp: 3;"
+                                th:text="${user.bio ?: 'Architecture of experiences.'}">
+                                Product Designer who focuses on simplicity &amp; usability.
+                            </p>
+
+                            <div class="d-flex align-items-center gap-5 mt-auto">
+                                <div class="sophie-card-stats d-flex gap-4">
+                                    <div class="sophie-stat-item fs-5">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2.5">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </svg>
+                                        <span th:text="${followerCount}">312</span>
+                                    </div>
+                                    <div class="sophie-stat-item fs-5">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2.5">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                            <line x1="9" y1="3" x2="9" y2="21"></line>
+                                        </svg>
+                                        <span th:text="${postCount}">42</span>
+                                    </div>
+                                </div>
+
+                                <div class="ms-auto d-flex gap-3">
+                                    <a th:if="${isOwner}" th:href="@{/profile/edit}"
+                                        class="sophie-follow-btn btn-lg px-5 py-3 d-flex align-items-center justify-content-center text-decoration-none"
+                                        style="background: #1a1a1a; color: #fff;">
+                                        Edit Domain
+                                    </a>
+                                    <div th:unless="${isOwner}" class="d-flex gap-3">
+                                        <button class="sophie-follow-btn btn-lg px-5 py-3 follow-btn-ajax"
+                                            th:data-user-id="${user.id}"
+                                            th:text="${isFollowing ? 'Requested' : 'Connect +'}">
+                                            Connect +
+                                        </button>
+                                        <button
+                                            class="btn btn-outline-dark rounded-pill px-5 py-3 fw-bold border-2">Message</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. LUXURY HERO HEADER (High-Fashion / Minimalist) -->
+                <div th:fragment="luxuryHeroHeader(user, isOwner, isFollowing, followerCount, followingCount, postCount)"
+                    class="luxury-profile-wrapper mb-5">
+
+                    <div class="luxury-hero-side">
+                        <img th:src="${user.profilePicture ?: 'https://i.pinimg.com/736x/a5/09/43/a50943da79659822b74be4199249856b.jpg'}"
+                            class="luxury-hero-img" alt="Hero">
+                    </div>
+
+                    <div class="luxury-content-side">
+                        <div class="luxury-avatar-box">
+                            <img th:src="${user.profilePicture ?: 'https://i.pinimg.com/736x/a5/09/43/a50943da79659822b74be4199249856b.jpg'}"
+                                class="luxury-avatar-img" alt="Avatar">
+                        </div>
+
+                        <div class="luxury-info-section">
+                            <h1 class="luxury-name" th:text="${user.displayNameOrUsername}">Susan Ledger</h1>
+                            <div class="luxury-about-glass mt-4 mb-4">
+                                <span class="luxury-about-label">ABOUT</span>
+                                <p class="luxury-bio mb-0"
+                                    th:text="${user.bio ?: 'Architecting digital experiences and curated narratives for the modern era.'}">
+                                    Bio content...
+                                </p>
+                            </div>
+
+                            <div class="luxury-meta">
+                                <div th:if="${user.location}" class="luxury-meta-item">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"></path>
+                                        <circle cx="12" cy="10" r="3"></circle>
+                                    </svg>
+                                    <span th:text="${user.location}">Paris, France</span>
+                                </div>
+                                <div th:if="${user.website}" class="luxury-meta-item">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                                        <path
+                                            d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                                        </path>
+                                    </svg>
+                                    <a th:href="${user.website.startsWith('http') ? user.website : 'https://' + user.website}"
+                                        target="_blank" class="text-decoration-none text-current"
+                                        th:text="${user.website}">website.com</a>
+                                </div>
+                            </div>
+
+                            <div class="luxury-actions">
+                                <button th:unless="${isOwner}" class="btn-luxury btn-luxury-primary follow-btn-ajax"
+                                    th:data-user-id="${user.id}">
+                                    <span th:text="${isFollowing ? 'CONNECTED' : '+ ADD'}">+ ADD</span>
+                                </button>
+                                <a th:if="${isOwner}" th:href="@{/profile/edit}"
+                                    class="btn-luxury btn-luxury-primary text-decoration-none">
+                                    EDIT PROFILE
+                                </a>
+                                <button th:unless="${isOwner}" class="btn-luxury btn-luxury-outline">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path
+                                            d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                        </path>
+                                        <polyline points="22,6 12,13 2,6"></polyline>
+                                    </svg>
+                                    MESSAGE
+                                </button>
+                                <button th:unless="${isOwner}"
+                                    class="btn-luxury btn-luxury-outline text-danger border-danger"
+                                    th:onclick="'openReportModal(\'USER\', ' + ${user.id} + ')'"
+                                    style="border-color: rgba(239, 68, 68, 0.4) !important;">
+                                    🚩 REPORT
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="luxury-stats-footer">
+                            <div class="luxury-stat-item">
+                                <span class="luxury-stat-label">FOLLOWERS</span>
+                                <span class="luxury-stat-value" th:text="${followerCount}">142</span>
+                            </div>
+                            <div class="luxury-stat-item">
+                                <span class="luxury-stat-label">FOLLOWING</span>
+                                <span class="luxury-stat-value" th:text="${followingCount}">104</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+</body>
+
+</html>
