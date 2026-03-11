@@ -1,5 +1,6 @@
 package com.revconnect.controller;
 
+import com.revconnect.dto.ReportResponseDTO;
 import com.revconnect.entity.User;
 import com.revconnect.service.PostService;
 import com.revconnect.service.UserService;
@@ -10,6 +11,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -24,6 +28,8 @@ public class AdminController {
     public String dashboard(Model model) {
         model.addAttribute("stats", adminService.getPlatformStats());
         model.addAttribute("pendingReportsCount", adminService.getPendingReports().size());
+        List<ReportResponseDTO> recentReports = adminService.getRecentReports();
+        model.addAttribute("recentReports", recentReports);
         return "admin/dashboard";
     }
 
@@ -57,7 +63,8 @@ public class AdminController {
 
     @GetMapping("/reports")
     public String reportsQueue(Model model) {
-        model.addAttribute("reports", adminService.getAllReports());
+        List<ReportResponseDTO> reports = adminService.getAllReports();
+        model.addAttribute("reports", reports);
         return "admin/reports";
     }
 

@@ -4,7 +4,11 @@ import com.revconnect.enums.UserRole;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class RegisterDTO {
 
     @NotBlank(message = "Username is required")
@@ -24,6 +28,11 @@ public class RegisterDTO {
     private String confirmPassword;
 
     private String displayName;
+
+    private String bio;
+    private String location;
+    private String website;
+    private boolean privateProfile;
 
     @NotNull(message = "Account type is required")
     @Builder.Default

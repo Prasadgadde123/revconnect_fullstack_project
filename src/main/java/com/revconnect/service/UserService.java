@@ -29,10 +29,10 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username)
-                .or(() -> userRepository.findByEmail(username))
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+    public UserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {
+        return userRepository.findByUsernameOrEmail(identifier, identifier)
+                .orElseThrow(
+                        () -> new UsernameNotFoundException("User not found with username or email: " + identifier));
     }
 
     public User register(RegisterDTO dto) {
@@ -51,6 +51,10 @@ public class UserService implements UserDetailsService {
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .displayName(dto.getDisplayName())
+                .bio(dto.getBio())
+                .location(dto.getLocation())
+                .website(dto.getWebsite())
+                .privateProfile(dto.isPrivateProfile())
                 .role(dto.getRole() != null ? dto.getRole() : UserRole.PERSONAL)
                 .securityQuestion(dto.getSecurityQuestion())
                 .securityAnswer(passwordEncoder.encode(dto.getSecurityAnswer().toLowerCase().trim()))

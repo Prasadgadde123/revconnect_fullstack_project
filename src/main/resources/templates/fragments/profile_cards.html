@@ -32,8 +32,21 @@
             </div>
             <div class="text-muted fs-8 text-truncate">@<span th:text="${user.username}">username</span></div>
         </div>
-        <button class="btn btn-sm btn-primary rounded-pill px-3 ms-2 follow-btn-ajax"
-            th:data-user-id="${user.id}">Follow</button>
+        <div th:if="${currentUser != null and user.id != currentUser.id}" class="ms-2 d-flex gap-1">
+            <button th:if="${globalConnectedIds != null and globalConnectedIds.contains(user.id)}"
+                class="btn btn-sm btn-outline-secondary rounded-pill px-3" disabled>Connected</button>
+            <button th:if="${globalPendingSentIds != null and globalPendingSentIds.contains(user.id)}"
+                class="btn btn-sm btn-outline-secondary rounded-pill px-3" disabled>Pending</button>
+            <button
+                th:if="${(globalConnectedIds == null or !globalConnectedIds.contains(user.id)) and (globalPendingSentIds == null or !globalPendingSentIds.contains(user.id))}"
+                class="btn btn-sm btn-primary rounded-pill px-3 connect-btn-ajax"
+                th:data-user-id="${user.id}">Connect</button>
+
+            <!-- Follow (only for business/creator) -->
+            <button th:if="${user.role.name() == 'BUSINESS' or user.role.name() == 'CREATOR'}"
+                class="btn btn-sm btn-outline-primary rounded-pill px-3 follow-btn-ajax" th:data-user-id="${user.id}"
+                th:text="${globalFollowingIds != null and globalFollowingIds.contains(user.id) ? 'Following' : 'Follow'}">Follow</button>
+        </div>
     </div>
 
     <!-- 2. MEDIUM GRID CARD (For Search / Discover) -->
@@ -87,9 +100,20 @@
                 </div>
             </div>
 
-            <div class="d-grid gap-2">
-                <button class="btn btn-primary rounded-pill follow-btn-ajax"
-                    th:data-user-id="${user.id}">Follow</button>
+            <div th:if="${currentUser != null and user.id != currentUser.id}" class="d-grid gap-2">
+                <!-- Connect -->
+                <button th:if="${globalConnectedIds != null and globalConnectedIds.contains(user.id)}"
+                    class="btn btn-outline-secondary rounded-pill" disabled>Connected</button>
+                <button th:if="${globalPendingSentIds != null and globalPendingSentIds.contains(user.id)}"
+                    class="btn btn-outline-secondary rounded-pill" disabled>Pending</button>
+                <button
+                    th:if="${(globalConnectedIds == null or !globalConnectedIds.contains(user.id)) and (globalPendingSentIds == null or !globalPendingSentIds.contains(user.id))}"
+                    class="btn btn-primary rounded-pill connect-btn-ajax" th:data-user-id="${user.id}">Connect</button>
+
+                <!-- Follow (only for business/creator) -->
+                <button th:if="${user.role.name() == 'BUSINESS' or user.role.name() == 'CREATOR'}"
+                    class="btn btn-outline-primary rounded-pill follow-btn-ajax" th:data-user-id="${user.id}"
+                    th:text="${globalFollowingIds != null and globalFollowingIds.contains(user.id) ? 'Following' : 'Follow'}">Follow</button>
             </div>
         </div>
     </div>
@@ -129,15 +153,27 @@
                         </div>
 
                         <div class="d-flex gap-2 mb-2">
-                            <a th:if="${isOwner}" th:href="@{/profile/edit}" class="btn btn-primary rounded-pill px-4">
-                                Edit Profile
-                            </a>
-                            <div th:unless="${isOwner}" class="d-flex gap-2">
-                                <button class="btn btn-primary rounded-pill px-4 follow-btn-ajax"
-                                    th:data-user-id="${user.id}"
-                                    th:text="${isFollowing ? 'Following' : 'Follow'}">Follow</button>
-                                <button class="btn btn-outline-secondary rounded-pill px-4">Message</button>
-                            </div>
+                            <th:block th:unless="${isOwner}">
+                                <div class="d-flex gap-2">
+                                    <!-- Connect -->
+                                    <button
+                                        th:if="${globalConnectedIds != null and globalConnectedIds.contains(user.id)}"
+                                        class="btn btn-outline-secondary rounded-pill px-4" disabled>Connected</button>
+                                    <button
+                                        th:if="${globalPendingSentIds != null and globalPendingSentIds.contains(user.id)}"
+                                        class="btn btn-outline-secondary rounded-pill px-4" disabled>Pending</button>
+                                    <button
+                                        th:if="${(globalConnectedIds == null or !globalConnectedIds.contains(user.id)) and (globalPendingSentIds == null or !globalPendingSentIds.contains(user.id))}"
+                                        class="btn btn-primary rounded-pill px-4 connect-btn-ajax"
+                                        th:data-user-id="${user.id}">Connect</button>
+
+                                    <!-- Follow (only for business/creator) -->
+                                    <button th:if="${user.role.name() == 'BUSINESS' or user.role.name() == 'CREATOR'}"
+                                        class="btn btn-outline-primary rounded-pill px-4 follow-btn-ajax"
+                                        th:data-user-id="${user.id}"
+                                        th:text="${globalFollowingIds != null and globalFollowingIds.contains(user.id) ? 'Following' : 'Follow'}">Follow</button>
+                                </div>
+                            </th:block>
                         </div>
                     </div>
 
@@ -209,8 +245,24 @@
                     <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
             </span>
-            <button class="btn premium-btn-shimmer btn-sm px-3 follow-btn-ajax"
-                th:data-user-id="${user.id}">Follow</button>
+            <div th:if="${currentUser != null and user.id != currentUser.id}"
+                class="ms-2 d-flex align-items-center gap-2">
+                <!-- Connect -->
+                <button th:if="${globalConnectedIds != null and globalConnectedIds.contains(user.id)}"
+                    class="btn btn-sm btn-outline-secondary rounded-pill px-3" disabled>Connected</button>
+                <button th:if="${globalPendingSentIds != null and globalPendingSentIds.contains(user.id)}"
+                    class="btn btn-sm btn-outline-secondary rounded-pill px-3" disabled>Pending</button>
+                <button
+                    th:if="${(globalConnectedIds == null or !globalConnectedIds.contains(user.id)) and (globalPendingSentIds == null or !globalPendingSentIds.contains(user.id))}"
+                    class="btn premium-btn-shimmer btn-sm px-3 connect-btn-ajax"
+                    th:data-user-id="${user.id}">Connect</button>
+
+                <!-- Follow (only for business/creator) -->
+                <button th:if="${user.role.name() == 'BUSINESS' or user.role.name() == 'CREATOR'}"
+                    class="btn btn-sm btn-outline-primary rounded-pill px-3 follow-btn-ajax"
+                    th:data-user-id="${user.id}"
+                    th:text="${globalFollowingIds != null and globalFollowingIds.contains(user.id) ? 'Following' : 'Follow'}">Follow</button>
+            </div>
         </div>
     </div>
 
@@ -272,8 +324,22 @@
                 </div>
             </div>
 
-            <button class="btn premium-btn-shimmer w-100 py-2 follow-btn-ajax" th:data-user-id="${user.id}">Follow
-                Creator</button>
+            <div th:if="${currentUser != null and user.id != currentUser.id}" class="d-grid gap-2">
+                <!-- Connect -->
+                <button th:if="${globalConnectedIds != null and globalConnectedIds.contains(user.id)}"
+                    class="btn btn-outline-secondary rounded-pill" disabled>Connected</button>
+                <button th:if="${globalPendingSentIds != null and globalPendingSentIds.contains(user.id)}"
+                    class="btn btn-outline-secondary rounded-pill" disabled>Pending</button>
+                <button
+                    th:if="${(globalConnectedIds == null or !globalConnectedIds.contains(user.id)) and (globalPendingSentIds == null or !globalPendingSentIds.contains(user.id))}"
+                    class="btn premium-btn-shimmer rounded-pill py-2 connect-btn-ajax"
+                    th:data-user-id="${user.id}">Connect</button>
+
+                <!-- Follow (only for business/creator) -->
+                <button th:if="${user.role.name() == 'BUSINESS' or user.role.name() == 'CREATOR'}"
+                    class="btn btn-outline-primary rounded-pill follow-btn-ajax" th:data-user-id="${user.id}"
+                    th:text="${globalFollowingIds != null and globalFollowingIds.contains(user.id) ? 'Following' : 'Follow'}">Follow</button>
+            </div>
         </div>
     </div>
 
@@ -321,11 +387,23 @@
                         <a th:if="${isOwner}" th:href="@{/profile/edit}"
                             class="btn premium-btn-shimmer px-4 py-3 rounded-pill fw-bold">Edit My Domain</a>
                         <div th:unless="${isOwner}" class="d-flex gap-3">
-                            <button class="btn premium-btn-shimmer px-4 py-3 rounded-pill fw-bold follow-btn-ajax"
+                            <!-- Connect -->
+                            <button th:if="${globalConnectedIds != null and globalConnectedIds.contains(user.id)}"
+                                class="btn premium-btn-shimmer px-4 py-3 rounded-pill fw-bold"
+                                disabled>Connected</button>
+                            <button th:if="${globalPendingSentIds != null and globalPendingSentIds.contains(user.id)}"
+                                class="btn premium-btn-shimmer px-4 py-3 rounded-pill fw-bold" disabled>Pending</button>
+                            <button
+                                th:if="${(globalConnectedIds == null or !globalConnectedIds.contains(user.id)) and (globalPendingSentIds == null or !globalPendingSentIds.contains(user.id))}"
+                                class="btn premium-btn-shimmer px-4 py-3 rounded-pill fw-bold connect-btn-ajax"
+                                th:data-user-id="${user.id}">Connect</button>
+
+                            <!-- Follow (only for business/creator) -->
+                            <button th:if="${user.role.name() == 'BUSINESS' or user.role.name() == 'CREATOR'}"
+                                class="btn btn-outline-primary px-4 py-3 rounded-pill fw-bold follow-btn-ajax"
                                 th:data-user-id="${user.id}"
-                                th:text="${isFollowing ? 'Requested' : 'Connect'}">Connect</button>
-                            <button class="btn btn-outline-secondary px-4 py-3 rounded-pill fw-bold"
-                                style="backdrop-filter: blur(10px); background: rgba(0,0,0,0.05); color: #111; border-color: rgba(0,0,0,0.1);">Message</button>
+                                th:text="${globalFollowingIds != null and globalFollowingIds.contains(user.id) ? 'Following' : 'Follow'}">Follow</button>
+
                             <button class="btn btn-outline-danger px-4 py-3 rounded-pill fw-bold"
                                 th:onclick="'openReportModal(\'USER\', ' + ${user.id} + ')'"
                                 style="backdrop-filter: blur(10px); background: rgba(239, 68, 68, 0.05); color: #ef4444; border-color: rgba(239, 68, 68, 0.2);">Report</button>
@@ -411,163 +489,274 @@
                             <span th:text="${user.posts != null ? user.posts.size() : 0}">42</span>
                         </div>
 
-                        style="max-width: 1000px; margin: 0 auto; flex-direction: row; min-height: 400px; align-items:
-                        stretch;">
+                        <div th:if="${currentUser != null and user.id != currentUser.id}"
+                            class="d-flex gap-2 ms-auto align-items-center">
+                            <!-- Connect -->
+                            <button th:if="${globalConnectedIds != null and globalConnectedIds.contains(user.id)}"
+                                class="sophie-follow-btn" disabled>Connected</button>
+                            <button th:if="${globalPendingSentIds != null and globalPendingSentIds.contains(user.id)}"
+                                class="sophie-follow-btn" disabled>Pending</button>
+                            <button
+                                th:if="${(globalConnectedIds == null or !globalConnectedIds.contains(user.id)) and (globalPendingSentIds == null or !globalPendingSentIds.contains(user.id))}"
+                                class="sophie-follow-btn connect-btn-ajax" th:data-user-id="${user.id}">Connect
+                                +</button>
 
-                        <div class="sophie-card-img-wrapper" style="width: 400px; padding: 1.5rem;">
-                            <img th:src="${user.profilePicture ?: 'https://i.pinimg.com/736x/a5/09/43/a50943da79659822b74be4199249856b.jpg'}"
-                                class="sophie-card-img w-100 h-100" style="aspect-ratio: auto;" alt="Profile">
-                        </div>
-
-                        <div class="sophie-card-content d-flex flex-column justify-content-center"
-                            style="padding: 3rem;">
-                            <h1 class="sophie-card-name" style="font-size: 3.5rem; margin-bottom: 1rem;">
-                                <span th:text="${user.displayNameOrUsername}">Sophie Bennett</span>
-                                <span th:if="${user.role.name() == 'BUSINESS' || user.role.name() == 'CREATOR'}"
-                                    style="color: #22c55e;">
-                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
-                                        <path
-                                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                                    </svg>
-                                </span>
-                            </h1>
-
-                            <p class="sophie-card-bio fs-4 mb-4" style="-webkit-line-clamp: 3; line-clamp: 3;"
-                                th:text="${user.bio ?: 'Architecture of experiences.'}">
-                                Product Designer who focuses on simplicity &amp; usability.
-                            </p>
-
-                            <div class="d-flex align-items-center gap-5 mt-auto">
-                                <div class="sophie-card-stats d-flex gap-4">
-                                    <div class="sophie-stat-item fs-5">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                            stroke="currentColor" stroke-width="2.5">
-                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                            <circle cx="12" cy="7" r="4"></circle>
-                                        </svg>
-                                        <span th:text="${followerCount}">312</span>
-                                    </div>
-                                    <div class="sophie-stat-item fs-5">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                            stroke="currentColor" stroke-width="2.5">
-                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                            <line x1="9" y1="3" x2="9" y2="21"></line>
-                                        </svg>
-                                        <span th:text="${postCount}">42</span>
-                                    </div>
-                                </div>
-
-                                <div class="ms-auto d-flex gap-3">
-                                    <a th:if="${isOwner}" th:href="@{/profile/edit}"
-                                        class="sophie-follow-btn btn-lg px-5 py-3 d-flex align-items-center justify-content-center text-decoration-none"
-                                        style="background: #1a1a1a; color: #fff;">
-                                        Edit Domain
-                                    </a>
-                                    <div th:unless="${isOwner}" class="d-flex gap-3">
-                                        <button class="sophie-follow-btn btn-lg px-5 py-3 follow-btn-ajax"
-                                            th:data-user-id="${user.id}"
-                                            th:text="${isFollowing ? 'Requested' : 'Connect +'}">
-                                            Connect +
-                                        </button>
-                                        <button
-                                            class="btn btn-outline-dark rounded-pill px-5 py-3 fw-bold border-2">Message</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 6. LUXURY HERO HEADER (High-Fashion / Minimalist) -->
-                <div th:fragment="luxuryHeroHeader(user, isOwner, isFollowing, followerCount, followingCount, postCount)"
-                    class="luxury-profile-wrapper mb-5">
-
-                    <div class="luxury-hero-side">
-                        <img th:src="${user.profilePicture ?: 'https://i.pinimg.com/736x/a5/09/43/a50943da79659822b74be4199249856b.jpg'}"
-                            class="luxury-hero-img" alt="Hero">
-                    </div>
-
-                    <div class="luxury-content-side">
-                        <div class="luxury-avatar-box">
-                            <img th:src="${user.profilePicture ?: 'https://i.pinimg.com/736x/a5/09/43/a50943da79659822b74be4199249856b.jpg'}"
-                                class="luxury-avatar-img" alt="Avatar">
-                        </div>
-
-                        <div class="luxury-info-section">
-                            <h1 class="luxury-name" th:text="${user.displayNameOrUsername}">Susan Ledger</h1>
-                            <div class="luxury-about-glass mt-4 mb-4">
-                                <span class="luxury-about-label">ABOUT</span>
-                                <p class="luxury-bio mb-0"
-                                    th:text="${user.bio ?: 'Architecting digital experiences and curated narratives for the modern era.'}">
-                                    Bio content...
-                                </p>
-                            </div>
-
-                            <div class="luxury-meta">
-                                <div th:if="${user.location}" class="luxury-meta-item">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2">
-                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"></path>
-                                        <circle cx="12" cy="10" r="3"></circle>
-                                    </svg>
-                                    <span th:text="${user.location}">Paris, France</span>
-                                </div>
-                                <div th:if="${user.website}" class="luxury-meta-item">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <line x1="2" y1="12" x2="22" y2="12"></line>
-                                        <path
-                                            d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
-                                        </path>
-                                    </svg>
-                                    <a th:href="${user.website.startsWith('http') ? user.website : 'https://' + user.website}"
-                                        target="_blank" class="text-decoration-none text-current"
-                                        th:text="${user.website}">website.com</a>
-                                </div>
-                            </div>
-
-                            <div class="luxury-actions">
-                                <button th:unless="${isOwner}" class="btn-luxury btn-luxury-primary follow-btn-ajax"
-                                    th:data-user-id="${user.id}">
-                                    <span th:text="${isFollowing ? 'CONNECTED' : '+ ADD'}">+ ADD</span>
-                                </button>
-                                <a th:if="${isOwner}" th:href="@{/profile/edit}"
-                                    class="btn-luxury btn-luxury-primary text-decoration-none">
-                                    EDIT PROFILE
-                                </a>
-                                <button th:unless="${isOwner}" class="btn-luxury btn-luxury-outline">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2">
-                                        <path
-                                            d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
-                                        </path>
-                                        <polyline points="22,6 12,13 2,6"></polyline>
-                                    </svg>
-                                    MESSAGE
-                                </button>
-                                <button th:unless="${isOwner}"
-                                    class="btn-luxury btn-luxury-outline text-danger border-danger"
-                                    th:onclick="'openReportModal(\'USER\', ' + ${user.id} + ')'"
-                                    style="border-color: rgba(239, 68, 68, 0.4) !important;">
-                                    🚩 REPORT
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="luxury-stats-footer">
-                            <div class="luxury-stat-item">
-                                <span class="luxury-stat-label">FOLLOWERS</span>
-                                <span class="luxury-stat-value" th:text="${followerCount}">142</span>
-                            </div>
-                            <div class="luxury-stat-item">
-                                <span class="luxury-stat-label">FOLLOWING</span>
-                                <span class="luxury-stat-value" th:text="${followingCount}">104</span>
-                            </div>
+                            <!-- Follow (only for business/creator) -->
+                            <button th:if="${user.role.name() == 'BUSINESS' or user.role.name() == 'CREATOR'}"
+                                class="sophie-follow-btn follow-btn-ajax" th:data-user-id="${user.id}"
+                                th:text="${globalFollowingIds != null and globalFollowingIds.contains(user.id) ? 'Following' : 'Follow +'}">Follow
+                                +</button>
                         </div>
                     </div>
                 </div>
         </div>
+
+        <!-- 5. SOPHIE HERO HEADER (Full Profile Page Version) -->
+        <div th:fragment="sophieHeroHeader(user, isOwner, isFollowing, followerCount, followingCount, postCount)"
+            class="sophie-hero-container mb-5">
+            <div class="sophie-card sophie-card-dynamic w-100 max-w-none shadow-lg"
+                style="max-width: 1000px; margin: 0 auto; flex-direction: row; min-height: 400px; align-items: stretch;">
+
+                <div class="sophie-card-img-wrapper" style="width: 400px; padding: 1.5rem;">
+                    <img th:src="${user.profilePicture ?: 'https://i.pinimg.com/736x/a5/09/43/a50943da79659822b74be4199249856b.jpg'}"
+                        class="sophie-card-img w-100 h-100" style="aspect-ratio: auto;" alt="Profile">
+                </div>
+
+                <div class="sophie-card-content d-flex flex-column justify-content-center" style="padding: 3rem;">
+                    <h1 class="sophie-card-name" style="font-size: 3.5rem; margin-bottom: 1rem;">
+                        <span th:text="${user.displayNameOrUsername}">Sophie Bennett</span>
+                        <span th:if="${user.role.name() == 'BUSINESS' || user.role.name() == 'CREATOR'}"
+                            style="color: #22c55e;">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                            </svg>
+                        </span>
+                    </h1>
+
+                    <p class="sophie-card-bio fs-4 mb-4" style="-webkit-line-clamp: 3; line-clamp: 3;"
+                        th:text="${user.bio ?: 'Architecture of experiences.'}">
+                        Product Designer who focuses on simplicity &amp; usability.
+                    </p>
+
+                    <div class="d-flex align-items-center gap-5 mt-auto">
+                        <div class="sophie-card-stats d-flex gap-4">
+                            <div class="sophie-stat-item fs-5">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <span th:text="${followerCount}">312</span>
+                            </div>
+                            <div class="sophie-stat-item fs-5">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="9" y1="3" x2="9" y2="21"></line>
+                                </svg>
+                                <span th:text="${postCount}">42</span>
+                            </div>
+                        </div>
+
+                        <div class="ms-auto d-flex gap-3">
+                            <a th:if="${isOwner}" th:href="@{/profile/edit}"
+                                class="sophie-follow-btn btn-lg px-5 py-3 d-flex align-items-center justify-content-center text-decoration-none"
+                                style="background: #1a1a1a; color: #fff;">
+                                Edit Domain
+                            </a>
+                            <div th:unless="${isOwner}" class="d-flex gap-3">
+                                <!-- Connect -->
+                                <button th:if="${globalConnectedIds != null and globalConnectedIds.contains(user.id)}"
+                                    class="sophie-follow-btn btn-lg px-5 py-3" disabled>Connected</button>
+                                <button
+                                    th:if="${globalPendingSentIds != null and globalPendingSentIds.contains(user.id)}"
+                                    class="sophie-follow-btn btn-lg px-5 py-3" disabled>Pending</button>
+                                <button
+                                    th:if="${(globalConnectedIds == null or !globalConnectedIds.contains(user.id)) and (globalPendingSentIds == null or !globalPendingSentIds.contains(user.id))}"
+                                    class="sophie-follow-btn btn-lg px-5 py-3 connect-btn-ajax"
+                                    th:data-user-id="${user.id}">Connect +</button>
+
+                                <!-- Follow (only for business/creator) -->
+                                <button th:if="${user.role.name() == 'BUSINESS' or user.role.name() == 'CREATOR'}"
+                                    class="sophie-follow-btn btn-lg px-5 py-3 follow-btn-ajax"
+                                    th:data-user-id="${user.id}"
+                                    th:text="${globalFollowingIds != null and globalFollowingIds.contains(user.id) ? 'Following' : 'Follow +'}">Follow
+                                    +</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. LUXURY HERO HEADER (High-Fashion / Minimalist) -->
+        <div th:fragment="luxuryHeroHeader(user, isOwner, isFollowing, followerCount, followingCount, postCount)"
+            class="luxury-profile-wrapper mb-5">
+
+            <div class="luxury-hero-side">
+                <img th:src="${user.profilePicture ?: 'https://i.pinimg.com/736x/a5/09/43/a50943da79659822b74be4199249856b.jpg'}"
+                    class="luxury-hero-img" alt="Hero">
+            </div>
+
+            <div class="luxury-content-side">
+                <div class="luxury-avatar-box">
+                    <img th:src="${user.profilePicture ?: 'https://i.pinimg.com/736x/a5/09/43/a50943da79659822b74be4199249856b.jpg'}"
+                        class="luxury-avatar-img" alt="Avatar">
+                </div>
+
+                <div class="luxury-info-section">
+                    <h1 class="luxury-name" th:text="${user.displayNameOrUsername}">Susan Ledger</h1>
+                    <div class="luxury-about-glass mt-4 mb-4">
+                        <span class="luxury-about-label">ABOUT</span>
+                        <p class="luxury-bio mb-0"
+                            th:text="${user.bio ?: 'Architecting digital experiences and curated narratives for the modern era.'}">
+                            Bio content...
+                        </p>
+                    </div>
+
+                    <div class="luxury-meta">
+                        <div th:if="${user.location}" class="luxury-meta-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            <span th:text="${user.location}">Paris, France</span>
+                        </div>
+                        <div th:if="${user.website}" class="luxury-meta-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="2" y1="12" x2="22" y2="12"></line>
+                                <path
+                                    d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                                </path>
+                            </svg>
+                            <a th:href="${user.website.startsWith('http') ? user.website : 'https://' + user.website}"
+                                target="_blank" class="text-decoration-none text-current"
+                                th:text="${user.website}">website.com</a>
+                        </div>
+                    </div>
+
+                    <!-- Connect -->
+                    <button th:if="${!isOwner && globalConnectedIds != null && globalConnectedIds.contains(user.id)}"
+                        class="btn-luxury btn-luxury-outline" disabled>CONNECTED</button>
+                    <button
+                        th:if="${!isOwner && globalPendingSentIds != null && globalPendingSentIds.contains(user.id)}"
+                        class="btn-luxury btn-luxury-outline" disabled>PENDING</button>
+                    <button
+                        th:if="${!isOwner && (globalConnectedIds == null || !globalConnectedIds.contains(user.id)) && (globalPendingSentIds == null || !globalPendingSentIds.contains(user.id))}"
+                        class="btn-luxury btn-luxury-primary connect-btn-ajax"
+                        th:data-user-id="${user.id}">CONNECT</button>
+
+                    <!-- Follow Button (Only for Business and Creator) -->
+                    <button th:if="${!isOwner && (user.role.name() == 'BUSINESS' || user.role.name() == 'CREATOR')}"
+                        class="btn-luxury follow-btn-ajax"
+                        th:classappend="${globalFollowingIds != null and globalFollowingIds.contains(user.id) ? 'btn-luxury-outline' : 'btn-luxury-primary'}"
+                        th:data-user-id="${user.id}" data-active-text="FOLLOWING" data-inactive-text="FOLLOW">
+                        <span
+                            th:text="${globalFollowingIds != null and globalFollowingIds.contains(user.id) ? 'FOLLOWING' : 'FOLLOW'}">FOLLOW</span>
+                    </button>
+
+                    <a th:if="${isOwner}" th:href="@{/profile/edit}"
+                        class="btn-luxury btn-luxury-primary text-decoration-none">
+                        EDIT PROFILE
+                    </a>
+
+                    <!-- Removed MESSAGE Button as per user request -->
+
+                    <button th:unless="${isOwner}" class="btn-luxury btn-luxury-outline text-danger border-danger"
+                        th:onclick="'openReportModal(\'USER\', ' + ${user.id} + ')'"
+                        style="border-color: rgba(239, 68, 68, 0.4) !important;">
+                        🚩 REPORT
+                    </button>
+                </div>
+            </div>
+
+            <div class="luxury-stats-footer">
+                <div class="luxury-stat-item">
+                    <span class="luxury-stat-label">FOLLOWERS</span>
+                    <span class="luxury-stat-value" th:text="${followerCount}">142</span>
+                </div>
+                <div class="luxury-stat-item">
+                    <span class="luxury-stat-label">FOLLOWING</span>
+                    <span class="luxury-stat-value" th:text="${followingCount}">104</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    <!-- 7. FROSTED LUXURY CARD (High-Blur Glassmorphism Edition) -->
+    <div th:fragment="frostedLuxuryCard(user)"
+        class="relative overflow-hidden group transition-all duration-500 hover:scale-[1.02]">
+        <!-- Deeply Frosted Glass Container -->
+        <div
+            class="relative z-10 p-6 rounded-[32px] border border-white/20 shadow-2xl backdrop-blur-[100px] bg-white/10 flex flex-col items-center text-center">
+
+            <!-- White Translucent Avatar -->
+            <div class="relative mb-4 group-hover:translate-z-10 transition-transform duration-500">
+                <div
+                    class="absolute inset-0 bg-white/30 rounded-full blur-2xl opacity-50 group-hover:opacity-100 transition-opacity">
+                </div>
+                <img th:src="${user.profilePicture ?: 'https://i.pinimg.com/736x/a5/09/43/a50943da79659822b74be4199249856b.jpg'}"
+                    class="relative w-24 h-24 rounded-full border-4 border-white/40 shadow-inner object-cover"
+                    alt="Avatar">
+            </div>
+
+            <!-- Light Grey / White Text -->
+            <div class="space-y-1">
+                <h3 class="text-2xl font-black text-white leading-none flex items-center justify-center gap-2">
+                    <span th:text="${user.displayNameOrUsername}">User Name</span>
+                    <!-- Light Grey Checkmark -->
+                    <svg th:if="${user.role.name() == 'BUSINESS' || user.role.name() == 'CREATOR'}" width="20"
+                        height="20" viewBox="0 0 24 24" fill="currentColor" class="text-white/60">
+                        <path
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                    </svg>
+                </h3>
+                <p class="text-white/50 text-sm font-semibold tracking-wider uppercase">@<span
+                        th:text="${user.username}">username</span></p>
+            </div>
+
+            <!-- Bio with subtle contrast -->
+            <p class="mt-4 text-white/80 text-sm leading-relaxed max-w-[240px] line-clamp-2"
+                th:text="${user.bio ?: 'Architecture of digital experiences and curated narratives.'}">
+                Bio placeholder text goes here...
+            </p>
+
+            <!-- Stats with Glass Pills -->
+            <div class="flex gap-3 mt-6">
+                <div
+                    class="px-4 py-2 bg-white/5 rounded-2xl border border-white/10 flex flex-col items-center min-w-[70px]">
+                    <span class="text-white font-bold text-lg"
+                        th:text="${user.followers != null ? user.followers.size() : 0}">0</span>
+                    <span class="text-white/40 text-[10px] font-black uppercase tracking-tighter">Followers</span>
+                </div>
+                <div
+                    class="px-4 py-2 bg-white/5 rounded-2xl border border-white/10 flex flex-col items-center min-w-[70px]">
+                    <span class="text-white font-bold text-lg"
+                        th:text="${user.posts != null ? user.posts.size() : 0}">0</span>
+                    <span class="text-white/40 text-[10px] font-black uppercase tracking-tighter">Posts</span>
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <div th:if="${currentUser != null and user.id != currentUser.id}" class="w-full mt-6">
+                <button th:if="${globalConnectedIds != null and globalConnectedIds.contains(user.id)}"
+                    class="w-full py-3 rounded-2xl bg-white/20 border border-white/30 text-white font-bold uppercase tracking-widest text-xs opacity-50"
+                    disabled>Connected</button>
+                <button
+                    th:if="${(globalConnectedIds == null or !globalConnectedIds.contains(user.id)) and (globalPendingSentIds == null or !globalPendingSentIds.contains(user.id))}"
+                    class="w-full py-3 rounded-2xl bg-white/20 hover:bg-white/30 border border-white/30 text-white font-bold uppercase tracking-widest text-xs transition-colors connect-btn-ajax"
+                    th:data-user-id="${user.id}">Connect</button>
+            </div>
+        </div>
+
+        <!-- Significantly Obscured Background Blob -->
+        <div class="absolute -top-10 -left-10 w-40 h-40 bg-white/10 rounded-full blur-[80px]"></div>
+        <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-[60px]"></div>
     </div>
 </body>
 

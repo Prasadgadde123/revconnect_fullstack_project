@@ -1,12 +1,18 @@
 package com.revconnect.service;
 
+import com.revconnect.dto.ReportResponseDTO;
+
 import com.revconnect.entity.Report;
 import com.revconnect.entity.User;
+import com.revconnect.entity.Post;
 import com.revconnect.enums.ReportStatus;
+import com.revconnect.enums.ReportType;
 import com.revconnect.repository.ReportRepository;
 import com.revconnect.repository.UserRepository;
 import com.revconnect.repository.PostRepository;
+import com.revconnect.service.NotificationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +20,9 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AdminService {
@@ -24,16 +32,22 @@ public class AdminService {
     private final PostRepository postRepository;
     private final NotificationService notificationService;
 
-    public List<Report> getAllReports() {
-        return reportRepository.findAll();
+    public List<ReportResponseDTO> getAllReports() {
+        log.debug("Fetching all reports");
+        return reportRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
-    public List<Report> getPendingReports() {
-        return reportRepository.findByStatus(ReportStatus.PENDING);
+    public List<ReportResponseDTO> getPendingReports() {
+        return reportRepository.findByStatus(ReportStatus.PENDING).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     @Transactional
     public void resolveReport(Long reportId, User resolver, String note) {
+        log.info("Resolving report ID: {} by {}", reportId, resolver.getUsername());
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new RuntimeException("Report not found"));
 
@@ -46,6 +60,7 @@ public class AdminService {
 
     @Transactional
     public void dismissReport(Long reportId, User resolver) {
+        log.info("Dismissing report ID: {} by {}", reportId, resolver.getUsername());
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new RuntimeException("Report not found"));
 
@@ -80,6 +95,9 @@ public class AdminService {
 
     @Transactional
     public void createReport(User reporter, com.revconnect.enums.ReportType type, Long targetId, String reason) {
+        log.info("Creating report: Reporter={}, Type={}, Target={}, Reason={}",
+                reporter.getUsername(), type, targetId, reason);
+
         Report report = Report.builder()
                 .reporter(reporter)
                 .type(type)
@@ -90,15 +108,65 @@ public class AdminService {
                 .build();
 
         reportRepository.save(report);
+        log.info("Report saved to repository. ID={}", report.getId());
 
         // Notify all admins
         List<User> admins = userRepository.findByRole(com.revconnect.enums.UserRole.ADMIN);
+        log.debug("Found {} admins to notify", admins.size());
+
         String message = String.format("🚨 NEW REPORT: %s reported a %s for: %s",
                 reporter.getDisplayNameOrUsername(), type.name(), reason);
 
-        for (User admin : admins) {
-            notificationService.createNotification(admin, reporter, com.revconnect.enums.NotificationType.ADMIN_REPORT,
-                    message, "/admin/reports");
+        /*
+         * for (User admin : admins) {
+         * notificationService.createNotification(admin, reporter,
+         * com.revconnect.enums.NotificationType.REPORT,
+         * message, "/admin/reports");
+         * }
+         */
+
+    }
+
+    public List<ReportResponseDTO> getRecentReports() {
+        return reportRepository.findAll().stream()
+                .sorted((r1, r2) -> r2.getCreatedAt().compareTo(r1.getCreatedAt()))
+                .limit(5)
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+    private ReportResponseDTO convertToDTO(Report report) {
+        ReportResponseDTO.ReportResponseDTOBuilder builder = ReportResponseDTO.builder()
+                .id(report.getId())
+                .reporterUsername(report.getReporter().getUsername())
+                .reporterDisplayName(report.getReporter().getDisplayNameOrUsername())
+                .type(report.getType())
+                .targetId(report.getTargetId())
+                .reason(report.getReason())
+                .status(report.getStatus())
+                .createdAt(report.getCreatedAt())
+                .resolvedAt(report.getResolvedAt())
+                .resolutionNote(report.getResolutionNote());
+
+        if (report.getResolver() != null) {
+            builder.resolverUsername(report.getResolver().getUsername());
         }
+
+        // Resolve Target Info
+        if (report.getType() == ReportType.USER) {
+            userRepository.findById(report.getTargetId()).ifPresent(user -> {
+                builder.targetName(user.getDisplayNameOrUsername());
+                builder.targetSnippet("@" + user.getUsername());
+            });
+        } else if (report.getType() == ReportType.POST) {
+            postRepository.findById(report.getTargetId()).ifPresent(post -> {
+                builder.targetName(
+                        "Post by @" + (post.getAuthor() != null ? post.getAuthor().getUsername() : "deleted"));
+                String content = post.getContent();
+                builder.targetSnippet(content.length() > 50 ? content.substring(0, 47) + "..." : content);
+            });
+        }
+
+        return builder.build();
     }
 }

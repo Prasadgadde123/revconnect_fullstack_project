@@ -60,7 +60,8 @@ public class PostService {
             post.setCtaButtonText(dto.getCtaButtonText());
         if (dto.getCtaButtonUrl() != null)
             post.setCtaButtonUrl(dto.getCtaButtonUrl());
-        if (dto.getTaggedProducts() != null) post.setTaggedProducts(parseTaggedProducts(dto.getTaggedProducts()));
+        if (dto.getTaggedProducts() != null)
+            post.setTaggedProducts(parseTaggedProducts(dto.getTaggedProducts()));
         post.setScheduledAt(dto.getScheduledAt());
         return postRepository.save(post);
     }
@@ -173,7 +174,19 @@ public class PostService {
         Post post = getPostById(postId);
         if (!post.getAuthor().equals(currentUser))
             throw new IllegalArgumentException("Unauthorized");
-        post.setPinned(!post.isPinned());
+
+        boolean newPinnedStatus = !post.isPinned();
+
+        // If we are pinning this post, we must unpin all other posts first
+        if (newPinnedStatus) {
+            List<Post> pinnedPosts = postRepository.findPinnedPosts(currentUser);
+            for (Post p : pinnedPosts) {
+                p.setPinned(false);
+            }
+            postRepository.saveAll(pinnedPosts);
+        }
+
+        post.setPinned(newPinnedStatus);
         postRepository.save(post);
     }
 
@@ -213,9 +226,10 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public Page<Post> getFeedPosts(User currentUser, int page, String type, String userRole) {
-        // Refresh currentUser to avoid LazyInitializationException with following collection
+        // Refresh currentUser to avoid LazyInitializationException with following
+        // collection
         currentUser = userService.findByUsername(currentUser.getUsername());
-        
+
         List<User> connections = connectionService.getConnections(currentUser);
         List<User> following = new ArrayList<>(currentUser.getFollowing());
         Set<User> feedUsers = new HashSet<>();
@@ -224,16 +238,39 @@ public class PostService {
         feedUsers.add(currentUser);
 
         List<Long> userIds = feedUsers.stream().map(User::getId).collect(java.util.stream.Collectors.toList());
-        
+
         PageRequest pageable = PageRequest.of(page, 20);
         java.time.LocalDateTime now = java.time.LocalDateTime.now();
 
         if (type != null && !type.isBlank()) {
-            return postRepository.findFeedPostsByType(userIds, com.revconnect.enums.PostType.valueOf(type.toUpperCase()), now, pageable);
+            return postRepository.findFeedPostsByType(userIds,
+                    com.revconnect.enums.PostType.valueOf(type.toUpperCase()), now, pageable);
         } else if (userRole != null && !userRole.isBlank()) {
-            return postRepository.findFeedPostsByRole(userIds, com.revconnect.enums.UserRole.valueOf(userRole.toUpperCase()), now, pageable);
+            return postRepository.findFeedPostsByRole(userIds,
+                    com.revconnect.enums.UserRole.valueOf(userRole.toUpperCase()), now, pageable);
         }
         return postRepository.findFeedPosts(userIds, now, pageable);
+    }
+
+    /**
+     * Professional Ranked Feed: Fetches posts from the social circle
+     * and ranks them by engagement score.
+     */
+    @Transactional(readOnly = true)
+    public Page<Post> getPersonalizedFeed(User currentUser, int page) {
+        currentUser = userService.findByUsername(currentUser.getUsername());
+
+        List<User> connections = connectionService.getConnections(currentUser);
+        List<User> following = new ArrayList<>(currentUser.getFollowing());
+        Set<User> feedUsers = new HashSet<>();
+        feedUsers.addAll(connections);
+        feedUsers.addAll(following);
+        feedUsers.add(currentUser);
+
+        List<Long> userIds = feedUsers.stream().map(User::getId).collect(Collectors.toList());
+        PageRequest pageable = PageRequest.of(page, 20);
+
+        return postRepository.findRankedFeedPosts(userIds, java.time.LocalDateTime.now(), pageable);
     }
 
     @Transactional(readOnly = true)
@@ -269,8 +306,7 @@ public class PostService {
                         conn, sharer,
                         NotificationType.POST_SHARED,
                         notificationMsg,
-                        "/post/" + postId
-                );
+                        "/post/" + postId);
             }
         }
     }
@@ -314,7 +350,7 @@ public class PostService {
                     counts.merge(t, 1L, (a, b) -> a + b);
             }
         }
-        
+
         // Add default hashtags if none exist to populate the UI
         if (counts.size() < 5) {
             counts.put("revconnect", 15L);
@@ -363,4 +399,3 @@ public class PostService {
         return postRepository.countByAuthorAndDeletedFalse(user);
     }
 }
-    

@@ -28,16 +28,31 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
         @Query("SELECT p FROM Post p WHERE p.deleted = false AND " +
                         "p.author.id IN :userIds AND (p.scheduledAt IS NULL OR p.scheduledAt <= :now) " +
-                        "AND p.pinned = false " +
                         "ORDER BY p.createdAt DESC")
         Page<Post> findFeedPosts(@Param("userIds") List<Long> userIds,
+                        @Param("now") java.time.LocalDateTime now,
+                        Pageable pageable);
+
+        /**
+         * Personalized Feed Query: Calculates an engagement score based on likes,
+         * comments, and reposts.
+         * The weights are calibrated for professional platform relevance.
+         */
+        @Query("SELECT p FROM Post p " +
+                        "LEFT JOIN p.likes l " +
+                        "LEFT JOIN p.comments c " +
+                        "WHERE p.deleted = false " +
+                        "AND (p.author.id IN :userIds) " +
+                        "AND (p.scheduledAt IS NULL OR p.scheduledAt <= :now) " +
+                        "GROUP BY p.id " +
+                        "ORDER BY (COUNT(DISTINCT l) * 1.5 + COUNT(DISTINCT c) * 3.0 + (CASE WHEN p.postType = 'REPOST' THEN 5 ELSE 0 END)) DESC, p.createdAt DESC")
+        Page<Post> findRankedFeedPosts(@Param("userIds") List<Long> userIds,
                         @Param("now") java.time.LocalDateTime now,
                         Pageable pageable);
 
         @Query("SELECT p FROM Post p WHERE p.deleted = false AND " +
                         "p.author.id IN :userIds AND p.postType = :postType AND (p.scheduledAt IS NULL OR p.scheduledAt <= :now) "
                         +
-                        "AND p.pinned = false " +
                         "ORDER BY p.createdAt DESC")
         Page<Post> findFeedPostsByType(@Param("userIds") List<Long> userIds,
                         @Param("postType") com.revconnect.enums.PostType postType,
@@ -47,7 +62,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         @Query("SELECT p FROM Post p WHERE p.deleted = false AND " +
                         "p.author.id IN :userIds AND p.author.role = :userRole AND (p.scheduledAt IS NULL OR p.scheduledAt <= :now) "
                         +
-                        "AND p.pinned = false " +
                         "ORDER BY p.createdAt DESC")
         Page<Post> findFeedPostsByRole(@Param("userIds") List<Long> userIds,
                         @Param("userRole") com.revconnect.enums.UserRole userRole,

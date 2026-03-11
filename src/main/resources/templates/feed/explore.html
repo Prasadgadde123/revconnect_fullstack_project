@@ -15,12 +15,12 @@
             <!-- Main explore column -->
             <div class="explore-main">
                 <!-- User search results -->
-
-                <!-- User search results -->
                 <div th:if="${searchResults != null}">
                     <h3 th:text="'Results for: ' + ${searchQuery}">Results</h3>
                     <div th:if="${searchResults.empty}" class="empty-state">
+                        <div class="empty-icon">🔍</div>
                         <p>No users found for "<span th:text="${searchQuery}"></span>"</p>
+                        <a th:href="@{/explore}" class="btn btn-sm btn-outline mt-2">Clear Search</a>
                     </div>
                     <div class="user-grid" th:if="${!searchResults.empty}">
                         <div th:each="u : ${searchResults}">
@@ -31,12 +31,23 @@
 
                 <!-- Hashtag posts -->
                 <div th:if="${activeHashtag != null}">
-                    <h3 th:text="'Posts tagged #' + ${activeHashtag}">Hashtag posts</h3>
-                    <div th:if="${hashtagPosts.empty}" class="empty-state">
-                        <p>No posts found with this hashtag yet.</p>
+                    <div
+                        style="background: rgba(99, 102, 241, 0.1); padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--primary);">
+                        <h3 style="margin: 0; font-size: 1.2rem;" th:text="'Posts tagged #' + ${activeHashtag}">Hashtag
+                            posts</h3>
+                        <small style="color: var(--primary); font-weight: 600;"
+                            th:text="'Debug: Found ' + ${hashtagPosts != null ? hashtagPosts.size() : 0} + ' posts'"></small>
                     </div>
-                    <div th:each="post : ${hashtagPosts}">
-                        <div th:replace="~{fragments/layout :: postCard(${post}, ${#authentication.principal})}"></div>
+
+                    <div th:if="${hashtagPosts == null or hashtagPosts.empty}" class="empty-state debug-empty"
+                        style="background: #fff; border: 2px dashed #6366f1 !important; opacity: 1 !important; display: flex !important;">
+                        <div class="empty-icon">🏷️</div>
+                        <h3>No posts found</h3>
+                        <p th:text="'We couldn\'t find any posts with #' + ${activeHashtag} + ' yet.'"></p>
+                        <a th:href="@{/explore}" class="btn btn-primary mt-2">Explore Trends</a>
+                    </div>
+                    <div th:if="${hashtagPosts != null}" th:each="post : ${hashtagPosts}">
+                        <div th:replace="~{fragments/layout :: postCard(${post}, ${currentUser})}"></div>
                     </div>
                 </div>
 
@@ -47,7 +58,7 @@
                         <p>No trending posts yet. Be the first to post!</p>
                     </div>
                     <div th:each="post : ${trendingPosts}">
-                        <div th:replace="~{fragments/layout :: postCard(${post}, ${#authentication.principal})}"></div>
+                        <div th:replace="~{fragments/layout :: postCard(${post}, ${currentUser})}"></div>
                     </div>
                 </div>
             </div>
@@ -73,6 +84,8 @@
         </div>
     </div>
     <script th:src="@{/js/main.js}"></script>
+    <!-- Reports Modal -->
+    <div th:replace="~{fragments/layout :: reporting}"></div>
 </body>
 
 </html>

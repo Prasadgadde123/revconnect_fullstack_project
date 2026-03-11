@@ -1,4 +1,5 @@
 package com.revconnect.entity;
+
 import com.revconnect.enums.NotificationType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -6,7 +7,11 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "notifications")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Notification {
 
     @Id
@@ -22,7 +27,7 @@ public class Notification {
     private User actor;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private NotificationType type;
 
     private String message;

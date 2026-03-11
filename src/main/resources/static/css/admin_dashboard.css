@@ -41,13 +41,12 @@
 }
 
 .admin-sidebar {
-    width: 100px;
-    /* Slim sidebar with rounded icons as requested */
-    background: var(--admin-card-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    width: 110px;
+    background: #15192b;
+    /* very dark blue, basically what the image shows */
     border-right: 1px solid var(--admin-border);
-    padding: 2rem 1rem;
+    padding: 2rem 0;
+    /* removed horizontal padding to allow full width flex */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -55,6 +54,18 @@
     position: sticky;
     top: 0;
     z-index: 100;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.admin-sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.admin-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
 }
 
 .admin-main {
@@ -70,12 +81,16 @@
     margin-bottom: 3rem;
     display: flex;
     justify-content: center;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
 }
 
 .admin-logo-icon {
     width: 50px;
     height: 50px;
-    background: linear-gradient(135deg, var(--admin-primary), #60a5fa);
+    background: #3b82f6;
+    /* Flat blue like the picture */
     border-radius: 16px;
     display: flex;
     align-items: center;
@@ -83,45 +98,83 @@
     color: white;
     font-weight: 900;
     font-size: 1.5rem;
-    box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
 }
 
 .admin-nav {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
     align-items: center;
+    width: 100%;
 }
 
 .admin-nav-link {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 54px;
-    height: 54px;
-    border-radius: 18px;
-    color: var(--admin-text-muted);
+    gap: 8px;
+    width: 100%;
+    color: #94a3b8;
+    /* Subtle slate hue */
     text-decoration: none;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     background: transparent;
+    padding: 0 10px;
+}
+
+.admin-nav-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    background: transparent;
+    color: inherit;
 }
 
 .admin-nav-link svg {
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
     stroke-width: 1.5;
 }
 
-.admin-nav-link:hover {
-    background: var(--admin-primary-light);
-    color: var(--admin-primary);
+.admin-nav-text {
+    font-size: 0.70rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+
+.admin-nav-link:hover .admin-nav-icon {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
     transform: translateY(-2px);
 }
 
-.admin-nav-link.active {
-    background: var(--admin-primary);
+.admin-nav-link:hover .admin-nav-text {
+    color: white;
+}
+
+.logout-btn:hover .admin-nav-icon {
+    background: rgba(239, 68, 68, 0.15) !important;
+    color: #ef4444 !important;
+}
+
+.logout-btn:hover .admin-nav-text {
+    color: #ef4444 !important;
+}
+
+.admin-nav-link.active .admin-nav-icon {
+    background: #3b82f6;
     color: white;
     box-shadow: 0 12px 20px -5px rgba(59, 130, 246, 0.4);
+}
+
+.admin-nav-link.active .admin-nav-text {
+    color: white;
 }
 
 /* Welcome Banner */

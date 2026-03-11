@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // ============================================================
     document.querySelectorAll('.btn-menu').forEach(btn => {
         btn.addEventListener('click', function (e) {
+            e.preventDefault();
             e.stopPropagation();
             const dropdown = this.nextElementSibling;
             const isOpen = dropdown.style.display === 'block';
@@ -57,8 +58,12 @@ document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('click', () => {
         document.querySelectorAll('.post-dropdown').forEach(d => d.style.display = 'none');
     });
+    // Let clicks on links/buttons inside the dropdown actually close the dropdown while preserving their default action
     document.querySelectorAll('.post-dropdown').forEach(d => {
-        d.addEventListener('click', e => e.stopPropagation());
+        d.addEventListener('click', e => {
+            // we don't stop propagation here so that the document click listener can close the menu
+            // BUT we let the default action happen (form submit, 'onclick' for modal, etc.)
+        });
     });
 
     // ============================================================
@@ -130,8 +135,26 @@ document.addEventListener('DOMContentLoaded', function () {
     // Dropdown is handled via CSS :hover but let's add touch support
     const profileMenu = document.querySelector('.nav-profile-menu');
     if (profileMenu) {
+        const toggleBtn = profileMenu.querySelector('.dock-item-v2');
+        const dropdown = profileMenu.querySelector('.dropdown-menu');
+
+        if (toggleBtn && dropdown) {
+            toggleBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const isOpen = dropdown.style.display === 'block';
+                dropdown.style.display = isOpen ? 'none' : 'block';
+            });
+
+            // Close when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!profileMenu.contains(e.target)) {
+                    dropdown.style.display = 'none';
+                }
+            });
+        }
+
         profileMenu.addEventListener('touchstart', function (e) {
-            const dropdown = this.querySelector('.dropdown-menu');
             if (dropdown) {
                 dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
                 e.preventDefault();
@@ -172,39 +195,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // ============================================================
     // CYBER CARD INTERACTIONS (Loading States)
     // ============================================================
-    document.querySelectorAll('.btn-interact').forEach(btn => {
-        btn.addEventListener('click', function (e) {
-            e.preventDefault();
-            if (this.classList.contains('loading')) return;
-
-            const action = this.dataset.action;
-            const originalHtml = this.innerHTML;
-
-            this.classList.add('loading');
-
-            // Simulate API Call
-            setTimeout(() => {
-                this.classList.remove('loading');
-                if (action === 'connect') {
-                    this.innerHTML = `
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        Connected
-                    `;
-                    this.classList.remove('cyber-btn-primary');
-                    this.classList.add('cyber-btn-outline');
-                    this.style.borderColor = 'var(--neon-green)';
-                    this.style.color = 'var(--neon-green)';
-                } else if (action === 'message') {
-                    // Just a subtle feedback for message
-                    this.style.borderColor = 'var(--neon-blue)';
-                    this.innerHTML = `
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                        Sent
-                    `;
-                }
-            }, 1200);
-        });
-    });
+    // Removal of btn-interact legacy handlers as they are replaced by universal follow/connect
 
     // ============================================================
     // PROFILE TABS (Vanilla Bootstrap-like behavior)
@@ -230,7 +221,51 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // ============================================================
-    // UNIVERSAL FOLLOW/CONNECT BUTTON (AJAX)
+    // UNIVERSAL CONNECT BUTTON (AJAX)
+    // ============================================================
+    document.querySelectorAll('.connect-btn-ajax').forEach(btn => {
+        btn.addEventListener('click', async function (e) {
+            e.preventDefault();
+            if (this.classList.contains('loading') || this.disabled) return;
+
+            const userId = this.dataset.userId;
+            const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+
+            const originalText = this.textContent;
+            this.classList.add('loading');
+            this.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+
+            try {
+                const res = await fetch(`/api/connections/request/${userId}`, {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': csrfToken }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.success) {
+                        this.textContent = 'Pending';
+                        this.disabled = true;
+                        this.classList.remove('btn-primary', 'premium-btn-shimmer', 'sophie-follow-btn', 'btn-luxury-primary');
+                        this.classList.add('btn-outline-secondary', 'btn-luxury-outline');
+                    } else {
+                        console.error('Connection request failed:', data.message);
+                        this.textContent = originalText;
+                    }
+                } else {
+                    this.textContent = originalText;
+                }
+            } catch (err) {
+                console.error('Connection request failed:', err);
+                this.textContent = originalText;
+            } finally {
+                this.classList.remove('loading');
+            }
+        });
+    });
+
+    // ============================================================
+    // UNIVERSAL FOLLOW BUTTON (AJAX)
     // ============================================================
     document.querySelectorAll('.follow-btn-ajax').forEach(btn => {
         btn.addEventListener('click', async function (e) {
@@ -245,10 +280,8 @@ document.addEventListener('DOMContentLoaded', function () {
             this.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
 
             try {
-                // Determine action based on current state
-                const isFollowing = this.classList.contains('btn-outline-primary') || this.textContent.trim().toUpperCase() === 'CONNECTED' || this.textContent.trim().toUpperCase() === 'FOLLOWING';
+                const isFollowing = this.textContent.trim().toUpperCase() === 'FOLLOWING';
                 const action = isFollowing ? 'unfollow' : 'follow';
-
                 const url = action === 'follow' ? `/follow/${userId}` : `/follow/unfollow/${userId}`;
 
                 const res = await fetch(url, {
@@ -260,34 +293,40 @@ document.addEventListener('DOMContentLoaded', function () {
                     const data = await res.json();
                     // Toggle appearance
                     if (data.isFollowing) {
-                        this.textContent = this.classList.contains('btn-luxury') ? 'CONNECTED' : 'Following';
-                        this.classList.remove('btn-primary');
-                        this.classList.add('btn-outline-primary');
+                        this.textContent = this.dataset.activeText || (this.classList.contains('btn-luxury') ? 'FOLLOWING' : 'Following');
+                        this.classList.remove('btn-primary', 'btn-luxury-primary');
+                        this.classList.add('btn-outline-primary', 'btn-luxury-outline');
                     } else {
-                        this.textContent = this.classList.contains('btn-luxury') ? '+ ADD' : 'Follow';
-                        this.classList.remove('btn-outline-primary');
-                        this.classList.add('btn-primary');
+                        this.textContent = this.dataset.inactiveText || (this.classList.contains('btn-luxury') ? 'FOLLOW' : 'Follow');
+                        this.classList.remove('btn-outline-primary', 'btn-luxury-outline');
+                        this.classList.add('btn-primary', 'btn-luxury-primary');
                     }
 
-                    // Update counts in the UI if we find the stat containers
-                    const followerStat = document.querySelectorAll('.luxury-stat-item').item(0)?.querySelector('.luxury-stat-value');
-                    const followingStat = document.querySelectorAll('.luxury-stat-item').item(1)?.querySelector('.luxury-stat-value');
+                    // Update counts in the UI
+                    // 1. Update the follower/following count on the current profile card (if on profile page)
+                    const profileFollowerCount = document.querySelector('.profile-header-card .fw-bold.fs-5, .premium-hero-header-v2 .premium-stat-val, .sophie-hero-container .sophie-stat-item span, .luxury-stat-item[data-stat="followers"] .luxury-stat-value');
+                    const profileFollowingCount = document.querySelector('.luxury-stat-item[data-stat="following"] .luxury-stat-value');
 
-                    if (followerStat) followerStat.textContent = data.followerCount;
-                    if (followingStat) followingStat.textContent = data.followingCount;
+                    if (profileFollowerCount && data.followerCount !== undefined) {
+                        profileFollowerCount.textContent = data.followerCount;
+                    }
+                    if (profileFollowingCount && data.followingCount !== undefined) {
+                        profileFollowingCount.textContent = data.followingCount;
+                    }
 
-                    // Also update premium stat pills if they exist
-                    document.querySelectorAll('.premium-stat-pill').forEach(pill => {
-                        const label = pill.querySelector('.premium-stat-label')?.textContent.toLowerCase();
-                        const val = pill.querySelector('.premium-stat-val');
-                        if (label === 'followers') val.textContent = data.followerCount;
-                        if (label === 'following') val.textContent = data.followingCount;
-                    });
+                    // 2. Update stats on mini-cards or suggested accounts sidebar
+                    const cardContainer = this.closest('.post-card, .profile-card, .suggested-user-card, .luxury-profile-card');
+                    if (cardContainer) {
+                        const cardFollowerCount = cardContainer.querySelector('.follower-count-text, .luxury-stat-value');
+                        if (cardFollowerCount && data.followerCount !== undefined) {
+                            cardFollowerCount.textContent = data.followerCount;
+                        }
+                    }
                 } else {
                     this.textContent = originalText;
                 }
             } catch (err) {
-                console.error('Operation failed:', err);
+                console.error('Follow failed:', err);
                 this.textContent = originalText;
             } finally {
                 this.classList.remove('loading');
@@ -323,4 +362,93 @@ document.addEventListener('DOMContentLoaded', function () {
             card.style.transform = `rotateX(0deg) rotateY(0deg)`;
         });
     });
+    // ============================================================
+    // PASSWORD STRENGTH INDICATOR
+    // ============================================================
+    const passwordInputs = document.querySelectorAll('input[type="password"]');
+    passwordInputs.forEach(input => {
+        if (!input.id.includes('Confirm') && !input.name.includes('confirm')) {
+            const meter = document.createElement('div');
+            meter.className = 'password-strength-meter';
+            meter.innerHTML = '<div class="password-strength-fill"></div>';
+            input.parentElement.after(meter);
+
+            input.addEventListener('input', () => {
+                const val = input.value;
+                const fill = meter.querySelector('.password-strength-fill');
+                meter.style.display = val.length > 0 ? 'block' : 'none';
+
+                if (val.length < 5) {
+                    fill.className = 'password-strength-fill weak';
+                } else if (val.length < 10) {
+                    fill.className = 'password-strength-fill medium';
+                } else {
+                    fill.className = 'password-strength-fill strong';
+                }
+            });
+        }
+    });
+    // ============================================================
+    // INFINITE SCROLL (Intersection Observer)
+    // ============================================================
+    const sentinel = document.getElementById('feed-sentinel');
+    const feedContainer = document.getElementById('feed-container');
+    const loader = document.getElementById('feed-loader');
+    const paginationData = document.getElementById('pagination-data');
+
+    if (sentinel && feedContainer && paginationData) {
+        let currentPage = parseInt(paginationData.dataset.currentPage);
+        const totalPages = parseInt(paginationData.dataset.totalPages);
+        let loading = false;
+
+        const loadMore = async () => {
+            if (loading || currentPage + 1 >= totalPages) return;
+            loading = true;
+            if (loader) loader.style.display = 'block';
+
+            try {
+                const nextPage = currentPage + 1;
+                const params = new URLSearchParams(window.location.search);
+                params.set('page', nextPage);
+
+                const res = await fetch(`/feed/fragment?${params.toString()}`);
+                if (res.ok) {
+                    const html = await res.text();
+                    const temp = document.createElement('div');
+                    temp.innerHTML = html;
+
+                    const newPosts = temp.querySelectorAll('.post-card');
+                    newPosts.forEach(post => {
+                        post.style.opacity = '0';
+                        feedContainer.appendChild(post);
+                        requestAnimationFrame(() => {
+                            post.style.transition = 'opacity 0.5s ease-in-out';
+                            post.style.opacity = '1';
+                        });
+                    });
+
+                    currentPage = nextPage;
+                    paginationData.dataset.currentPage = currentPage;
+
+                    if (currentPage + 1 >= totalPages) {
+                        observer.unobserve(sentinel);
+                        sentinel.innerHTML = '<p class="text-center text-muted small mt-4">You\'ve caught up with everything! ✨</p>';
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to load more posts:', err);
+            } finally {
+                loading = false;
+                if (loader) loader.style.display = 'none';
+            }
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                loadMore();
+            }
+        }, { rootMargin: '200px' });
+
+        observer.observe(sentinel);
+    }
 });
