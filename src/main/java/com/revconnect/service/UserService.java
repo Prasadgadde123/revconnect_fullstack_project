@@ -57,7 +57,7 @@ public class UserService implements UserDetailsService {
                 .privateProfile(dto.isPrivateProfile())
                 .role(dto.getRole() != null ? dto.getRole() : UserRole.PERSONAL)
                 .securityQuestion(dto.getSecurityQuestion())
-                .securityAnswer(passwordEncoder.encode(dto.getSecurityAnswer().toLowerCase().trim()))
+                .securityAnswer(dto.getSecurityAnswer() != null ? passwordEncoder.encode(dto.getSecurityAnswer().toLowerCase().trim()) : null)
                 .build();
 
         User saved = userRepository.save(user);
@@ -213,7 +213,6 @@ public class UserService implements UserDetailsService {
         user.setEnabled(!user.isEnabled());
         userRepository.save(user);
     }
-
     public void toggleBookmark(User user, User target) {
         User freshUser = userRepository.findByIdWithBookmarks(user.getId())
                 .orElse(user);

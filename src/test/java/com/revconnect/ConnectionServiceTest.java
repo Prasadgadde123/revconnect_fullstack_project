@@ -32,10 +32,12 @@ class ConnectionServiceTest {
         userA = userService.register(RegisterDTO.builder()
                 .username("userA").email("a@test.com")
                 .password("pass").confirmPassword("pass")
+                .securityQuestion("Question").securityAnswer("Answer")
                 .role(UserRole.PERSONAL).build());
         userB = userService.register(RegisterDTO.builder()
                 .username("userB").email("b@test.com")
                 .password("pass").confirmPassword("pass")
+                .securityQuestion("Question").securityAnswer("Answer")
                 .role(UserRole.PERSONAL).build());
     }
 
@@ -53,8 +55,8 @@ class ConnectionServiceTest {
         Connection conn = connectionService.sendRequest(userA, userB);
         connectionService.rejectRequest(conn.getId(), userB);
         assertFalse(connectionService.areConnected(userA, userB));
-        
-        Connection updated = connectionService.getStatus(userA, userB) != null ? conn : null; 
+
+        Connection updated = connectionService.getStatus(userA, userB) != null ? conn : null;
         // Note: depends on implementation of getStatus
     }
 }

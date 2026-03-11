@@ -78,7 +78,7 @@ public class PostService {
 
     public void deletePost(Long postId, User currentUser) {
         Post post = getPostById(postId);
-        if (!post.getAuthor().equals(currentUser) && !currentUser.getRole().name().equals("ADMIN")) {
+        if (!post.getAuthor().getId().equals(currentUser.getId()) && currentUser.getRole() != com.revconnect.enums.UserRole.ADMIN) {
             throw new IllegalArgumentException("Unauthorized");
         }
         post.setDeleted(true);
@@ -393,7 +393,6 @@ public class PostService {
         analytics.put("createdAt", post.getCreatedAt());
         return analytics;
     }
-
     @Transactional(readOnly = true)
     public long getPostCountByUser(User user) {
         return postRepository.countByAuthorAndDeletedFalse(user);

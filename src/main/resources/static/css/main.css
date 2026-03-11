@@ -3105,7 +3105,6 @@ small {
     flex: 1;
     min-width: 0;
 }
-
 .notif-actor-name {
     font-weight: 700;
     font-size: 15px;
@@ -3132,7 +3131,6 @@ small {
     align-items: center;
     gap: 12px;
 }
-
 .unread-dot {
     color: var(--primary);
     font-size: 14px;
@@ -5809,4 +5807,6 @@ body {
 
 .trending-tag:hover .tag-name {
     color: var(--primary);
+=======
+>>>>>>> 49d8fa7de989b0161b7e67477586b02f7ab55eb0
 }

@@ -180,12 +180,26 @@ public class DataInitializer implements CommandLineRunner {
                 return userService.register(dto);
         }
 
-        private void createPost(User author, String content, String hashtags, PostType type) {
-                PostCreateDTO dto = PostCreateDTO.builder()
-                                .content(content)
-                                .hashtags(hashtags)
-                                .postType(type)
-                                .build();
-                postService.createPost(author, dto);
-        }
+    private User registerUser(String username, String email, String password, String displayName, UserRole role) {
+        RegisterDTO dto = RegisterDTO.builder()
+                .username(username)
+                .email(email)
+                .password(password)
+                .confirmPassword(password)
+                .displayName(displayName)
+                .role(role)
+                .securityQuestion("Default Question")
+                .securityAnswer("Default Answer")
+                .build();
+        return userService.register(dto);
+    }
+
+    private void createPost(User author, String content, String hashtags, PostType type) {
+        PostCreateDTO dto = PostCreateDTO.builder()
+                .content(content)
+                .hashtags(hashtags)
+                .postType(type)
+                .build();
+        postService.createPost(author, dto);
+    }
 }

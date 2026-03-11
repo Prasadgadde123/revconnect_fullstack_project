@@ -31,10 +31,12 @@ class NotificationServiceTest {
         recipient = userService.register(RegisterDTO.builder()
                 .username("recip").email("r@test.com")
                 .password("pass").confirmPassword("pass")
+                .securityQuestion("Question").securityAnswer("Answer")
                 .role(UserRole.PERSONAL).build());
         actor = userService.register(RegisterDTO.builder()
                 .username("actor").email("a@test.com")
                 .password("pass").confirmPassword("pass")
+                .securityQuestion("Question").securityAnswer("Answer")
                 .role(UserRole.PERSONAL).build());
     }
 

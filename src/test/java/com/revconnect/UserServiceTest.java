@@ -56,6 +56,7 @@ class UserServiceTest {
                 .email("different@example.com")
                 .password("pass")
                 .confirmPassword("pass")
+                .securityQuestion("Question").securityAnswer("Answer")
                 .build();
         assertThrows(IllegalArgumentException.class, () -> userService.register(duplicate));
     }
@@ -68,6 +69,7 @@ class UserServiceTest {
                 .email("test@example.com")
                 .password("pass")
                 .confirmPassword("pass")
+                .securityQuestion("Question").securityAnswer("Answer")
                 .build();
         assertThrows(IllegalArgumentException.class, () -> userService.register(duplicate));
     }
@@ -86,6 +88,7 @@ class UserServiceTest {
         RegisterDTO dto2 = RegisterDTO.builder()
                 .username("target").email("t@t.com")
                 .password("pass").confirmPassword("pass")
+                .securityQuestion("Question").securityAnswer("Answer")
                 .role(UserRole.PERSONAL).build();
         User target = userService.register(dto2);
 

@@ -53,24 +53,6 @@
                 </select>
             </div>
 
-            <hr class="my-4">
-            <h3 class="h6 mb-3">Security Recovery</h3>
-
-            <div class="form-group">
-                <label>Security Question *</label>
-                <input type="text" th:field="*{securityQuestion}" placeholder="e.g., What was your first pet's name?"
-                       class="form-control" th:classappend="${#fields.hasErrors('securityQuestion')} ? 'is-invalid'"/>
-                <span th:if="${#fields.hasErrors('securityQuestion')}" th:errors="*{securityQuestion}" class="field-error"></span>
-            </div>
-
-            <div class="form-group">
-                <label>Security Answer *</label>
-                <input type="text" th:field="*{securityAnswer}" placeholder="Your answer"
-                       class="form-control" th:classappend="${#fields.hasErrors('securityAnswer')} ? 'is-invalid'"/>
-                <span th:if="${#fields.hasErrors('securityAnswer')}" th:errors="*{securityAnswer}" class="field-error"></span>
-                <small class="text-muted">You will need this to reset your password.</small>
-            </div>
-
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <button type="submit" class="btn btn-primary btn-full">Create Account</button>
         </form>

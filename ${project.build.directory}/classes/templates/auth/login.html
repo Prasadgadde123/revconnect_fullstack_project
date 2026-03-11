@@ -6,11 +6,9 @@
 <div class="auth-container">
     <div class="auth-card">
         <div class="auth-brand">
-            <img th:src="@{/images/logo.png}" alt="RevConnect" class="brand-logo-img brand-logo-auth"/>
-            <div class="auth-brand-text">
-                <h1>RevConnect</h1>
-                <p>Connect. Create. Grow.</p>
-            </div>
+            <span class="brand-icon-large">⚡</span>
+            <h1>RevConnect</h1>
+            <p>Connect. Create. Grow.</p>
         </div>
 
         <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
@@ -22,13 +20,10 @@
                 <input type="text" name="username" placeholder="Enter username or email"
                        class="form-control" required autofocus/>
             </div>
-            <div class="form-group mb-3">
+            <div class="form-group">
                 <label>Password</label>
                 <input type="password" name="password" placeholder="Enter password"
                        class="form-control" required/>
-                <div class="text-right mt-1">
-                    <a th:href="@{/forgot-password}" class="text-muted small">Forgot Password?</a>
-                </div>
             </div>
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <button type="submit" class="btn btn-primary btn-full">Login</button>
