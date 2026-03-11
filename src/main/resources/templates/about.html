@@ -1,0 +1,137 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en" xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>About Us - RevConnect</title>-->
+<!--    &lt;!&ndash; Modern Typography &ndash;&gt;-->
+<!--    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">-->
+<!--    &lt;!&ndash; FontAwesome for Icons &ndash;&gt;-->
+<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">-->
+<!--    &lt;!&ndash; Custom CSS &ndash;&gt;-->
+<!--    <link rel="stylesheet" th:href="@{/css/landing.css}">-->
+<!--    <style>-->
+<!--        .page-header {-->
+<!--            padding: 10rem 5% 4rem;-->
+<!--            text-align: center;-->
+<!--            position: relative;-->
+<!--            z-index: 10;-->
+<!--        }-->
+<!--        .page-title {-->
+<!--            font-size: clamp(2.5rem, 5vw, 4rem);-->
+<!--            margin-bottom: 1rem;-->
+<!--            font-weight: 800;-->
+<!--        }-->
+<!--        .content-section {-->
+<!--            max-width: 800px;-->
+<!--            margin: 0 auto;-->
+<!--            padding: 2rem 5% 6rem;-->
+<!--            position: relative;-->
+<!--            z-index: 10;-->
+<!--        }-->
+<!--        .content-card {-->
+<!--            background: rgba(30, 41, 59, 0.4);-->
+<!--            backdrop-filter: blur(16px);-->
+<!--            -webkit-backdrop-filter: blur(16px);-->
+<!--            border: 1px solid rgba(255, 255, 255, 0.1);-->
+<!--            border-radius: 1.5rem;-->
+<!--            padding: 3rem;-->
+<!--            margin-bottom: 2rem;-->
+<!--            line-height: 1.8;-->
+<!--            font-size: 1.125rem;-->
+<!--            color: var(&#45;&#45;text-secondary);-->
+<!--        }-->
+<!--        .content-card h2 {-->
+<!--            color: var(&#45;&#45;text-primary);-->
+<!--            margin-bottom: 1.5rem;-->
+<!--            font-size: 2rem;-->
+<!--        }-->
+<!--        .team-grid {-->
+<!--            display: grid;-->
+<!--            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));-->
+<!--            gap: 2rem;-->
+<!--            margin-top: 3rem;-->
+<!--        }-->
+<!--        .team-member {-->
+<!--            text-align: center;-->
+<!--        }-->
+<!--        .team-avatar {-->
+<!--            width: 120px;-->
+<!--            height: 120px;-->
+<!--            border-radius: 50%;-->
+<!--            background: linear-gradient(135deg, var(&#45;&#45;primary-color), var(&#45;&#45;accent-color));-->
+<!--            margin: 0 auto 1rem;-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            justify-content: center;-->
+<!--            font-size: 3rem;-->
+<!--            color: white;-->
+<!--            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);-->
+<!--        }-->
+<!--        .team-name {-->
+<!--            font-weight: 600;-->
+<!--            color: var(&#45;&#45;text-primary);-->
+<!--            margin-bottom: 0.25rem;-->
+<!--        }-->
+<!--        .team-role {-->
+<!--            font-size: 0.875rem;-->
+<!--            color: var(&#45;&#45;primary-color);-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--    <nav class="navbar">-->
+<!--        <div class="logo">-->
+<!--            <a th:href="@{/}" style="text-decoration: none; color: inherit;"><i class="fas fa-network-wired text-primary"></i> RevConnect</a>-->
+<!--        </div>-->
+<!--        <div class="nav-links">-->
+<!--            <a th:href="@{/about}" class="btn" style="color: var(&#45;&#45;text-primary);">About</a>-->
+<!--            <a th:href="@{/contact}" class="btn" style="color: var(&#45;&#45;text-primary);">Contact</a>-->
+<!--            <a th:href="@{/login}" class="btn btn-outline">Log In</a>-->
+<!--            <a th:href="@{/register}" class="btn btn-primary">Sign Up</a>-->
+<!--        </div>-->
+<!--    </nav>-->
+
+<!--    <header class="page-header">-->
+<!--        <h1 class="page-title text-gradient">About RevConnect</h1>-->
+<!--        <p class="hero-subtitle" style="margin: 0 auto;">Building the future of professional networking</p>-->
+<!--    </header>-->
+
+<!--    <main class="content-section">-->
+<!--        <div class="content-card">-->
+<!--            <h2>Our Mission</h2>-->
+<!--            <p>-->
+<!--                At RevConnect, we believe that professional networking shouldn't feel like a chore. Our mission is to create a vibrant, dynamic platform where professionals, creators, and businesses can connect, share ideas, and grow together in a meaningful way.-->
+<!--            </p>-->
+<!--            <br>-->
+<!--            <p>-->
+<!--                Founded in 2026, we noticed a gap in the market between traditional, rigid networking sites and casual social media. RevConnect bridges that gap by offering powerful tools for businesses while maintaining an engaging, fresh experience for everyday users.-->
+<!--            </p>-->
+<!--        </div>-->
+
+<!--        <div class="content-card" style="text-align: center;">-->
+<!--            <h2>The Visionaries</h2>-->
+<!--            <div class="team-grid">-->
+<!--                <div class="team-member">-->
+<!--                    <div class="team-avatar"><i class="fas fa-user-astronaut"></i></div>-->
+<!--                    <div class="team-name">Alex Voyager</div>-->
+<!--                    <div class="team-role">CEO & Founder</div>-->
+<!--                </div>-->
+<!--                <div class="team-member">-->
+<!--                    <div class="team-avatar"><i class="fas fa-user-ninja"></i></div>-->
+<!--                    <div class="team-name">Sam Coder</div>-->
+<!--                    <div class="team-role">Head of Engineering</div>-->
+<!--                </div>-->
+<!--                <div class="team-member">-->
+<!--                    <div class="team-avatar"><i class="fas fa-user-tie"></i></div>-->
+<!--                    <div class="team-name">Jordan Design</div>-->
+<!--                    <div class="team-role">Lead Product Designer</div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="blob shape-1"></div>-->
+<!--        <div class="blob shape-2"></div>-->
+<!--    </main>-->
+<!--</body>-->
+<!--</html>-->

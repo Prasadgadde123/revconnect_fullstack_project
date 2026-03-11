@@ -25,9 +25,9 @@ public class NotificationController {
     }
 
     @PostMapping("/mark-read/{id}")
-    public String markRead(@PathVariable Long id,
-                            @AuthenticationPrincipal User currentUser,
-                            RedirectAttributes ra) {
+    public String markRead(@PathVariable(name = "id") Long id,
+            @AuthenticationPrincipal User currentUser,
+            RedirectAttributes ra) {
         notificationService.markAsRead(id, currentUser);
         return "redirect:/notifications";
     }

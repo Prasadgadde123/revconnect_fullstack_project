@@ -125,17 +125,27 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // ============================================================
-    // MOBILE NAV DROPDOWN
+    // PROFILE MENU DROPDOWN (Click toggle)
     // ============================================================
-    // Dropdown is handled via CSS :hover but let's add touch support
     const profileMenu = document.querySelector('.nav-profile-menu');
     if (profileMenu) {
-        profileMenu.addEventListener('touchstart', function (e) {
-            const dropdown = this.querySelector('.dropdown-menu');
-            if (dropdown) {
-                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-                e.preventDefault();
+        const profileBtn = profileMenu.querySelector('button');
+        profileBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            profileMenu.classList.toggle('active');
+        });
+
+        // Close when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!profileMenu.contains(e.target)) {
+                profileMenu.classList.remove('active');
             }
+        });
+
+        // Touch support
+        profileMenu.addEventListener('touchstart', function (e) {
+            // Let the click listener handle it or prevent overlap
+            // e.stopPropagation(); 
         });
     }
 

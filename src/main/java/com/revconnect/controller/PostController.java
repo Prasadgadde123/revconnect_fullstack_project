@@ -35,10 +35,10 @@ public class PostController {
 
     @PostMapping("/create")
     public String createPost(@AuthenticationPrincipal User user,
-                             @Valid @ModelAttribute("postDTO") PostCreateDTO dto,
-                             BindingResult result,
-                             RedirectAttributes ra,
-                             Model model) {
+            @Valid @ModelAttribute("postDTO") PostCreateDTO dto,
+            BindingResult result,
+            RedirectAttributes ra,
+            Model model) {
         if (result.hasErrors()) {
             model.addAttribute("unreadCount", notificationService.getUnreadCount(user));
             return "post/create";
@@ -53,9 +53,9 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public String viewPost(@PathVariable Long id,
-                           @AuthenticationPrincipal User currentUser,
-                           Model model) {
+    public String viewPost(@PathVariable(name = "id") Long id,
+            @AuthenticationPrincipal User currentUser,
+            Model model) {
         Post post = postService.getPostById(id);
         model.addAttribute("post", post);
         model.addAttribute("comments", postService.getComments(id));
@@ -65,7 +65,7 @@ public class PostController {
     }
 
     @GetMapping("/{id}/edit")
-    public String editForm(@PathVariable Long id, @AuthenticationPrincipal User user, Model model) {
+    public String editForm(@PathVariable(name = "id") Long id, @AuthenticationPrincipal User user, Model model) {
         Post post = postService.getPostById(id);
         if (!post.getAuthor().equals(user)) {
             return "redirect:/feed";
@@ -86,12 +86,12 @@ public class PostController {
     }
 
     @PostMapping("/{id}/edit")
-    public String editPost(@PathVariable Long id,
-                           @AuthenticationPrincipal User user,
-                           @Valid @ModelAttribute("postDTO") PostCreateDTO dto,
-                           BindingResult result,
-                           RedirectAttributes ra,
-                           Model model) {
+    public String editPost(@PathVariable(name = "id") Long id,
+            @AuthenticationPrincipal User user,
+            @Valid @ModelAttribute("postDTO") PostCreateDTO dto,
+            BindingResult result,
+            RedirectAttributes ra,
+            Model model) {
         if (result.hasErrors()) {
             model.addAttribute("postId", id);
             model.addAttribute("unreadCount", notificationService.getUnreadCount(user));
@@ -107,9 +107,9 @@ public class PostController {
     }
 
     @PostMapping("/{id}/delete")
-    public String deletePost(@PathVariable Long id,
-                             @AuthenticationPrincipal User user,
-                             RedirectAttributes ra) {
+    public String deletePost(@PathVariable(name = "id") Long id,
+            @AuthenticationPrincipal User user,
+            RedirectAttributes ra) {
         try {
             postService.deletePost(id, user);
             ra.addFlashAttribute("success", "Post deleted");
@@ -121,8 +121,8 @@ public class PostController {
 
     @PostMapping("/{id}/like")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> toggleLike(@PathVariable Long id,
-                                                          @AuthenticationPrincipal User user) {
+    public ResponseEntity<Map<String, Object>> toggleLike(@PathVariable(name = "id") Long id,
+            @AuthenticationPrincipal User user) {
         Post updatedPost = postService.toggleLike(id, user);
         boolean isLiked = updatedPost.getLikes().contains(user);
         long newCount = postService.getLikeCount(id);
@@ -130,10 +130,10 @@ public class PostController {
     }
 
     @PostMapping("/{id}/comment")
-    public String addComment(@PathVariable Long id,
-                             @AuthenticationPrincipal User user,
-                             @RequestParam String content,
-                             RedirectAttributes ra) {
+    public String addComment(@PathVariable(name = "id") Long id,
+            @AuthenticationPrincipal User user,
+            @RequestParam(name = "content") String content,
+            RedirectAttributes ra) {
         if (content.isBlank()) {
             ra.addFlashAttribute("error", "Comment cannot be empty");
             return "redirect:/post/" + id;
@@ -148,10 +148,10 @@ public class PostController {
     }
 
     @PostMapping("/comment/{commentId}/delete")
-    public String deleteComment(@PathVariable Long commentId,
-                                @AuthenticationPrincipal User user,
-                                @RequestParam Long postId,
-                                RedirectAttributes ra) {
+    public String deleteComment(@PathVariable(name = "commentId") Long commentId,
+            @AuthenticationPrincipal User user,
+            @RequestParam(name = "postId") Long postId,
+            RedirectAttributes ra) {
         try {
             postService.deleteComment(commentId, user);
         } catch (Exception e) {
@@ -161,9 +161,9 @@ public class PostController {
     }
 
     @PostMapping("/{id}/repost")
-    public String repost(@PathVariable Long id,
-                         @AuthenticationPrincipal User user,
-                         RedirectAttributes ra) {
+    public String repost(@PathVariable(name = "id") Long id,
+            @AuthenticationPrincipal User user,
+            RedirectAttributes ra) {
         try {
             Post result = postService.repost(id, user);
             if (result == null) {
@@ -178,9 +178,9 @@ public class PostController {
     }
 
     @PostMapping("/{id}/pin")
-    public String togglePin(@PathVariable Long id,
-                            @AuthenticationPrincipal User user,
-                            RedirectAttributes ra) {
+    public String togglePin(@PathVariable(name = "id") Long id,
+            @AuthenticationPrincipal User user,
+            RedirectAttributes ra) {
         try {
             postService.togglePin(id, user);
         } catch (Exception e) {
@@ -190,7 +190,7 @@ public class PostController {
     }
 
     @GetMapping("/{id}/send")
-    public String showSendPage(@PathVariable Long id, @AuthenticationPrincipal User user, Model model) {
+    public String showSendPage(@PathVariable(name = "id") Long id, @AuthenticationPrincipal User user, Model model) {
         Post post = postService.getPostById(id);
         model.addAttribute("post", post);
         model.addAttribute("connections", connectionService.getConnections(user));
@@ -199,11 +199,11 @@ public class PostController {
     }
 
     @PostMapping("/{id}/send")
-    public String sendToSelectedUsers(@PathVariable Long id,
-                                      @AuthenticationPrincipal User user,
-                                      @RequestParam(required = false) java.util.List<Long> userIds,
-                                      @RequestParam(required = false) String message,
-                                      RedirectAttributes ra) {
+    public String sendToSelectedUsers(@PathVariable(name = "id") Long id,
+            @AuthenticationPrincipal User user,
+            @RequestParam(name = "userIds", required = false) java.util.List<Long> userIds,
+            @RequestParam(name = "message", required = false) String message,
+            RedirectAttributes ra) {
         if (userIds == null || userIds.isEmpty()) {
             ra.addFlashAttribute("error", "Please select at least one connection to send the post to");
             return "redirect:/post/" + id + "/send";
@@ -219,7 +219,8 @@ public class PostController {
 
     @GetMapping("/scheduled")
     public String viewScheduledPosts(@AuthenticationPrincipal User user, Model model) {
-        if (user.getRole() != com.revconnect.enums.UserRole.BUSINESS && user.getRole() != com.revconnect.enums.UserRole.CREATOR) {
+        if (user.getRole() != com.revconnect.enums.UserRole.BUSINESS
+                && user.getRole() != com.revconnect.enums.UserRole.CREATOR) {
             return "redirect:/feed";
         }
         model.addAttribute("scheduledPosts", postService.getScheduledPosts(user));

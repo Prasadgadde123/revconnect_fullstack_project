@@ -31,9 +31,9 @@ public class ProfileController {
     private final ProductService productService;
 
     @GetMapping("/{username}")
-    public String viewProfile(@PathVariable String username,
-                              @AuthenticationPrincipal User currentUser,
-                              Model model) {
+    public String viewProfile(@PathVariable(name = "username") String username,
+            @AuthenticationPrincipal User currentUser,
+            Model model) {
         User profileUser = userService.findByUsername(username);
         boolean isSelf = profileUser.equals(currentUser);
         boolean connected = !isSelf && connectionService.areConnected(currentUser, profileUser);
@@ -59,7 +59,8 @@ public class ProfileController {
                 model.addAttribute("posts", postService.getPublishedUserPosts(profileUser));
             }
             model.addAttribute("reposts", postService.getUserReposts(profileUser));
-            if (profileUser.getRole() == com.revconnect.enums.UserRole.BUSINESS || profileUser.getRole() == com.revconnect.enums.UserRole.CREATOR) {
+            if (profileUser.getRole() == com.revconnect.enums.UserRole.BUSINESS
+                    || profileUser.getRole() == com.revconnect.enums.UserRole.CREATOR) {
                 model.addAttribute("products", productService.getProductsByOwner(profileUser));
             }
         }
@@ -94,10 +95,10 @@ public class ProfileController {
 
     @PostMapping("/edit")
     public String updateProfile(@AuthenticationPrincipal User currentUser,
-                                @Valid @ModelAttribute("profileDTO") ProfileUpdateDTO dto,
-                                BindingResult result,
-                                RedirectAttributes ra,
-                                Model model) {
+            @Valid @ModelAttribute("profileDTO") ProfileUpdateDTO dto,
+            BindingResult result,
+            RedirectAttributes ra,
+            Model model) {
         if (result.hasErrors()) {
             model.addAttribute("user", currentUser);
             model.addAttribute("unreadCount", notificationService.getUnreadCount(currentUser));
@@ -110,8 +111,8 @@ public class ProfileController {
 
     @PostMapping("/picture")
     public String uploadPicture(@AuthenticationPrincipal User currentUser,
-                                @RequestParam("file") MultipartFile file,
-                                RedirectAttributes ra) {
+            @RequestParam("file") MultipartFile file,
+            RedirectAttributes ra) {
         if (file.isEmpty()) {
             ra.addFlashAttribute("error", "Please select a file");
             return "redirect:/profile/edit";
@@ -148,10 +149,10 @@ public class ProfileController {
     }
 
     @GetMapping("/{username}/analytics")
-    public String viewAnalytics(@PathVariable String username,
-                                @AuthenticationPrincipal User currentUser,
-                                Model model,
-                                RedirectAttributes ra) {
+    public String viewAnalytics(@PathVariable(name = "username") String username,
+            @AuthenticationPrincipal User currentUser,
+            Model model,
+            RedirectAttributes ra) {
         User profileUser = userService.findByUsername(username);
 
         // Only let users view their own analytics
@@ -161,7 +162,8 @@ public class ProfileController {
         }
 
         // Only CREATOR or BUSINESS roles
-        if (profileUser.getRole() == com.revconnect.enums.UserRole.PERSONAL || profileUser.getRole() == com.revconnect.enums.UserRole.ADMIN) {
+        if (profileUser.getRole() == com.revconnect.enums.UserRole.PERSONAL
+                || profileUser.getRole() == com.revconnect.enums.UserRole.ADMIN) {
             ra.addFlashAttribute("error", "Analytics are only available for Creator and Business accounts.");
             return "redirect:/profile/" + username;
         }

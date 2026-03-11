@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RevConnect - Connecting Professionals</title>
+    <!-- Modern Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/landing.css}">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <a th:href="@{/}" style="text-decoration: none; color: inherit;"><i
+                    class="fas fa-network-wired text-primary"></i> RevConnect</a>
+        </div>
+        <div class="nav-links">
+            <!--            <a href="#about" class="btn" style="color: var(&#45;&#45;text-primary); text-decoration: none;">About</a>-->
+            <!--            <a href="#contact" class="btn" style="color: var(&#45;&#45;text-primary); text-decoration: none;">Contact</a>-->
+            <a th:href="@{/login}" class="btn btn-outline">Log In</a>
+            <a th:href="@{/register}" class="btn btn-primary">Sign Up</a>
+        </div>
+    </nav>
+
+    <main class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">Connect. Create. <span class="text-gradient">Grow.</span></h1>
+            <p class="hero-subtitle">
+                A social media platform where individuals, creators, and businesses connect, share ideas, and grow their
+                network.
+            </p>
+            <div class="hero-actions">
+                <a th:href="@{/register}" class="btn btn-primary btn-lg">Get Started</a>
+                <a th:href="@{/login}" class="btn btn-outline btn-lg">Login</a>
+            </div>
+        </div>
+
+        <div class="hero-visual">
+            <div class="glass-card mockup-card floating-1">
+                <div class="mockup-header">
+                    <div class="mockup-avatar avatar-1"></div>
+                    <div class="mockup-info">
+                        <div class="mockup-name"></div>
+                        <div class="mockup-handle"></div>
+                    </div>
+                </div>
+                <div class="mockup-body"></div>
+                <div class="mockup-body short"></div>
+                <div class="mockup-footer">
+                    <span><i class="fas fa-heart" style="color: var(--accent-light);"></i> 124</span>
+                    <span><i class="far fa-comment"></i> 12</span>
+                    <span><i class="fas fa-share"></i></span>
+                </div>
+            </div>
+
+            <div class="glass-card mockup-card floating-2">
+                <div class="mockup-header" style="margin-bottom: 0.5rem;">
+                    <div class="mockup-avatar avatar-2" style="width: 32px; height: 32px;"></div>
+                    <div class="mockup-info">
+                        <div class="mockup-name" style="width: 80%; height: 8px;"></div>
+                    </div>
+                </div>
+                <div class="mockup-badge"><i class="fas fa-user-plus"></i> New Connection</div>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem;">Sarah followed you</p>
+            </div>
+
+            <div class="glass-card mockup-card floating-3">
+                <div class="mockup-badge"><i class="fas fa-chart-line"></i> Trending</div>
+                <div class="mockup-tags">
+                    <span class="mockup-tag">#networking</span>
+                    <span class="mockup-tag">#growth</span>
+                    <span class="mockup-tag">#social</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="blob shape-1"></div>
+        <div class="blob shape-2"></div>
+    </main>
+
+    <section id="features" class="landing-section">
+        <h2 class="section-title">Why choose <span class="text-gradient">RevConnect?</span></h2>
+        <p class="section-subtitle">Everything you need to build your digital presence.</p>
+
+        <div class="features-grid-large">
+            <div class="feature-card-large">
+                <div class="feature-icon-wrapper">
+                    <i class="fas fa-pen-nib fa-2x feature-icon"></i>
+                </div>
+                <h3>Create & Share Posts</h3>
+                <p>Share thoughts, hashtags, and updates with your network.</p>
+            </div>
+
+            <div class="feature-card-large">
+                <div class="feature-icon-wrapper">
+                    <i class="fas fa-users fa-2x feature-icon"></i>
+                </div>
+                <h3>Build Your Network</h3>
+                <p>Connect with people, follow creators, and engage with businesses.</p>
+            </div>
+
+            <div class="feature-card-large">
+                <div class="feature-icon-wrapper">
+                    <i class="fas fa-bell fa-2x feature-icon"></i>
+                </div>
+                <h3>Real-Time Notifications</h3>
+                <p>Get notified for likes, comments, followers, and connection requests.</p>
+            </div>
+
+            <div class="feature-card-large">
+                <div class="feature-icon-wrapper">
+                    <i class="fas fa-stream fa-2x feature-icon"></i>
+                </div>
+                <h3>Personalized Feed</h3>
+                <p>See posts from connections and accounts you follow.</p>
+            </div>
+
+            <div class="feature-card-large">
+                <div class="feature-icon-wrapper">
+                    <i class="fas fa-tools fa-2x feature-icon"></i>
+                </div>
+                <h3>Creator & Business Tools</h3>
+                <p>Analytics, promotional posts, and engagement insights.</p>
+            </div>
+
+            <div class="feature-card-large">
+                <div class="feature-icon-wrapper">
+                    <i class="fas fa-shield-alt fa-2x feature-icon"></i>
+                </div>
+                <h3>Privacy & Control</h3>
+                <p>Manage profile privacy and notification preferences.</p>
+            </div>
+        </div>
+    </section>
+
+    <!--    <section id="about" class="landing-section">-->
+    <!--        <h2 class="section-title text-gradient">About RevConnect</h2>-->
+    <!--        <p class="section-subtitle">Building the future of professional networking</p>-->
+    <!--        -->
+    <!--        <div style="background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem; padding: 3rem; margin-bottom: 2rem; line-height: 1.8; color: var(&#45;&#45;text-secondary);">-->
+    <!--            <h3 style="color: var(&#45;&#45;text-primary); margin-bottom: 1.5rem; font-size: 1.5rem;">Our Mission</h3>-->
+    <!--            <p>At RevConnect, we believe that professional networking shouldn't feel like a chore. Our mission is to create a vibrant, dynamic platform where professionals, creators, and businesses can connect, share ideas, and grow together in a meaningful way.</p>-->
+    <!--            <br>-->
+    <!--            <p>Founded in 2026, we noticed a gap in the market between traditional, rigid networking sites and casual social media. RevConnect bridges that gap by offering powerful tools for businesses while maintaining an engaging, fresh experience for everyday users.</p>-->
+    <!--        </div>-->
+
+    <!--        <div style="background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem; padding: 3rem; text-align: center;">-->
+    <!--            <h3 style="color: var(&#45;&#45;text-primary); margin-bottom: 2rem; font-size: 1.5rem;">The Visionaries</h3>-->
+    <!--            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;">-->
+    <!--                <div>-->
+    <!--                    <div style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, var(&#45;&#45;primary-color), var(&#45;&#45;accent-color)); margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: white;"><i class="fas fa-user-astronaut"></i></div>-->
+    <!--                    <div style="font-weight: 600; color: var(&#45;&#45;text-primary);">Alex Voyager</div>-->
+    <!--                    <div style="font-size: 0.875rem; color: var(&#45;&#45;primary-color);">CEO & Founder</div>-->
+    <!--                </div>-->
+    <!--                <div>-->
+    <!--                    <div style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, var(&#45;&#45;primary-color), var(&#45;&#45;accent-color)); margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: white;"><i class="fas fa-user-ninja"></i></div>-->
+    <!--                    <div style="font-weight: 600; color: var(&#45;&#45;text-primary);">Sam Coder</div>-->
+    <!--                    <div style="font-size: 0.875rem; color: var(&#45;&#45;primary-color);">Head of Engineering</div>-->
+    <!--                </div>-->
+    <!--                <div>-->
+    <!--                    <div style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, var(&#45;&#45;primary-color), var(&#45;&#45;accent-color)); margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: white;"><i class="fas fa-user-tie"></i></div>-->
+    <!--                    <div style="font-weight: 600; color: var(&#45;&#45;text-primary);">Jordan Design</div>-->
+    <!--                    <div style="font-size: 0.875rem; color: var(&#45;&#45;primary-color);">Lead Product Designer</div>-->
+    <!--                </div>-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--    </section>-->
+
+    <!--    <section id="contact" class="landing-section">-->
+    <!--        <h2 class="section-title text-gradient">Get in Touch</h2>-->
+    <!--        <p class="section-subtitle">We'd love to hear from you. Drop us a line!</p>-->
+
+    <!--        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 4rem;">-->
+    <!--            <div style="display: flex; flex-direction: column; gap: 2rem;">-->
+    <!--                <div style="background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; padding: 2rem; display: flex; gap: 1.5rem;">-->
+    <!--                    <div style="font-size: 2rem; color: var(&#45;&#45;primary-color); background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 1rem; display: flex; align-items: center; justify-content: center;"><i class="fas fa-envelope"></i></div>-->
+    <!--                    <div>-->
+    <!--                        <h3 style="color: var(&#45;&#45;text-primary); margin-bottom: 0.5rem;">Email Us</h3>-->
+    <!--                        <p style="color: var(&#45;&#45;text-secondary); line-height: 1.5;">support@revconnect.com<br>partnerships@revconnect.com</p>-->
+    <!--                    </div>-->
+    <!--                </div>-->
+    <!--                <div style="background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; padding: 2rem; display: flex; gap: 1.5rem;">-->
+    <!--                    <div style="font-size: 2rem; color: var(&#45;&#45;primary-color); background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 1rem; display: flex; align-items: center; justify-content: center;"><i class="fas fa-map-marker-alt"></i></div>-->
+    <!--                    <div>-->
+    <!--                        <h3 style="color: var(&#45;&#45;text-primary); margin-bottom: 0.5rem;">Visit Us</h3>-->
+    <!--                        <p style="color: var(&#45;&#45;text-secondary); line-height: 1.5;">123 Innovation Drive<br>Tech Hub, CA 94043</p>-->
+    <!--                    </div>-->
+    <!--                </div>-->
+    <section id="platform-types" class="landing-section bg-light">
+        <h2 class="section-title">Built for <span class="text-gradient">everyone.</span></h2>
+        <p class="section-subtitle">Whether you're here to connect, create, or grow your business.</p>
+
+        <div class="platform-cards-container">
+            <!-- Personal Users Card -->
+            <div class="platform-card">
+                <div class="platform-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3>Personal Users</h3>
+                <ul class="platform-features">
+                    <li><i class="fas fa-check"></i> Connect with friends</li>
+                    <li><i class="fas fa-check"></i> Share posts</li>
+                    <li><i class="fas fa-check"></i> Discover trending content</li>
+                </ul>
+            </div>
+
+            <!-- Creators Card -->
+            <div class="platform-card platform-card-active">
+                <div class="platform-icon text-gradient">
+                    <i class="fas fa-paint-brush"></i>
+                </div>
+                <h3>Creators</h3>
+                <ul class="platform-features">
+                    <li><i class="fas fa-check"></i> Grow followers</li>
+                    <li><i class="fas fa-check"></i> Track engagement</li>
+                    <li><i class="fas fa-check"></i> Share branded content</li>
+                </ul>
+            </div>
+
+            <!-- Businesses Card -->
+            <div class="platform-card">
+                <div class="platform-icon">
+                    <i class="fas fa-building"></i>
+                </div>
+                <h3>Businesses</h3>
+                <ul class="platform-features">
+                    <li><i class="fas fa-check"></i> Promote products/services</li>
+                    <li><i class="fas fa-check"></i> Interact with customers</li>
+                    <li><i class="fas fa-check"></i> View analytics</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="cta" class="cta-section">
+        <div class="cta-container">
+            <h2>Join RevConnect Today</h2>
+            <p>Start building your network and sharing your voice.</p>
+            <div class="cta-actions">
+                <a th:href="@{/register}" class="btn btn-primary btn-lg"
+                    style="background: white; color: var(--primary-color);">Create Account</a>
+                <a th:href="@{/login}" class="btn btn-outline btn-lg"
+                    style="border-color: white; color: white;">Login</a>
+            </div>
+        </div>
+    </section>
+
+    <footer
+        style="text-align: center; padding: 3rem; color: var(--text-secondary); border-top: 1px solid rgba(255, 255, 255, 0.1); margin-top: 4rem;">
+        <p>&copy; 2026 RevConnect. All rights reserved.</p>
+    </footer>
+</body>
+
+</html>

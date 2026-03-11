@@ -1,89 +1,94 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head th:replace="~{fragments/layout :: head('Explore')}"></head>
+
 <body>
-<div th:replace="~{fragments/layout :: navbar}"></div>
-<div class="page-container">
-    <div th:replace="~{fragments/layout :: flash}"></div>
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+    <div class="page-container">
+        <div th:replace="~{fragments/layout :: flash}"></div>
 
-    <div class="explore-layout">
-        <!-- Left sidebar (fragment) -->
-        <div th:replace="~{fragments/layout :: leftSidebar}"></div>
+        <div class="explore-layout">
+            <!-- Left sidebar (fragment) -->
+            <div th:replace="~{fragments/layout :: leftSidebar}"></div>
 
-        <!-- Main explore column -->
-        <div class="explore-main">
-            <!-- User search results -->
+            <!-- Main explore column -->
+            <div class="explore-main">
+                <!-- User search results -->
 
-            <!-- User search results -->
-            <div th:if="${searchResults != null}">
-                <h3 th:text="'Results for: ' + ${searchQuery}">Results</h3>
-                <div th:if="${searchResults.empty}" class="empty-state">
-                    <p>No users found for "<span th:text="${searchQuery}"></span>"</p>
+                <!-- User search results -->
+                <div th:if="${searchResults != null}">
+                    <h3 th:text="'Results for: ' + ${searchQuery}">Results</h3>
+                    <div th:if="${searchResults.empty}" class="empty-state">
+                        <p>No users found for "<span th:text="${searchQuery}"></span>"</p>
+                    </div>
+                    <div class="user-grid" th:if="${!searchResults.empty}">
+                        <div th:each="u : ${searchResults}" class="user-card">
+                            <div class="user-card-avatar">
+                                <img th:if="${u.profilePicture != null}" th:src="${u.profilePicture}" alt="pic"
+                                    class="avatar-img-lg" />
+                                <div th:if="${u.profilePicture == null}" class="avatar-placeholder-lg"
+                                    th:text="${u.displayNameOrUsername.substring(0,1).toUpperCase()}">U</div>
+                            </div>
+                            <div class="user-card-info">
+                                <a th:href="@{/profile/{un}(un=${u.username})}" th:text="${u.displayNameOrUsername}"
+                                    class="user-card-name">Name</a>
+                                <span th:text="'@' + ${u.username}" class="user-card-username">@user</span>
+                                <span th:if="${u.role.name() == 'BUSINESS'}" class="role-badge business">Business</span>
+                                <span th:if="${u.role.name() == 'CREATOR'}" class="role-badge creator">Creator</span>
+                                <p th:if="${u.bio != null}" th:text="${u.bio}" class="user-card-bio"></p>
+                            </div>
+                            <a th:href="@{/profile/{un}(un=${u.username})}" class="btn btn-primary btn-sm">View
+                                Profile</a>
+                        </div>
+                    </div>
                 </div>
-                <div class="user-grid" th:if="${!searchResults.empty}">
-                    <div th:each="u : ${searchResults}" class="user-card">
-                        <div class="user-card-avatar">
-                            <img th:if="${u.profilePicture != null}" th:src="${u.profilePicture}" alt="pic" class="avatar-img-lg"/>
-                            <div th:if="${u.profilePicture == null}" class="avatar-placeholder-lg"
-                                 th:text="${u.displayNameOrUsername.substring(0,1).toUpperCase()}">U</div>
-                        </div>
-                        <div class="user-card-info">
-                            <a th:href="@{/profile/{un}(un=${u.username})}"
-                               th:text="${u.displayNameOrUsername}" class="user-card-name">Name</a>
-                            <span th:text="'@' + ${u.username}" class="user-card-username">@user</span>
-                            <span th:if="${u.role.name() == 'BUSINESS'}" class="role-badge business">Business</span>
-                            <span th:if="${u.role.name() == 'CREATOR'}" class="role-badge creator">Creator</span>
-                            <p th:if="${u.bio != null}" th:text="${u.bio}" class="user-card-bio"></p>
-                        </div>
-                        <a th:href="@{/profile/{un}(un=${u.username})}" class="btn btn-primary btn-sm">View Profile</a>
+
+                <!-- Hashtag posts -->
+                <div th:if="${activeHashtag != null}">
+                    <h3 th:text="'Posts tagged #' + ${activeHashtag}">Hashtag posts</h3>
+                    <div th:if="${hashtagPosts.empty}" class="empty-state">
+                        <p>No posts found with this hashtag yet.</p>
+                    </div>
+                    <div th:each="post : ${hashtagPosts}">
+                        <div th:replace="~{fragments/layout :: postCard(${post}, ${#authentication.principal})}"></div>
+                    </div>
+                </div>
+
+                <!-- Trending posts (default) -->
+                <div th:if="${activeHashtag == null and searchResults == null}">
+                    <h3>🔥 Trending Posts</h3>
+                    <div th:if="${trendingPosts.empty}" class="empty-state">
+                        <p>No trending posts yet. Be the first to post!</p>
+                    </div>
+                    <div th:each="post : ${trendingPosts}">
+                        <div th:replace="~{fragments/layout :: postCard(${post}, ${#authentication.principal})}"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Hashtag posts -->
-            <div th:if="${activeHashtag != null}">
-                <h3 th:text="'Posts tagged #' + ${activeHashtag}">Hashtag posts</h3>
-                <div th:if="${hashtagPosts.empty}" class="empty-state">
-                    <p>No posts found with this hashtag yet.</p>
-                </div>
-                <div th:each="post : ${hashtagPosts}">
-                    <div th:replace="~{fragments/layout :: postCard(${post}, ${#authentication.principal})}"></div>
-                </div>
-            </div>
-
-            <!-- Trending posts (default) -->
-            <div th:if="${activeHashtag == null and searchResults == null}">
-                <h3>🔥 Trending Posts</h3>
-                <div th:if="${trendingPosts.empty}" class="empty-state">
-                    <p>No trending posts yet. Be the first to post!</p>
-                </div>
-                <div th:each="post : ${trendingPosts}">
-                    <div th:replace="~{fragments/layout :: postCard(${post}, ${#authentication.principal})}"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Trending sidebar -->
-        <div class="sidebar-right">
-            <div class="sidebar-card">
-                <h3>🏷️ Trending Tags</h3>
-                <div class="trending-tags">
-                    <a th:each="entry : ${trendingHashtags}"
-                       th:href="@{/explore(hashtag=${entry.key})}"
-                       class="trending-tag"
-                       th:classappend="${activeHashtag == entry.key} ? 'active' : ''">
-                        <span class="trending-header">Trending</span>
-                        <span class="tag-name" th:text="'#' + ${entry.key}">tag</span>
-                        <span class="tag-count" th:text="${entry.value} + ' posts'">0 posts</span>
-                    </a>
-                    <div th:if="${trendingHashtags == null or trendingHashtags.empty}" style="padding: 12px; color: var(--text-secondary); font-size: 14px;">
-                        No trends at the moment.
+            <!-- Trending sidebar -->
+            <div class="sidebar-right">
+                <div class="sidebar-card">
+                    <h3>🏷️ Trending Tags</h3>
+                    <div class="trending-tags">
+                        <a th:each="entry : ${trendingHashtags}" th:href="@{/explore(hashtag=${entry.key})}"
+                            class="trending-tag" th:classappend="${activeHashtag == entry.key} ? 'active' : ''">
+                            <span class="trending-header">Trending</span>
+                            <span class="tag-name" th:text="'#' + ${entry.key}">tag</span>
+                            <span class="tag-count" th:text="${entry.value} + ' posts'">0 posts</span>
+                        </a>
+                        <div th:if="${trendingHashtags == null or trendingHashtags.empty}"
+                            style="padding: 12px; color: var(--text-secondary); font-size: 14px;">
+                            No trends at the moment.
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/main.js}"></script>
+    <div th:replace="~{fragments/layout :: modals}"></div>
 </body>
+
 </html>

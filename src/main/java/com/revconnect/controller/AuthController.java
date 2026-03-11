@@ -19,11 +19,13 @@ public class AuthController {
     private final UserService userService;
 
     @GetMapping("/login")
-    public String loginPage(@RequestParam(required = false) String error,
-                            @RequestParam(required = false) String logout,
-                            Model model) {
-        if (error != null) model.addAttribute("error", "Invalid username or password");
-        if (logout != null) model.addAttribute("message", "Logged out successfully");
+    public String loginPage(@RequestParam(name = "error", required = false) String error,
+            @RequestParam(name = "logout", required = false) String logout,
+            Model model) {
+        if (error != null)
+            model.addAttribute("error", "Invalid username or password");
+        if (logout != null)
+            model.addAttribute("message", "Logged out successfully");
         return "auth/login";
     }
 
@@ -40,9 +42,9 @@ public class AuthController {
 
     @PostMapping("/register")
     public String register(@Valid @ModelAttribute("registerDTO") RegisterDTO dto,
-                           BindingResult result,
-                           RedirectAttributes redirectAttributes,
-                           Model model) {
+            BindingResult result,
+            RedirectAttributes redirectAttributes,
+            Model model) {
         if (result.hasErrors()) {
             return "auth/register";
         }

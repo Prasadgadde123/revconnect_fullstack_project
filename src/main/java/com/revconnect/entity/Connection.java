@@ -6,9 +6,12 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "connections",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"requester_id","receiver_id"}))
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Table(name = "connections", uniqueConstraints = @UniqueConstraint(columnNames = { "requester_id", "receiver_id" }))
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Connection {
 
     @Id
@@ -35,5 +38,7 @@ public class Connection {
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     @PreUpdate
-    public void preUpdate() { this.updatedAt = LocalDateTime.now(); }
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

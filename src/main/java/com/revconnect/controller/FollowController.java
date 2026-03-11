@@ -20,9 +20,9 @@ public class FollowController {
     private final NotificationService notificationService;
 
     @PostMapping("/{userId}")
-    public String follow(@PathVariable Long userId,
-                          @AuthenticationPrincipal User currentUser,
-                          RedirectAttributes ra) {
+    public String follow(@PathVariable(name = "userId") Long userId,
+            @AuthenticationPrincipal User currentUser,
+            RedirectAttributes ra) {
         User target = userService.findById(userId);
         if (!userService.isFollowing(currentUser, target)) {
             userService.follow(currentUser, target);
@@ -30,17 +30,16 @@ public class FollowController {
                     target, currentUser,
                     NotificationType.NEW_FOLLOWER,
                     currentUser.getDisplayNameOrUsername() + " started following you",
-                    "/profile/" + currentUser.getUsername()
-            );
+                    "/profile/" + currentUser.getUsername());
             ra.addFlashAttribute("success", "Following " + target.getDisplayNameOrUsername());
         }
         return "redirect:/profile/" + target.getUsername();
     }
 
     @PostMapping("/unfollow/{userId}")
-    public String unfollow(@PathVariable Long userId,
-                            @AuthenticationPrincipal User currentUser,
-                            RedirectAttributes ra) {
+    public String unfollow(@PathVariable(name = "userId") Long userId,
+            @AuthenticationPrincipal User currentUser,
+            RedirectAttributes ra) {
         User target = userService.findById(userId);
         userService.unfollow(currentUser, target);
         ra.addFlashAttribute("success", "Unfollowed " + target.getDisplayNameOrUsername());

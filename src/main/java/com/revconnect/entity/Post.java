@@ -1,4 +1,5 @@
 package com.revconnect.entity;
+
 import com.revconnect.enums.PostType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,7 +12,11 @@ import java.util.Set;
 
 @Entity
 @Table(name = "posts")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Post {
 
     @Id
@@ -56,9 +61,7 @@ public class Post {
 
     // Likes
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "post_likes",
-            joinColumns = @JoinColumn(name = "post_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @JoinTable(name = "post_likes", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     @Builder.Default
     private Set<User> likes = new HashSet<>();
 
@@ -80,9 +83,14 @@ public class Post {
     private List<String> taggedProducts = new ArrayList<>();
 
     @PreUpdate
-    public void preUpdate() { this.updatedAt = LocalDateTime.now(); }
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 
-    public int getLikeCount() { return likes.size(); }
+    public int getLikeCount() {
+        return likes.size();
+    }
+
     public int getCommentCount() {
         return (int) comments.stream()
                 .filter(c -> !c.isDeleted())
@@ -92,16 +100,18 @@ public class Post {
     public int getRepostCount() {
         return reposts != null
                 ? (int) reposts.stream()
-                .filter(r -> !r.isDeleted())
-                .count()
+                        .filter(r -> !r.isDeleted())
+                        .count()
                 : 0;
     }
+
     public boolean isLikedBy(User user) {
         return likes.contains(user);
     }
 
     public List<String> getHashtagList() {
-        if (hashtags == null || hashtags.isBlank()) return new ArrayList<>();
+        if (hashtags == null || hashtags.isBlank())
+            return new ArrayList<>();
         return List.of(hashtags.split(","));
     }
 }

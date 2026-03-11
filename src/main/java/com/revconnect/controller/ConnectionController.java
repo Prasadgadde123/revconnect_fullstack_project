@@ -20,9 +20,9 @@ public class ConnectionController {
     private final NotificationService notificationService;
 
     @PostMapping("/request/{userId}")
-    public String sendRequest(@PathVariable Long userId,
-                               @AuthenticationPrincipal User currentUser,
-                               RedirectAttributes ra) {
+    public String sendRequest(@PathVariable(name = "userId") Long userId,
+            @AuthenticationPrincipal User currentUser,
+            RedirectAttributes ra) {
         try {
             User target = userService.findById(userId);
             connectionService.sendRequest(currentUser, target);
@@ -34,9 +34,9 @@ public class ConnectionController {
     }
 
     @PostMapping("/accept/{connectionId}")
-    public String acceptRequest(@PathVariable Long connectionId,
-                                 @AuthenticationPrincipal User currentUser,
-                                 RedirectAttributes ra) {
+    public String acceptRequest(@PathVariable(name = "connectionId") Long connectionId,
+            @AuthenticationPrincipal User currentUser,
+            RedirectAttributes ra) {
         try {
             connectionService.acceptRequest(connectionId, currentUser);
             ra.addFlashAttribute("success", "Connection accepted!");
@@ -47,9 +47,9 @@ public class ConnectionController {
     }
 
     @PostMapping("/reject/{connectionId}")
-    public String rejectRequest(@PathVariable Long connectionId,
-                                 @AuthenticationPrincipal User currentUser,
-                                 RedirectAttributes ra) {
+    public String rejectRequest(@PathVariable(name = "connectionId") Long connectionId,
+            @AuthenticationPrincipal User currentUser,
+            RedirectAttributes ra) {
         try {
             connectionService.rejectRequest(connectionId, currentUser);
         } catch (Exception e) {
@@ -59,9 +59,9 @@ public class ConnectionController {
     }
 
     @PostMapping("/remove/{userId}")
-    public String removeConnection(@PathVariable Long userId,
-                                    @AuthenticationPrincipal User currentUser,
-                                    RedirectAttributes ra) {
+    public String removeConnection(@PathVariable(name = "userId") Long userId,
+            @AuthenticationPrincipal User currentUser,
+            RedirectAttributes ra) {
         User other = userService.findById(userId);
         connectionService.removeConnection(currentUser, other);
         ra.addFlashAttribute("success", "Connection removed.");

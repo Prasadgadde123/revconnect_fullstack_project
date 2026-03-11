@@ -20,12 +20,16 @@ public class FeedController {
     private final UserService userService;
     private final NotificationService notificationService;
 
-    @GetMapping({"/", "/feed"})
+    @GetMapping("/feed")
     public String feed(@AuthenticationPrincipal User currentUser,
-                       @RequestParam(defaultValue = "0") int page,
-                       @RequestParam(required = false) String filterType,
-                       @RequestParam(required = false) String filterRole,
-                       Model model) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "filterType", required = false) String filterType,
+            @RequestParam(name = "filterRole", required = false) String filterRole,
+            Model model) {
+        if (currentUser != null && currentUser.getRole() == com.revconnect.enums.UserRole.ADMIN) {
+            return "redirect:/admin";
+        }
+
         Page<Post> feedPage = postService.getFeedPosts(currentUser, page, filterType, filterRole);
         model.addAttribute("posts", feedPage.getContent());
         model.addAttribute("currentPage", page);
@@ -38,7 +42,8 @@ public class FeedController {
         model.addAttribute("activeFilterType", filterType);
         model.addAttribute("activeFilterRole", filterRole);
 
-        if (currentUser.getRole() == com.revconnect.enums.UserRole.BUSINESS || currentUser.getRole() == com.revconnect.enums.UserRole.CREATOR) {
+        if (currentUser != null && (currentUser.getRole() == com.revconnect.enums.UserRole.BUSINESS
+                || currentUser.getRole() == com.revconnect.enums.UserRole.CREATOR)) {
             model.addAttribute("scheduledPosts", postService.getScheduledPosts(currentUser));
             model.addAttribute("soonToBePublishedPosts", postService.getSoonToBePublishedPosts(currentUser));
         }
@@ -48,9 +53,13 @@ public class FeedController {
 
     @GetMapping("/explore")
     public String explore(@AuthenticationPrincipal User currentUser,
-                          @RequestParam(required = false) String hashtag,
-                          @RequestParam(required = false) String search,
-                          Model model) {
+            @RequestParam(name = "hashtag", required = false) String hashtag,
+            @RequestParam(name = "search", required = false) String search,
+            Model model) {
+        if (currentUser != null && currentUser.getRole() == com.revconnect.enums.UserRole.ADMIN) {
+            return "redirect:/admin";
+        }
+
         model.addAttribute("trendingPosts", postService.getTrendingPosts());
         model.addAttribute("trendingHashtags", postService.getTrendingHashtags());
         model.addAttribute("unreadCount", notificationService.getUnreadCount(currentUser));

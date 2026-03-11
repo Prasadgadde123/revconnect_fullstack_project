@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head('Content Moderation')}"></head>
+<link rel="stylesheet" th:href="@{/css/admin_dashboard.css}" />
+
+<body class="admin-body">
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+
+    <div class="admin-container">
+        <div th:replace="~{fragments/layout :: flash}"></div>
+
+        <header class="admin-header-section">
+            <h1 class="admin-title">📝 Content Audit</h1>
+            <p style="color: var(--admin-text-dim);">Moderate and monitor platform interactions</p>
+        </header>
+
+        <div class="admin-nav-tabs">
+            <a th:href="@{/admin}" class="admin-nav-link">Overview</a>
+            <a th:href="@{/admin/users}" class="admin-nav-link">User Management</a>
+            <a th:href="@{/admin/posts}" class="admin-nav-link active">Post Content</a>
+        </div>
+
+        <div class="admin-content-card animate-up">
+            <div class="admin-card-header">
+                <h3>Recent Activity</h3>
+                <span style="color: var(--admin-text-dim); font-size: 0.9rem;"
+                    th:text="${posts.size()} + ' posts scanned'">0 posts</span>
+            </div>
+
+            <div class="admin-table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Author</th>
+                            <th>Content Preview</th>
+                            <th>Type</th>
+                            <th>Engagement</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="p : ${posts}">
+                            <td>
+                                <div class="user-cell">
+                                    <img th:src="${p.author.profilePicture != null ? p.author.profilePicture : 'https://i.pinimg.com/1200x/40/52/35/405235fe31661005e9db369db4f732b7.jpg'}"
+                                        alt="Avatar" />
+                                    <div class="user-name-small" th:text="${p.author.username}">User</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="max-width: 300px; color: #fff; font-size: 0.9rem; line-height: 1.4;"
+                                    th:text="${p.content.length() > 80 ? p.content.substring(0, 80) + '...' : p.content}">
+                                    Content</div>
+                                <small style="color: var(--admin-text-dim);"
+                                    th:text="${#temporals.format(p.createdAt, 'MMM d, HH:mm')}">Time</small>
+                            </td>
+                            <td>
+                                <span class="admin-badge badge-personal" th:text="${p.postType}">REGULAR</span>
+                            </td>
+                            <td>
+                                <div
+                                    style="display: flex; gap: 10px; color: var(--admin-text-dim); font-size: 0.85rem;">
+                                    <span>❤️ <span th:text="${p.likeCount}">0</span></span>
+                                    <span>💬 <span th:text="${p.commentCount}">0</span></span>
+                                </div>
+                            </td>
+                            <td>
+                                <a th:href="@{/post/{id}(id=${p.id})}" target="_blank"
+                                    class="btn-admin btn-admin-primary">View</a>
+                                <form th:action="@{/admin/posts/{id}/delete(id=${p.id})}" method="post"
+                                    style="display:inline"
+                                    onsubmit="return confirm('Archive this content permanently?')">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                    <button type="submit" class="btn-admin btn-admin-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/main.js}"></script>
+</body>
+
+</html>

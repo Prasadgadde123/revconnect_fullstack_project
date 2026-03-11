@@ -9,56 +9,65 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        private final CustomAuthenticationSuccessHandler successHandler;
 
-    @Bean
-    public DaoAuthenticationProvider authProvider(UserDetailsService userDetailsService,
-                                                  PasswordEncoder passwordEncoder) {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder);
-        return provider;
-    }
+        public SecurityConfig(CustomAuthenticationSuccessHandler successHandler) {
+                this.successHandler = successHandler;
+        }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, DaoAuthenticationProvider authProvider) throws Exception {
-        http
-                .authenticationProvider(authProvider)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/register", "/login", "/forgot-password", "/api/auth/forgot-password/**",
-                                "/css/**", "/js/**", "/images/**", "/h2-console/**", "/uploads/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
-                )
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/feed", true)
-                        .failureUrl("/login?error")
-                        .usernameParameter("username")
-                        .passwordParameter("password")
-                        .permitAll()
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout")
-                        .permitAll()
-                )
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/h2-console/**")
-                )
-                .headers(headers -> headers
-                        .frameOptions(fo -> fo.sameOrigin())
-                );
-        return http.build();
-    }
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
+
+        @Bean
+        public DaoAuthenticationProvider authProvider(UserDetailsService userDetailsService,
+                        PasswordEncoder passwordEncoder) {
+                DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+                provider.setUserDetailsService(userDetailsService);
+                provider.setPasswordEncoder(passwordEncoder);
+                return provider;
+        }
+
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity http, DaoAuthenticationProvider authProvider)
+                        throws Exception {
+                http
+                                .authenticationProvider(authProvider)
+                                .authorizeHttpRequests(auth -> auth
+                                                .requestMatchers("/", "/register", "/login", "/forgot-password",
+                                                                "/api/auth/forgot-password/**",
+                                                                "/css/**", "/js/**", "/images/**", "/h2-console/**",
+                                                                "/uploads/**")
+                                                .permitAll()
+                                                .requestMatchers("/admin/**").hasRole("ADMIN")
+                                                .anyRequest().authenticated())
+                                .formLogin(form -> form
+                                                .loginPage("/login")
+                                                .loginProcessingUrl("/login")
+                                                .successHandler(successHandler)
+                                                .failureUrl("/login?error")
+                                                .usernameParameter("username")
+                                                .passwordParameter("password")
+                                                .permitAll())
+                                .logout(logout -> logout
+                                                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                                                .logoutSuccessUrl("/login?logout")
+                                                .invalidateHttpSession(true)
+                                                .clearAuthentication(true)
+                                                .deleteCookies("JSESSIONID")
+                                                .permitAll())
+                                .csrf(csrf -> csrf
+                                                .ignoringRequestMatchers("/h2-console/**"))
+                                .headers(headers -> headers
+                                                .frameOptions(fo -> fo.sameOrigin()));
+                return http.build();
+        }
 }

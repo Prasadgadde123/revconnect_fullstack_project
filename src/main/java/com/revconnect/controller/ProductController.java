@@ -38,7 +38,8 @@ public class ProductController {
 
     @GetMapping("/create")
     public String showCreateForm(@AuthenticationPrincipal User currentUser, Model model) {
-        if (currentUser.getRole() == com.revconnect.enums.UserRole.PERSONAL || currentUser.getRole() == com.revconnect.enums.UserRole.ADMIN) {
+        if (currentUser.getRole() == com.revconnect.enums.UserRole.PERSONAL
+                || currentUser.getRole() == com.revconnect.enums.UserRole.ADMIN) {
             return "redirect:/explore";
         }
         model.addAttribute("productDTO", new ProductCreateDTO());
@@ -48,11 +49,11 @@ public class ProductController {
 
     @PostMapping("/create")
     public String createProduct(@AuthenticationPrincipal User currentUser,
-                                @Valid @ModelAttribute("productDTO") ProductCreateDTO dto,
-                                BindingResult result,
-                                @RequestParam(value = "file", required = false) MultipartFile file,
-                                RedirectAttributes ra,
-                                Model model) {
+            @Valid @ModelAttribute("productDTO") ProductCreateDTO dto,
+            BindingResult result,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            RedirectAttributes ra,
+            Model model) {
         if (result.hasErrors()) {
             model.addAttribute("unreadCount", notificationService.getUnreadCount(currentUser));
             return "product/create";
@@ -63,7 +64,8 @@ public class ProductController {
                 String uploadsDir = "uploads/products/";
                 Files.createDirectories(Paths.get(uploadsDir));
                 String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-                Files.copy(file.getInputStream(), Paths.get(uploadsDir + filename), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(file.getInputStream(), Paths.get(uploadsDir + filename),
+                        StandardCopyOption.REPLACE_EXISTING);
                 dto.setImageUrl("/uploads/products/" + filename);
             } catch (IOException e) {
                 ra.addFlashAttribute("error", "Failed to upload product image");
@@ -77,9 +79,10 @@ public class ProductController {
     }
 
     @GetMapping("/{id}/edit")
-    public String showEditForm(@PathVariable Long id, @AuthenticationPrincipal User currentUser, Model model) {
+    public String showEditForm(@PathVariable(name = "id") Long id, @AuthenticationPrincipal User currentUser,
+            Model model) {
         Product p = productService.getById(id);
-        if(!p.getOwner().equals(currentUser)) {
+        if (!p.getOwner().equals(currentUser)) {
             return "redirect:/explore";
         }
         ProductCreateDTO dto = ProductCreateDTO.builder()
@@ -98,13 +101,13 @@ public class ProductController {
     }
 
     @PostMapping("/{id}/edit")
-    public String updateProduct(@PathVariable Long id,
-                                @AuthenticationPrincipal User currentUser,
-                                @Valid @ModelAttribute("productDTO") ProductCreateDTO dto,
-                                BindingResult result,
-                                @RequestParam(value = "file", required = false) MultipartFile file,
-                                RedirectAttributes ra,
-                                Model model) {
+    public String updateProduct(@PathVariable(name = "id") Long id,
+            @AuthenticationPrincipal User currentUser,
+            @Valid @ModelAttribute("productDTO") ProductCreateDTO dto,
+            BindingResult result,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            RedirectAttributes ra,
+            Model model) {
         if (result.hasErrors()) {
             model.addAttribute("unreadCount", notificationService.getUnreadCount(currentUser));
             return "product/edit";
@@ -115,7 +118,8 @@ public class ProductController {
                 String uploadsDir = "uploads/products/";
                 Files.createDirectories(Paths.get(uploadsDir));
                 String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-                Files.copy(file.getInputStream(), Paths.get(uploadsDir + filename), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(file.getInputStream(), Paths.get(uploadsDir + filename),
+                        StandardCopyOption.REPLACE_EXISTING);
                 dto.setImageUrl("/uploads/products/" + filename);
             } catch (IOException e) {
                 ra.addFlashAttribute("error", "Failed to upload product image");
@@ -129,7 +133,8 @@ public class ProductController {
     }
 
     @PostMapping("/{id}/delete")
-    public String deleteProduct(@PathVariable Long id, @AuthenticationPrincipal User currentUser, RedirectAttributes ra) {
+    public String deleteProduct(@PathVariable(name = "id") Long id, @AuthenticationPrincipal User currentUser,
+            RedirectAttributes ra) {
         productService.deleteProduct(id, currentUser);
         ra.addFlashAttribute("success", "Product removed.");
         return "redirect:/profile/" + currentUser.getUsername();

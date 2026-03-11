@@ -1,62 +1,349 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('Admin Dashboard')}"></head>
-<body>
-<div th:replace="~{fragments/layout :: navbar}"></div>
-<div class="page-container">
-    <div th:replace="~{fragments/layout :: flash}"></div>
 
-    <div class="form-page">
-        <h2>🛡️ Admin Dashboard</h2>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RevConnect - Admin Command Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/admin_dashboard.css}" />
+</head>
 
-        <div class="admin-stats-row">
-            <div class="admin-stat-card">
-                <span class="stat-big" th:text="${totalUsers}">0</span>
-                <span class="stat-label">Total Users</span>
+<body class="admin-body">
+
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+        <div class="admin-sidebar-header">
+            <i class="fas fa-network-wired text-gradient"></i> RevConnect Admin
+        </div>
+        <nav class="admin-sidebar-nav">
+            <a th:href="@{/admin/dashboard(tab='overview')}" class="admin-nav-item"
+                th:classappend="${activeTab == 'overview' || activeTab == null ? 'active' : ''}">
+                <i class="fas fa-home"></i> Dashboard
+            </a>
+            <a th:href="@{/admin/users}" class="admin-nav-item"
+                th:classappend="${activeTab == 'users' ? 'active' : ''}">
+                <i class="fas fa-users"></i> Users
+            </a>
+            <a th:href="@{/admin/posts}" class="admin-nav-item"
+                th:classappend="${activeTab == 'posts' ? 'active' : ''}">
+                <i class="fas fa-file-alt"></i> Posts
+            </a>
+            <a th:href="@{/admin/comments}" class="admin-nav-item"
+                th:classappend="${activeTab == 'comments' ? 'active' : ''}">
+                <i class="fas fa-comments"></i> Comments
+            </a>
+            <a th:href="@{/admin/reports}" class="admin-nav-item"
+                th:classappend="${activeTab == 'reports' ? 'active' : ''}">
+                <i class="fas fa-flag"></i> Reports
+            </a>
+            <a th:href="@{/admin/analytics}" class="admin-nav-item"
+                th:classappend="${activeTab == 'analytics' ? 'active' : ''}">
+                <i class="fas fa-chart-line"></i> Analytics
+            </a>
+            <div class="nav-divider" style="height: 1px; background: rgba(255,255,255,0.1); margin: 15px 20px;"></div>
+            <a th:href="@{/logout}" class="admin-nav-item" style="color: #fca5a5; margin-top: 10px;">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <main class="admin-main-wrapper">
+        <!-- Top Navbar -->
+        <header class="admin-topnav">
+            <div class="topnav-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search across platform...">
             </div>
-        </div>
+            <div class="topnav-actions">
+                <div th:if="${success}" class="alert-toast"
+                    style="background: #10b981; color: #fff; padding: 6px 15px; border-radius: 20px; font-size: 0.8rem; margin-right: 15px;">
+                    <i class="fas fa-check-circle"></i> <span th:text="${success}">Success</span>
+                </div>
+                <button class="topnav-btn"><i class="far fa-bell"></i></button>
+                <div class="topnav-profile">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=8b5cf6&color=fff" alt="Admin">
+                    <span style="font-weight: 500; font-size: 0.9rem;">Administrator</span>
+                </div>
+            </div>
+        </header>
 
-        <div class="settings-card">
-            <h3>👥 All Users</h3>
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Username</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="u : ${users}">
-                        <td th:text="${u.id}">1</td>
-                        <td>
-                            <a th:href="@{/profile/{un}(un=${u.username})}" th:text="${u.username}">user</a>
-                        </td>
-                        <td th:text="${u.email}">email</td>
-                        <td>
-                            <span class="role-badge" th:text="${u.role.name()}"
-                                  th:classappend="${u.role.name() == 'ADMIN' ? ' admin' : (u.role.name() == 'BUSINESS' ? ' business' : (u.role.name() == 'CREATOR' ? ' creator' : ''))}">PERSONAL</span>
-                        </td>
-                        <td>
-                            <span th:text="${u.enabled ? 'Active' : 'Disabled'}"
-                                  th:class="${u.enabled ? 'status-active' : 'status-disabled'}">Active</span>
-                        </td>
-                        <td>
-                            <form th:action="@{/admin/users/{id}/toggle(id=${u.id})}" method="post" style="display:inline">
-                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                                <button type="submit" class="btn btn-sm btn-outline"
-                                        th:text="${u.enabled ? 'Disable' : 'Enable'}">Toggle</button>
-                            </form>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- Content Area -->
+        <div class="admin-content-area">
+
+            <!-- 1. Overview Section -->
+            <section id="overview" class="admin-section"
+                th:classappend="${activeTab == 'overview' || activeTab == null ? 'active' : ''}">
+                <div class="section-header">
+                    <h1 class="section-title">Dashboard Overview</h1>
+                    <p class="section-subtitle">Real-time statistics and platform health.</p>
+                </div>
+
+                <div class="admin-stats-grid">
+                    <div class="admin-stat-card">
+                        <div class="stat-icon-wrapper"><i class="fas fa-users"></i></div>
+                        <div class="stat-details">
+                            <div class="stat-value" th:text="${totalUsers}">12,450</div>
+                            <div class="stat-label">Total Users</div>
+                        </div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="stat-icon-wrapper"><i class="fas fa-pen"></i></div>
+                        <div class="stat-details">
+                            <div class="stat-value" th:text="${totalPosts}">45.2k</div>
+                            <div class="stat-label">Total Posts</div>
+                        </div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="stat-icon-wrapper"><i class="fas fa-comments"></i></div>
+                        <div class="stat-details">
+                            <div class="stat-value" th:text="${totalComments}">1,482</div>
+                            <div class="stat-label">Total Comments</div>
+                        </div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="stat-icon-wrapper"><i class="fas fa-heart"></i></div>
+                        <div class="stat-details">
+                            <div class="stat-value" th:text="${newUsersThisWeek}">24</div>
+                            <div class="stat-label">New Users (Week)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-charts-grid">
+                    <div class="admin-chart-card">
+                        <div class="chart-header">User Growth Trend</div>
+                        <div class="chart-placeholder"
+                            style="display: flex; align-items: flex-end; gap: 10px; height: 150px; padding: 20px;">
+                            <div
+                                style="flex:1; background: var(--admin-primary); opacity: 0.3; height: 40%; border-radius: 4px;">
+                            </div>
+                            <div
+                                style="flex:1; background: var(--admin-primary); opacity: 0.5; height: 60%; border-radius: 4px;">
+                            </div>
+                            <div
+                                style="flex:1; background: var(--admin-primary); opacity: 0.4; height: 45%; border-radius: 4px;">
+                            </div>
+                            <div
+                                style="flex:1; background: var(--admin-primary); opacity: 0.8; height: 80%; border-radius: 4px;">
+                            </div>
+                            <div
+                                style="flex:1; background: var(--admin-primary); opacity: 1; height: 70%; border-radius: 4px;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="admin-chart-card">
+                        <div class="chart-header">Trending Hashtags</div>
+                        <div class="hashtags-list" style="padding: 15px;">
+                            <div th:each="entry : ${trendingTags}"
+                                style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--admin-border);">
+                                <span style="color: var(--admin-primary); font-weight: 600;"
+                                    th:text="'#' + ${entry.key}">#tag</span>
+                                <span style="color: var(--admin-text-dim); font-size: 0.85rem;"
+                                    th:text="${entry.value} + ' posts'">0 posts</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. Users Section -->
+            <section id="users" class="admin-section" th:classappend="${activeTab == 'users' ? 'active' : ''}">
+                <div class="section-header">
+                    <h1 class="section-title">User Management</h1>
+                    <p class="section-subtitle">Manage accounts, roles, and platform access.</p>
+                </div>
+
+                <div class="admin-table-card">
+                    <div class="admin-table-header">
+                        <div class="table-search">
+                            <input type="text" placeholder="Search users by name or email...">
+                        </div>
+                        <button class="btn-primary"><i class="fas fa-plus"></i> Add User</button>
+                    </div>
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Account Type</th>
+                                    <th>Status</th>
+                                    <th>Joined Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="u : ${users}">
+                                    <td>
+                                        <div class="user-identity">
+                                            <img th:src="${u.profilePicture != null ? u.profilePicture : 'https://ui-avatars.com/api/?name=' + u.username}"
+                                                alt="">
+                                            <div>
+                                                <div class="user-name" th:text="${u.displayNameOrUsername}">User</div>
+                                                <div class="user-email" th:text="${u.email}">email@example.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="role-badge" th:text="${u.role}">Personal</span></td>
+                                    <td>
+                                        <span class="status-badge"
+                                            th:classappend="${u.enabled ? 'status-active' : 'status-inactive'}">
+                                            <i class="fas fa-circle" style="font-size: 6px;"></i>
+                                            <span th:text="${u.enabled ? 'Active' : 'Suspended'}">Status</span>
+                                        </span>
+                                    </td>
+                                    <td th:text="${#temporals.format(u.createdAt, 'MMM dd, yyyy')}">Date</td>
+                                    <td>
+                                        <div class="action-btns">
+                                            <form th:if="${u.enabled}"
+                                                th:action="@{/admin/users/{id}/suspend(id=${u.id})}" method="post"
+                                                style="display:inline;">
+                                                <button type="submit" class="btn-action delete" title="Suspend"><i
+                                                        class="fas fa-ban"></i></button>
+                                            </form>
+                                            <form th:unless="${u.enabled}"
+                                                th:action="@{/admin/users/{id}/activate(id=${u.id})}" method="post"
+                                                style="display:inline;">
+                                                <button type="submit" class="btn-action" style="color: #10b981;"
+                                                    title="Activate"><i class="fas fa-check"></i></button>
+                                            </form>
+                                            <button class="btn-action" title="Edit"><i class="fas fa-edit"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Posts Section -->
+            <section id="posts" class="admin-section" th:classappend="${activeTab == 'posts' ? 'active' : ''}">
+                <div class="section-header">
+                    <h1 class="section-title">Post Moderation</h1>
+                    <p class="section-subtitle">Review, flag, and delete content.</p>
+                </div>
+
+                <div class="admin-table-card">
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Author</th>
+                                    <th>Content Preview</th>
+                                    <th>Engagement</th>
+                                    <th>Posted Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="p : ${posts}">
+                                    <td style="font-weight: 600;" th:text="'@' + ${p.author.username}">@user</td>
+                                    <td style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                                        th:text="${p.content}">Content...</td>
+                                    <td>
+                                        <span style="margin-right: 12px;"><i class="fas fa-heart"
+                                                style="color: var(--admin-accent);"></i> <span
+                                                th:text="${p.likeCount}">0</span></span>
+                                        <span><i class="fas fa-comment" style="color: var(--admin-primary);"></i> <span
+                                                th:text="${p.commentCount}">0</span></span>
+                                    </td>
+                                    <td th:text="${#temporals.format(p.createdAt, 'MMM dd, HH:mm')}">Date</td>
+                                    <td>
+                                        <div class="action-btns">
+                                            <form th:action="@{/admin/posts/{id}/delete(id=${p.id})}" method="post">
+                                                <button type="submit" class="btn-action delete" title="Delete Post"><i
+                                                        class="fas fa-trash-alt"></i></button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. Reports Section -->
+            <section id="reports" class="admin-section" th:classappend="${activeTab == 'reports' ? 'active' : ''}">
+                <div class="section-header">
+                    <h1 class="section-title">Reports Management</h1>
+                    <p class="section-subtitle">Review flagged content and user violations.</p>
+                </div>
+                <div class="admin-table-card">
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Reporter</th>
+                                    <th>Target</th>
+                                    <th>Reason</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="r : ${reports}">
+                                    <td th:text="${r.reporter.username}">@user</td>
+                                    <td>
+                                        <span th:if="${r.reportedPost != null}"
+                                            th:text="'Post #' + ${r.reportedPost.id}">Post</span>
+                                        <span th:if="${r.reportedUser != null}"
+                                            th:text="'User: ' + ${r.reportedUser.username}">User</span>
+                                    </td>
+                                    <td th:text="${r.reason}">Reason</td>
+                                    <td><span class="status-badge"
+                                            th:classappend="${'status-' + r.status.name().toLowerCase()}"
+                                            th:text="${r.status}">Pending</span></td>
+                                    <td>
+                                        <div class="action-btns">
+                                            <form th:if="${r.status.name() == 'PENDING'}"
+                                                th:action="@{/admin/reports/{id}/resolve(id=${r.id})}" method="post">
+                                                <button type="submit" class="btn-action"
+                                                    style="color: var(--admin-primary);" title="Resolve"><i
+                                                        class="fas fa-check-double"></i></button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(reports)}">
+                                    <td colspan="5"
+                                        style="text-align: center; padding: 40px; color: var(--admin-text-dim);">No
+                                        active reports.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Placeholder Sections -->
+            <section id="comments" class="admin-section" th:classappend="${activeTab == 'comments' ? 'active' : ''}">
+                <div class="section-header">
+                    <h1 class="section-title">Comment Moderation</h1>
+                    <p class="section-subtitle">Manage user discussions.</p>
+                </div>
+                <div class="admin-table-card" style="padding: 50px; text-align: center; color: var(--admin-text-dim);">
+                    <i class="fas fa-comments" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.3;"></i>
+                    <p>Comment moderation data pipeline is being initialized.</p>
+                </div>
+            </section>
+
+            <section id="analytics" class="admin-section" th:classappend="${activeTab == 'analytics' ? 'active' : ''}">
+                <div class="section-header">
+                    <h1 class="section-title">Advanced Analytics</h1>
+                    <p class="section-subtitle">Deep dive into platform engagement.</p>
+                </div>
+                <div class="admin-table-card" style="padding: 50px; text-align: center; color: var(--admin-text-dim);">
+                    <i class="fas fa-chart-pie" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.3;"></i>
+                    <p>Advanced metrics will be available in the next system update.</p>
+                </div>
+            </section>
+
         </div>
-    </div>
-</div>
-<script th:src="@{/js/main.js}"></script>
+    </main>
 </body>
+
 </html>

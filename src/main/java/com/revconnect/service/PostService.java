@@ -60,7 +60,8 @@ public class PostService {
             post.setCtaButtonText(dto.getCtaButtonText());
         if (dto.getCtaButtonUrl() != null)
             post.setCtaButtonUrl(dto.getCtaButtonUrl());
-        if (dto.getTaggedProducts() != null) post.setTaggedProducts(parseTaggedProducts(dto.getTaggedProducts()));
+        if (dto.getTaggedProducts() != null)
+            post.setTaggedProducts(parseTaggedProducts(dto.getTaggedProducts()));
         post.setScheduledAt(dto.getScheduledAt());
         return postRepository.save(post);
     }
@@ -77,7 +78,8 @@ public class PostService {
 
     public void deletePost(Long postId, User currentUser) {
         Post post = getPostById(postId);
-        if (!post.getAuthor().getId().equals(currentUser.getId()) && currentUser.getRole() != com.revconnect.enums.UserRole.ADMIN) {
+        if (!post.getAuthor().getId().equals(currentUser.getId())
+                && currentUser.getRole() != com.revconnect.enums.UserRole.ADMIN) {
             throw new IllegalArgumentException("Unauthorized");
         }
         post.setDeleted(true);
@@ -173,7 +175,19 @@ public class PostService {
         Post post = getPostById(postId);
         if (!post.getAuthor().equals(currentUser))
             throw new IllegalArgumentException("Unauthorized");
-        post.setPinned(!post.isPinned());
+
+        boolean newState = !post.isPinned();
+
+        if (newState) {
+            // Unpin other posts first
+            List<Post> currentlyPinned = postRepository.findPinnedPosts(currentUser);
+            for (Post p : currentlyPinned) {
+                p.setPinned(false);
+            }
+            postRepository.saveAll(currentlyPinned);
+        }
+
+        post.setPinned(newState);
         postRepository.save(post);
     }
 
@@ -268,8 +282,7 @@ public class PostService {
                         conn, sharer,
                         NotificationType.POST_SHARED,
                         notificationMsg,
-                        "/post/" + postId
-                );
+                        "/post/" + postId);
             }
         }
     }
