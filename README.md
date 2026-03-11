@@ -26,6 +26,33 @@ For in-depth technical details, please refer to the following documentation file
 - **[System Architecture](docs/ARCHITECTURE.md):** Detailed breakdown of the N-tier architecture, data flow, and security.
 - **[ER Diagram (ERD)](docs/ERD.md):** Visual representation of the database schema and entity relationships.
 
+## 📂 Project Structure
+
+```text
+revconnect_fullstack_project/
+├── docs/                      # Technical documentation
+│   ├── ARCHITECTURE.md        # System architecture details
+│   └── ERD.md                 # Entity Relationship Diagram
+├── src/
+│   ├── main/
+│   │   ├── java/com/revconnect/
+│   │   │   ├── config/        # Security and application configuration
+│   │   │   ├── controller/    # Web controllers (API endpoints)
+│   │   │   ├── dto/           # Data Transfer Objects (DTOs)
+│   │   │   ├── entity/        # JPA Database Entities
+│   │   │   ├── enums/         # User roles and post types
+│   │   │   ├── exception/     # Custom error handling
+│   │   │   ├── repository/    # Data access layer (Interfaces)
+│   │   │   ├── service/       # Business logic implementation
+│   │   │   └── RevConnectAppApplication.java
+│   │   └── resources/
+│   │       ├── static/        # Static assets (CSS, JS, images)
+│   │       └── templates/     # Thymeleaf HTML templates (UI)
+│   └── test/                  # Unit and integration test suites
+├── pom.xml                    # Maven dependencies and build config
+└── README.md                  # Project overview and guide
+```
+
 ## 🛠️ Tech Stack
 
 - **Backend:** Java 17, Spring Boot 3.2
