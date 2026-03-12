@@ -41,6 +41,7 @@ public class SecurityConfig {
                                                                 "/uploads/**")
                                                 .permitAll()
                                                 .requestMatchers("/admin/**").hasRole("ADMIN")
+                                                .requestMatchers("/dashboard/**").hasAnyRole("CREATOR", "BUSINESS")
                                                 .anyRequest().authenticated())
                                 .formLogin(form -> form
                                                 .loginPage("/login")

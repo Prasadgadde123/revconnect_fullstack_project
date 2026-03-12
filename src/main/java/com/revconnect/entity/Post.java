@@ -53,6 +53,8 @@ public class Post {
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     private LocalDateTime scheduledAt;
+    @Builder.Default
+    private boolean published = false;
 
     // Likes
     @ManyToMany(fetch = FetchType.LAZY)

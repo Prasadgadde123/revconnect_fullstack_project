@@ -2,6 +2,7 @@ package com.revconnect.controller;
 
 import com.revconnect.dto.RegisterDTO;
 import com.revconnect.service.UserService;
+import com.revconnect.repository.SystemSettingRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AuthController {
 
     private final UserService userService;
+    private final SystemSettingRepository systemSettingRepository;
 
     @GetMapping("/login")
     public String loginPage(@RequestParam(required = false) String error,
@@ -34,7 +36,12 @@ public class AuthController {
 
     @GetMapping("/register")
     public String registerPage(Model model) {
+        boolean signupBlocked = systemSettingRepository.findBySettingKey("BLOCK_SIGNUP")
+                .map(s -> Boolean.parseBoolean(s.getSettingValue()))
+                .orElse(false);
+        
         model.addAttribute("registerDTO", new RegisterDTO());
+        model.addAttribute("signupBlocked", signupBlocked);
         return "auth/register";
     }
 

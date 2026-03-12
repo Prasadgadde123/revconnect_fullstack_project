@@ -5,16 +5,17 @@
 <div th:replace="~{fragments/layout :: navbar}"></div>
 <div class="page-container">
     <div th:replace="~{fragments/layout :: flash}"></div>
-    <div class="form-page">
-        <h2>✏️ Create Post</h2>
-        <div class="settings-card">
+    <div class="modal-view-container">
+        <div class="modal-view-card">
+            <a th:href="@{/feed}" class="modal-close-btn">×</a>
+            <h2 style="margin-bottom: 24px;">✏️ Create Post</h2>
             <form th:action="@{/post/create}" th:object="${postDTO}" method="post">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
                 <div class="form-group">
                     <label>What's on your mind? *</label>
                     <textarea th:field="*{content}" class="form-control post-textarea"
-                              rows="5" placeholder="Write something..." required
+                              rows="4" placeholder="Write something..." required
                               th:classappend="${#fields.hasErrors('content')} ? 'is-invalid'"></textarea>
                     <span th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="field-error"></span>
                     <small class="char-counter"><span id="charCount">0</span>/2000</small>
@@ -24,12 +25,11 @@
                     <label>Hashtags</label>
                     <input type="text" th:field="*{hashtags}" class="form-control"
                            placeholder="e.g. tech, news, fun (comma separated)"/>
-                    <small>Separate with commas. The # sign is optional.</small>
                 </div>
 
                 <div th:if="${#authentication.principal.role.name() == 'CREATOR' or #authentication.principal.role.name() == 'BUSINESS'}">
-                    <div class="form-row">
-                        <div class="form-group">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6 form-group">
                             <label>Post Type</label>
                             <select th:field="*{postType}" class="form-control">
                                 <option value="REGULAR">Regular</option>
@@ -37,40 +37,73 @@
                                 <option value="ANNOUNCEMENT">Announcement</option>
                             </select>
                         </div>
-                        <div class="form-group">
+                        <div class="col-md-6 form-group">
                             <label>Tag Products/Services</label>
                             <input type="text" th:field="*{taggedProducts}" class="form-control"
                                    placeholder="e.g. Shoes, Coaching Service"/>
-                            <small>Separate with commas</small>
                         </div>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6 form-group">
                             <label>CTA Button Text</label>
                             <input type="text" th:field="*{ctaButtonText}" class="form-control"
-                                   placeholder="e.g. Shop Now, Learn More"/>
+                                   placeholder="e.g. Shop Now"/>
                         </div>
-                        <div class="form-group">
+                        <div class="col-md-6 form-group">
                             <label>CTA Button URL</label>
                             <input type="url" th:field="*{ctaButtonUrl}" class="form-control"
                                    placeholder="https://..."/>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>Schedule Post 🕒</label>
-                        <input type="datetime-local" th:field="*{scheduledAt}" class="form-control"/>
-                        <small class="text-muted" style="display: block; margin-top: 4px; font-size: 12px;">Leave blank to publish immediately. Post will be hidden until this time.</small>
+
+                    <!-- Toggle for Scheduler -->
+                    <div class="schedule-toggle-container">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        <span style="font-weight: 600; font-size: 14px;">Want to schedule this post?</span>
+                        <button type="button" id="toggleScheduler" class="btn btn-sm btn-outline-primary ms-auto" style="border-radius: 8px;">
+                            📅 Open Scheduler
+                        </button>
+                    </div>
+
+                    <!-- Floating Scheduling Panel -->
+                    <div id="schedulingPanel" class="scheduling-panel-floating">
+                        <div class="scheduling-panel-header">
+                            <h3>🕒 Schedule Post</h3>
+                            <button type="button" class="close-panel-btn" onclick="document.getElementById('schedulingPanel').style.display = 'none'">×</button>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label>Select Date & Time</label>
+                            <input type="datetime-local" th:field="*{scheduledAt}" class="form-control"/>
+                            <small class="text-muted d-block mt-2">Pick a future date and time to publish automatically.</small>
+                        </div>
+                        <div class="d-grid gap-2">
+                             <button type="button" class="btn btn-primary" onclick="document.getElementById('schedulingPanel').style.display = 'none'">
+                                Confirm Schedule
+                             </button>
+                             <button type="button" class="btn btn-outline" onclick="document.getElementById('schedulingPanel').style.display = 'none'; document.getElementById('scheduledAt').value = ''">
+                                Cancel
+                             </button>
+                        </div>
                     </div>
                 </div>
 
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">🚀 Publish Post</button>
-                    <a th:href="@{/feed}" class="btn btn-outline">Cancel</a>
+                <div class="form-actions mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary px-4 py-2">🚀 Publish Post</button>
+                    <a th:href="@{/feed}" class="btn btn-outline px-4 py-2">Cancel</a>
                 </div>
             </form>
         </div>
     </div>
 </div>
 <script th:src="@{/js/main.js}"></script>
+<script>
+    document.getElementById('toggleScheduler')?.addEventListener('click', function() {
+        const panel = document.getElementById('schedulingPanel');
+        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    });
+</script>
 </body>
 </html>

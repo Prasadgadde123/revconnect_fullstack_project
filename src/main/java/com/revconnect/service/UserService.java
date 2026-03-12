@@ -7,6 +7,7 @@ import com.revconnect.entity.User;
 import com.revconnect.enums.UserRole;
 import com.revconnect.exception.ResourceNotFoundException;
 import com.revconnect.repository.UserRepository;
+import com.revconnect.repository.SystemSettingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,6 +28,7 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SystemSettingRepository systemSettingRepository;
 
     @Override
     public UserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {
@@ -36,6 +38,14 @@ public class UserService implements UserDetailsService {
     }
 
     public User register(RegisterDTO dto) {
+        boolean signupBlocked = systemSettingRepository.findBySettingKey("BLOCK_SIGNUP")
+                .map(s -> Boolean.parseBoolean(s.getSettingValue()))
+                .orElse(false);
+
+        if (signupBlocked) {
+            throw new IllegalArgumentException("New user registrations are currently disabled by the administrator.");
+        }
+
         if (userRepository.existsByUsername(dto.getUsername())) {
             throw new IllegalArgumentException("Username already taken");
         }

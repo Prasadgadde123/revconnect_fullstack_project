@@ -30,6 +30,7 @@ public class DashboardController {
     public String viewDashboard(@AuthenticationPrincipal User currentUser, Model model) {
         if (currentUser == null) return "redirect:/login";
         if (currentUser.getRole() == com.revconnect.enums.UserRole.ADMIN) return "redirect:/admin";
+        if (currentUser.getRole() == com.revconnect.enums.UserRole.PERSONAL) return "redirect:/feed";
 
         // Refresh user to get latest collections
         User freshUser = userService.findById(currentUser.getId());

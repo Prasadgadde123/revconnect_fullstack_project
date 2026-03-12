@@ -30,6 +30,7 @@ public class AdminController {
         model.addAttribute("pendingReportsCount", adminService.getPendingReports().size());
         List<ReportResponseDTO> recentReports = adminService.getRecentReports();
         model.addAttribute("recentReports", recentReports);
+        model.addAttribute("signupBlocked", adminService.getBooleanSetting("BLOCK_SIGNUP", false));
         return "admin/dashboard";
     }
 
@@ -69,8 +70,17 @@ public class AdminController {
     }
 
     @GetMapping("/settings")
-    public String systemSettings() {
+    public String systemSettings(Model model) {
+        model.addAttribute("signupBlocked", adminService.getBooleanSetting("BLOCK_SIGNUP", false));
+        model.addAttribute("maintenanceMode", adminService.getBooleanSetting("MAINTENANCE_MODE", false));
         return "admin/settings";
+    }
+
+    @PostMapping("/settings/update")
+    public String updateSetting(@RequestParam String key, @RequestParam String value, RedirectAttributes ra) {
+        adminService.updateSetting(key, value);
+        ra.addFlashAttribute("success", "System setting updated.");
+        return "redirect:/admin/settings";
     }
 
     @PostMapping("/users/{userId}/toggle")

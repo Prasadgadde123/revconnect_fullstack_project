@@ -44,6 +44,7 @@ public class PostService {
                 .ctaButtonUrl(dto.getCtaButtonUrl())
                 .taggedProducts(parseTaggedProducts(dto.getTaggedProducts()))
                 .scheduledAt(dto.getScheduledAt())
+                .published(dto.getScheduledAt() == null || dto.getScheduledAt().isBefore(java.time.LocalDateTime.now()))
                 .build();
         Post saved = postRepository.save(post);
         log.info("Post created by {}", author.getUsername());
@@ -199,12 +200,12 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public List<Post> getUserPosts(User user) {
-        return postRepository.findPublishedUserPosts(user, java.time.LocalDateTime.now());
+        return postRepository.findPublishedUserPosts(user);
     }
 
     @Transactional(readOnly = true)
     public List<Post> getPublishedUserPosts(User user) {
-        return postRepository.findPublishedUserPosts(user, java.time.LocalDateTime.now());
+        return postRepository.findPublishedUserPosts(user);
     }
 
     @Transactional(readOnly = true)
@@ -244,12 +245,12 @@ public class PostService {
 
         if (type != null && !type.isBlank()) {
             return postRepository.findFeedPostsByType(userIds,
-                    com.revconnect.enums.PostType.valueOf(type.toUpperCase()), now, pageable);
+                    com.revconnect.enums.PostType.valueOf(type.toUpperCase()), pageable);
         } else if (userRole != null && !userRole.isBlank()) {
             return postRepository.findFeedPostsByRole(userIds,
-                    com.revconnect.enums.UserRole.valueOf(userRole.toUpperCase()), now, pageable);
+                    com.revconnect.enums.UserRole.valueOf(userRole.toUpperCase()), pageable);
         }
-        return postRepository.findFeedPosts(userIds, now, pageable);
+        return postRepository.findFeedPosts(userIds, pageable);
     }
 
     /**
@@ -270,7 +271,7 @@ public class PostService {
         List<Long> userIds = feedUsers.stream().map(User::getId).collect(Collectors.toList());
         PageRequest pageable = PageRequest.of(page, 20);
 
-        return postRepository.findRankedFeedPosts(userIds, java.time.LocalDateTime.now(), pageable);
+        return postRepository.findRankedFeedPosts(userIds, pageable);
     }
 
     @Transactional(readOnly = true)

@@ -13,13 +13,13 @@
         <main class="feed-main">
             <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 20px;">📨 Shared With Me</h2>
 
-            <div th:if="${sharedPosts == null or sharedPosts.empty}" class="empty-state" style="margin-top: 40px;">
+            <div th:if="${sharedPosts == null or sharedPosts.empty}" class="empty-state glass-card" style="margin-top: 40px; padding: 40px; border-radius: 24px;">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 12px;">
                     <line x1="22" y1="2" x2="11" y2="13"></line>
                     <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                 </svg>
-                <p style="font-size: 18px; color: var(--text-secondary);">No one has shared posts with you yet.</p>
-                <p style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">When someone sends you a post, it will appear here.</p>
+                <p style="font-size: 18px; color: var(--text-primary); font-weight: 700;">No one has shared posts with you yet.</p>
+                <p style="font-size: 14px; color: var(--text-secondary); margin-top: 8px;">When someone sends you a post, it will appear here.</p>
             </div>
 
             <div th:each="sp : ${sharedPosts}" class="post-card" style="position: relative;">

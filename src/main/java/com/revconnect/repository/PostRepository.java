@@ -16,21 +16,20 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
         List<Post> findByAuthorAndDeletedFalseOrderByPinnedDescCreatedAtDesc(User author);
 
-        @Query("SELECT p FROM Post p WHERE p.deleted = false AND p.author = :author AND (p.scheduledAt IS NULL OR p.scheduledAt <= :now) ORDER BY p.pinned DESC, p.createdAt DESC")
-        List<Post> findPublishedUserPosts(@Param("author") User author, @Param("now") java.time.LocalDateTime now);
+        @Query("SELECT p FROM Post p WHERE p.deleted = false AND p.author = :author AND p.published = true ORDER BY p.pinned DESC, p.createdAt DESC")
+        List<Post> findPublishedUserPosts(@Param("author") User author);
 
-        @Query("SELECT p FROM Post p WHERE p.deleted = false AND p.author = :author AND p.scheduledAt > :now ORDER BY p.scheduledAt ASC")
+        @Query("SELECT p FROM Post p WHERE p.deleted = false AND p.author = :author AND p.published = false AND p.scheduledAt > :now ORDER BY p.scheduledAt ASC")
         List<Post> findScheduledPosts(@Param("author") User author, @Param("now") java.time.LocalDateTime now);
 
-        @Query("SELECT p FROM Post p WHERE p.deleted = false AND p.author = :author AND p.scheduledAt > :now AND p.scheduledAt <= :cutoffTime ORDER BY p.scheduledAt ASC")
+        @Query("SELECT p FROM Post p WHERE p.deleted = false AND p.author = :author AND p.published = false AND p.scheduledAt > :now AND p.scheduledAt <= :cutoffTime ORDER BY p.scheduledAt ASC")
         List<Post> findSoonToBePublishedPosts(@Param("author") User author, @Param("now") java.time.LocalDateTime now,
                         @Param("cutoffTime") java.time.LocalDateTime cutoffTime);
 
         @Query("SELECT p FROM Post p WHERE p.deleted = false AND " +
-                        "p.author.id IN :userIds AND (p.scheduledAt IS NULL OR p.scheduledAt <= :now) " +
+                        "p.author.id IN :userIds AND p.published = true " +
                         "ORDER BY p.createdAt DESC")
         Page<Post> findFeedPosts(@Param("userIds") List<Long> userIds,
-                        @Param("now") java.time.LocalDateTime now,
                         Pageable pageable);
 
         /**
@@ -43,30 +42,30 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                         "LEFT JOIN p.comments c " +
                         "WHERE p.deleted = false " +
                         "AND (p.author.id IN :userIds) " +
-                        "AND (p.scheduledAt IS NULL OR p.scheduledAt <= :now) " +
+                        "AND p.published = true " +
                         "GROUP BY p.id " +
                         "ORDER BY (COUNT(DISTINCT l) * 1.5 + COUNT(DISTINCT c) * 3.0 + (CASE WHEN p.postType = 'REPOST' THEN 5 ELSE 0 END)) DESC, p.createdAt DESC")
         Page<Post> findRankedFeedPosts(@Param("userIds") List<Long> userIds,
-                        @Param("now") java.time.LocalDateTime now,
                         Pageable pageable);
 
         @Query("SELECT p FROM Post p WHERE p.deleted = false AND " +
-                        "p.author.id IN :userIds AND p.postType = :postType AND (p.scheduledAt IS NULL OR p.scheduledAt <= :now) "
+                        "p.author.id IN :userIds AND p.postType = :postType AND p.published = true "
                         +
                         "ORDER BY p.createdAt DESC")
         Page<Post> findFeedPostsByType(@Param("userIds") List<Long> userIds,
                         @Param("postType") com.revconnect.enums.PostType postType,
-                        @Param("now") java.time.LocalDateTime now,
                         Pageable pageable);
 
         @Query("SELECT p FROM Post p WHERE p.deleted = false AND " +
-                        "p.author.id IN :userIds AND p.author.role = :userRole AND (p.scheduledAt IS NULL OR p.scheduledAt <= :now) "
+                        "p.author.id IN :userIds AND p.author.role = :userRole AND p.published = true "
                         +
                         "ORDER BY p.createdAt DESC")
         Page<Post> findFeedPostsByRole(@Param("userIds") List<Long> userIds,
                         @Param("userRole") com.revconnect.enums.UserRole userRole,
-                        @Param("now") java.time.LocalDateTime now,
                         Pageable pageable);
+
+        @Query("SELECT p FROM Post p WHERE p.deleted = false AND p.scheduledAt IS NOT NULL AND p.scheduledAt <= :now AND p.published = false")
+        List<Post> findDuePosts(@Param("now") java.time.LocalDateTime now);
 
         @Query("SELECT p FROM Post p WHERE p.deleted = false AND " +
                         "LOWER(p.hashtags) LIKE LOWER(CONCAT('%',:tag,'%')) " +

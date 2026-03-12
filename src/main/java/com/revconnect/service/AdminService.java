@@ -10,6 +10,7 @@ import com.revconnect.enums.ReportType;
 import com.revconnect.repository.ReportRepository;
 import com.revconnect.repository.UserRepository;
 import com.revconnect.repository.PostRepository;
+import com.revconnect.repository.SystemSettingRepository;
 import com.revconnect.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +31,27 @@ public class AdminService {
     private final ReportRepository reportRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final SystemSettingRepository systemSettingRepository;
     private final NotificationService notificationService;
+
+    public String getSetting(String key, String defaultValue) {
+        return systemSettingRepository.findBySettingKey(key)
+                .map(com.revconnect.entity.SystemSetting::getSettingValue)
+                .orElse(defaultValue);
+    }
+
+    public boolean getBooleanSetting(String key, boolean defaultValue) {
+        return Boolean.parseBoolean(getSetting(key, String.valueOf(defaultValue)));
+    }
+
+    @Transactional
+    public void updateSetting(String key, String value) {
+        com.revconnect.entity.SystemSetting setting = systemSettingRepository.findBySettingKey(key)
+                .orElse(com.revconnect.entity.SystemSetting.builder().settingKey(key).build());
+        setting.setSettingValue(value);
+        systemSettingRepository.save(setting);
+        log.info("System setting updated: {} = {}", key, value);
+    }
 
     public List<ReportResponseDTO> getAllReports() {
         log.debug("Fetching all reports");

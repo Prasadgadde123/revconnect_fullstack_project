@@ -388,6 +388,7 @@ body {
     color: var(--text-primary);
     line-height: 1.6;
     font-size: 15px;
+    padding-bottom: 110px; /* Space for bottom navbar */
 }
 
 a {
@@ -404,20 +405,22 @@ a:hover {
    ============================================================ */
 .glassy-floating-nav {
     position: fixed;
-    bottom: 32px;
+    bottom: 20px; /* Moved to bottom */
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
     display: flex;
     align-items: center;
-    gap: 16px;
-    pointer-events: none;
-    /* Let clicks pass through the container... */
+    gap: 20px; /* Increased gap for better separation */
+    pointer-events: auto; /* Ensure it's clickable */
+    width: fit-content;
 }
 
-.glassy-floating-nav>* {
-    pointer-events: auto;
-    /* ...but catch clicks on the actual bars */
+.nav-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    pointer-events: none;
 }
 
 .glassy-dock {
@@ -837,40 +840,37 @@ a:hover {
     border-color: rgba(255, 255, 255, 0.08);
 }
 
-/* ============================================================
-   GLASS PILL NAVBAR - Three-Pill Dock
-   ============================================================ */
+/* Consolidated Glass Pill Styling */
 .glass-pill {
     display: flex;
     align-items: center;
-    background: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 40px;
-    padding: 6px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.06);
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    gap: 4px;
+    padding: 8px 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    gap: 8px;
 }
 
 [data-theme='dark'] .glass-pill {
-    background: rgba(15, 23, 42, 0.85);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(15, 23, 42, 0.75);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .brand-pill {
-    padding: 10px 16px;
-    gap: 4px;
+    padding: 10px 20px;
 }
 
 .nav-pill {
-    gap: 2px;
+    padding: 6px 12px;
 }
 
 .actions-pill {
-    gap: 6px;
-    padding: 6px 8px;
+    padding: 6px 16px;
 }
 
 .dock-item-v2 {
@@ -926,63 +926,7 @@ a:hover {
     border: 2px solid rgba(139, 92, 246, 0.2);
 }
 
-/* ============================================================
-   SEARCH FORM IN PILL NAVBAR
-   ============================================================ */
-.search-form-pill {
-    display: flex;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.04);
-    border-radius: 24px;
-    padding: 4px;
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
-}
 
-.search-form-pill:focus-within {
-    background: rgba(139, 92, 246, 0.06);
-    border-color: rgba(139, 92, 246, 0.15);
-}
-
-[data-theme='dark'] .search-form-pill {
-    background: rgba(255, 255, 255, 0.05);
-}
-
-[data-theme='dark'] .search-form-pill:focus-within {
-    background: rgba(139, 92, 246, 0.1);
-    border-color: rgba(139, 92, 246, 0.2);
-}
-
-.search-input-pill {
-    border: none;
-    outline: none;
-    background: transparent;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-primary);
-    padding: 8px 12px;
-    width: 160px;
-    font-family: inherit;
-}
-
-.search-input-pill::placeholder {
-    color: var(--text-muted);
-}
-
-.search-btn-pill {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: none;
-    background: var(--primary);
-    color: white;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    flex-shrink: 0;
-}
 
 .search-btn-pill:hover {
     background: var(--primary-hover);
@@ -1427,6 +1371,46 @@ a:hover {
     max-width: 80%;
     margin-bottom: 2rem;
     filter: drop-shadow(0 20px 40px rgba(124, 92, 255, 0.15));
+}
+
+.modern-auth-left {
+    flex: 1.2;
+    background: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    text-align: center;
+    border-right: 1px solid #E5E7EB;
+}
+
+.modern-auth-logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 3rem;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+}
+
+.modern-auth-logo-container:hover {
+    transform: translateY(-5px);
+}
+
+.modern-auth-logo-container img {
+    width: 64px;
+    height: 64px;
+    border-radius: 14px;
+    box-shadow: 0 8px 16px rgba(124, 92, 255, 0.2);
+}
+
+.modern-auth-logo-container span {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #7C5CFF;
+    letter-spacing: -0.5px;
 }
 
 .modern-auth-left h2 {
@@ -2766,51 +2750,9 @@ small {
 
 /* Legacy Profile V2 Styles Removed */
 
-/* ============================================================
-   THREE-PILL FLOATING DOCK
-   ============================================================ */
-.glassy-floating-nav {
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: auto;
-    display: flex;
-    gap: 16px;
-    align-items: flex-end;
-}
+/* Removed redundant dock styles */
 
-.glass-pill {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(40px);
-    -webkit-backdrop-filter: blur(40px);
-    border-radius: 50px;
-    padding: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-}
-
-[data-theme='dark'] .glass-pill {
-    background: rgba(25, 25, 25, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
-}
-
-.brand-pill {
-    padding: 8px 30px;
-}
-
-.nav-pill {
-    padding: 8px;
-    gap: 4px;
-}
-
-.actions-pill {
-    padding: 8px;
-    gap: 8px;
-}
+/* Redundant pill utility styles removed */
 
 .dock-item-v2 {
     width: 54px;
@@ -2977,6 +2919,122 @@ small {
     align-items: center;
     gap: 20px;
     flex-wrap: wrap;
+}
+
+/* Publish Post "Modal" Styling */
+.modal-view-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+[data-theme='dark'] .modal-view-container {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.modal-view-card {
+    width: 100%;
+    max-width: 650px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: var(--bg-card);
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border);
+    position: relative;
+    animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalSlideUp {
+    from { opacity: 0; transform: translateY(20px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.2s;
+    text-decoration: none !important;
+}
+
+.modal-close-btn:hover {
+    color: var(--text-primary);
+}
+
+/* Floating Scheduling Panel */
+.scheduling-panel-floating {
+    position: fixed;
+    left: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 320px;
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border);
+    z-index: 2100;
+    display: none; /* Hidden by default */
+    animation: panelFadeIn 0.3s ease-out;
+}
+
+[data-theme='dark'] .scheduling-panel-floating {
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@keyframes panelFadeIn {
+    from { opacity: 0; transform: translateY(-50%) translateX(-20px); }
+    to { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
+
+.scheduling-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.scheduling-panel-header h3 {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.close-panel-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.schedule-toggle-container {
+    padding: 12px;
+    background: var(--bg-hover);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 /* ============================================================
@@ -4606,86 +4664,10 @@ body {
     color: var(--text-primary) !important;
 }
 
-/* Global Navbar Redesign */
-.glassy-floating-nav {
-    background: var(--glass-white) !important;
-    backdrop-filter: blur(20px) !important;
-    border: 1px solid var(--glass-border) !important;
-    box-shadow: var(--shadow) !important;
-}
+/* Redundant global navbar styles removed */
 
-.glass-pill {
-    background: var(--glass-white) !important;
-    border: 1px solid var(--glass-border) !important;
-    display: flex;
-    align-items: center;
-}
+/* Redundant search styles removed for consolidation */
 
-/* Navbar Search Pill - REFINED */
-.search-form-pill {
-    display: flex;
-    align-items: center;
-    background: var(--lavender-pill) !important;
-    border: 1.5px solid var(--lavender-border) !important;
-    border-radius: 99px !important;
-    padding: 0 4px 0 16px !important;
-    margin-right: 12px !important;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    height: 38px !important;
-    width: 200px !important;
-    overflow: hidden !important;
-}
-
-.search-form-pill:focus-within {
-    background: var(--bg-card) !important;
-    border-color: var(--primary) !important;
-    box-shadow: 0 0 0 4px var(--lavender-glow) !important;
-    width: 280px !important;
-}
-
-[data-theme='dark'] .search-input-pill {
-    background: transparent !important;
-    color: var(--text-primary) !important;
-}
-
-[data-theme='dark'] .search-form-pill {
-    background: rgba(15, 23, 42, 0.6) !important;
-    border-color: var(--border) !important;
-}
-
-.search-input-pill {
-    background: transparent !important;
-    border: none !important;
-    outline: none !important;
-    font-size: 14px !important;
-    color: var(--text-primary) !important;
-    width: 100% !important;
-    height: 100% !important;
-    padding: 0 !important;
-    font-weight: 500 !important;
-}
-
-.search-btn-pill {
-    background: var(--primary) !important;
-    color: white !important;
-    border: none !important;
-    width: 30px !important;
-    height: 30px !important;
-    border-radius: 50% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    cursor: pointer !important;
-    transition: all 0.3s !important;
-    margin-left: 8px !important;
-    padding: 0 !important;
-    flex-shrink: 0 !important;
-}
-
-.search-btn-pill:hover {
-    transform: scale(1.1) rotate(5deg) !important;
-    background: var(--primary-hover) !important;
-}
 
 /* Feed & Dashboard Cards */
 .card,
@@ -4721,29 +4703,35 @@ body {
 }
 
 /* ============================================================
-   ULTRA-PREMIUM SEARCH BAR ENHANCEMENTS
+   ULTRA-PREMIUM SEARCH BAR ENHANCEMENTS - EXPANDABLE
    ============================================================ */
-
 .search-form-pill {
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
-    justify-content: space-between !important;
-    background: #ffffff !important;
-    border: 1.5px solid var(--lavender-border) !important;
-    border-radius: 99px !important;
-    padding: 0 4px 0 16px !important;
+    justify-content: center !important; /* Centered in circular state */
+    background: var(--bg-card) !important;
+    border: 1.5px solid var(--border) !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
     margin-bottom: 0 !important;
-    height: 40px !important;
-    width: 240px !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.05) !important;
+    height: 42px !important;
+    width: 42px !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    cursor: pointer !important;
+    overflow: hidden !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    z-index: 10 !important;
 }
 
+.search-form-pill:hover,
 .search-form-pill:focus-within {
+    width: 260px !important;
+    border-radius: 99px !important;
+    padding: 0 4px 0 16px !important;
+    justify-content: space-between !important;
     border-color: var(--primary) !important;
     box-shadow: 0 0 0 4px var(--lavender-glow) !important;
-    width: 320px !important;
 }
 
 .search-input-pill {
@@ -4756,24 +4744,36 @@ body {
     padding: 0 !important;
     font-weight: 500 !important;
     min-width: 0 !important;
-    /* Prevents flex items from overflowing */
+    width: 0 !important; /* Collapsed */
+    opacity: 0 !important;
+    transition: all 0.3s ease !important;
+}
+
+.search-form-pill:hover .search-input-pill,
+.search-form-pill:focus-within .search-input-pill {
+    width: 100% !important;
+    opacity: 1 !important;
+    margin-right: 8px !important;
 }
 
 .search-btn-pill {
     background: var(--primary) !important;
     color: white !important;
     border: none !important;
-    width: 32px !important;
-    height: 32px !important;
+    width: 34px !important;
+    height: 34px !important;
     border-radius: 50% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
-    transition: all 0.2s ease !important;
-    padding: 0 !important;
-    margin-left: 8px !important;
     flex-shrink: 0 !important;
+    transition: all 0.3s !important;
+}
+
+[data-theme='dark'] .search-form-pill {
+    background: rgba(15, 23, 42, 0.8) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 .search-btn-pill:hover {
@@ -4804,13 +4804,28 @@ body {
     color: var(--text-primary) !important;
 }
 
+[data-theme='dark'] .profile-tabs-container {
+    background: var(--dash-card) !important;
+    color: var(--dash-text-main) !important;
+    border: 1px solid var(--dash-border) !important;
+}
+
 .profile-tabs-container .nav-link {
     color: var(--text-secondary) !important;
+}
+
+[data-theme='dark'] .profile-tabs-container .nav-link {
+    color: var(--dash-text-muted) !important;
 }
 
 .profile-tabs-container .nav-link.active {
     color: var(--primary) !important;
     border-bottom: 3px solid var(--primary) !important;
+}
+
+[data-theme='dark'] .profile-tabs-container .nav-link.active {
+    color: var(--dash-primary) !important;
+    border-bottom-color: var(--dash-primary) !important;
 }
 
 .premium-stat-val {
@@ -4825,6 +4840,12 @@ body {
     background: #ffffff !important;
     border: 1px solid rgba(139, 92, 246, 0.1) !important;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-theme='dark'] .profile-tabs-container {
+    background: var(--dash-card) !important;
+    border: 1px solid var(--dash-border) !important;
+    box-shadow: var(--dash-shadow) !important;
 }
 
 
@@ -5347,7 +5368,8 @@ body {
 
 .luxury-stats-footer {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
+    gap: 60px;
     padding-top: 40px;
     border-top: 1px solid #f0f0f0;
 }
@@ -5807,6 +5829,4 @@ body {
 
 .trending-tag:hover .tag-name {
     color: var(--primary);
-=======
->>>>>>> 49d8fa7de989b0161b7e67477586b02f7ab55eb0
 }

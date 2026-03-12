@@ -4,17 +4,15 @@
 <head th:replace="~{fragments/layout :: head('Login')}"></head>
 
 <body class="auth-body light-theme">
-    <header class="auth-header">
-        <a th:href="@{/}" class="auth-header-logo">
-            <img th:src="@{/images/logo.png}" alt="RevConnect"
-                style="width: 40px; height: 40px; border-radius: 10px;" />
-            <span>RevConnect</span>
-        </a>
-    </header>
 
     <div class="modern-auth-split">
         <!-- LEFT: Branding & Illustration -->
         <div class="modern-auth-left">
+            <a th:href="@{/}" class="modern-auth-logo-container">
+                <img th:src="@{/images/logo.png}" alt="RevConnect" />
+                <span>RevConnect</span>
+            </a>
+
             <img th:src="@{/images/lavender_signup_illustration.png}" class="modern-auth-illustration"
                 alt="Illustration" />
 

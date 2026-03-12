@@ -24,7 +24,7 @@
                     </div>
                     <div class="user-grid" th:if="${!searchResults.empty}">
                         <div th:each="u : ${searchResults}">
-                            <div th:replace="~{fragments/profile_cards :: sophieModernCard(${u}, 'light')}"></div>
+                            <div th:replace="~{fragments/profile_cards :: sophieModernCard(${u}, 'glass')}"></div>
                         </div>
                     </div>
                 </div>

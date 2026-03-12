@@ -65,7 +65,12 @@
                                 <p class="text-muted small mb-0">Disable platform access for regular users.</p>
                             </div>
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" style="width: 48px; height: 24px;">
+                                <form th:action="@{/admin/settings/update}" method="post" id="maintenanceForm">
+                                    <input type="hidden" name="key" value="MAINTENANCE_MODE">
+                                    <input type="hidden" name="value" th:value="${maintenanceMode ? 'false' : 'true'}">
+                                    <input class="form-check-input" type="checkbox" style="width: 48px; height: 24px;" 
+                                           th:checked="${maintenanceMode}" onchange="document.getElementById('maintenanceForm').submit()">
+                                </form>
                             </div>
                         </div>
 
@@ -76,8 +81,12 @@
                                 <p class="text-muted small mb-0">Allow or block new signups.</p>
                             </div>
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" checked
-                                    style="width: 48px; height: 24px;">
+                                <form th:action="@{/admin/settings/update}" method="post" id="signupForm">
+                                    <input type="hidden" name="key" value="BLOCK_SIGNUP">
+                                    <input type="hidden" name="value" th:value="${signupBlocked ? 'false' : 'true'}">
+                                    <input class="form-check-input" type="checkbox" style="width: 48px; height: 24px;"
+                                           th:checked="${!signupBlocked}" onchange="document.getElementById('signupForm').submit()">
+                                </form>
                             </div>
                         </div>
                     </div>

@@ -40,7 +40,7 @@
                 </svg>
                 <span>Home</span>
             </a>
-            <a th:href="@{/dashboard}" class="dock-item-v2"
+            <a sec:authorize="hasAnyRole('CREATOR', 'BUSINESS')" th:href="@{/dashboard}" class="dock-item-v2"
                 th:classappend="${#httpServletRequest != null and #httpServletRequest.requestURI == '/dashboard'} ? 'active' : ''"
                 title="Dashboard">
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -174,7 +174,7 @@
                 <span class="qa-title-text">Quick Actions</span>
             </h3>
             <nav class="sidebar-nav">
-                <a th:href="@{/dashboard}" class="sidebar-link"
+                <a sec:authorize="hasAnyRole('CREATOR', 'BUSINESS')" th:href="@{/dashboard}" class="sidebar-link"
                     th:classappend="${#httpServletRequest != null and #httpServletRequest.requestURI == '/dashboard'} ? 'active' : ''">
                     <span class="sidebar-link-icon">
                         <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2"

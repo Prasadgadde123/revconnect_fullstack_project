@@ -42,8 +42,8 @@
                 class="btn btn-sm btn-primary rounded-pill px-3 connect-btn-ajax"
                 th:data-user-id="${user.id}">Connect</button>
 
-            <!-- Follow (only for business/creator) -->
-            <button th:if="${user.role.name() == 'BUSINESS' or user.role.name() == 'CREATOR'}"
+            <!-- Follow -->
+            <button th:if="${currentUser != null and user.id != currentUser.id}"
                 class="btn btn-sm btn-outline-primary rounded-pill px-3 follow-btn-ajax" th:data-user-id="${user.id}"
                 th:text="${globalFollowingIds != null and globalFollowingIds.contains(user.id) ? 'Following' : 'Follow'}">Follow</button>
         </div>
@@ -110,8 +110,8 @@
                     th:if="${(globalConnectedIds == null or !globalConnectedIds.contains(user.id)) and (globalPendingSentIds == null or !globalPendingSentIds.contains(user.id))}"
                     class="btn btn-primary rounded-pill connect-btn-ajax" th:data-user-id="${user.id}">Connect</button>
 
-                <!-- Follow (only for business/creator) -->
-                <button th:if="${user.role.name() == 'BUSINESS' or user.role.name() == 'CREATOR'}"
+                <!-- Follow -->
+                <button th:if="${currentUser != null and user.id != currentUser.id}"
                     class="btn btn-outline-primary rounded-pill follow-btn-ajax" th:data-user-id="${user.id}"
                     th:text="${globalFollowingIds != null and globalFollowingIds.contains(user.id) ? 'Following' : 'Follow'}">Follow</button>
             </div>
@@ -167,8 +167,8 @@
                                         class="btn btn-primary rounded-pill px-4 connect-btn-ajax"
                                         th:data-user-id="${user.id}">Connect</button>
 
-                                    <!-- Follow (only for business/creator) -->
-                                    <button th:if="${user.role.name() == 'BUSINESS' or user.role.name() == 'CREATOR'}"
+                                    <!-- Follow -->
+                                    <button th:if="${!isOwner}"
                                         class="btn btn-outline-primary rounded-pill px-4 follow-btn-ajax"
                                         th:data-user-id="${user.id}"
                                         th:text="${globalFollowingIds != null and globalFollowingIds.contains(user.id) ? 'Following' : 'Follow'}">Follow</button>
@@ -257,8 +257,8 @@
                     class="btn premium-btn-shimmer btn-sm px-3 connect-btn-ajax"
                     th:data-user-id="${user.id}">Connect</button>
 
-                <!-- Follow (only for business/creator) -->
-                <button th:if="${user.role.name() == 'BUSINESS' or user.role.name() == 'CREATOR'}"
+                <!-- Follow -->
+                <button th:if="${currentUser != null and user.id != currentUser.id}"
                     class="btn btn-sm btn-outline-primary rounded-pill px-3 follow-btn-ajax"
                     th:data-user-id="${user.id}"
                     th:text="${globalFollowingIds != null and globalFollowingIds.contains(user.id) ? 'Following' : 'Follow'}">Follow</button>
@@ -335,8 +335,8 @@
                     class="btn premium-btn-shimmer rounded-pill py-2 connect-btn-ajax"
                     th:data-user-id="${user.id}">Connect</button>
 
-                <!-- Follow (only for business/creator) -->
-                <button th:if="${user.role.name() == 'BUSINESS' or user.role.name() == 'CREATOR'}"
+                <!-- Follow -->
+                <button th:if="${currentUser != null and user.id != currentUser.id}"
                     class="btn btn-outline-primary rounded-pill follow-btn-ajax" th:data-user-id="${user.id}"
                     th:text="${globalFollowingIds != null and globalFollowingIds.contains(user.id) ? 'Following' : 'Follow'}">Follow</button>
             </div>
@@ -398,8 +398,8 @@
                                 class="btn premium-btn-shimmer px-4 py-3 rounded-pill fw-bold connect-btn-ajax"
                                 th:data-user-id="${user.id}">Connect</button>
 
-                            <!-- Follow (only for business/creator) -->
-                            <button th:if="${user.role.name() == 'BUSINESS' or user.role.name() == 'CREATOR'}"
+                            <!-- Follow -->
+                            <button th:if="${!isOwner}"
                                 class="btn btn-outline-primary px-4 py-3 rounded-pill fw-bold follow-btn-ajax"
                                 th:data-user-id="${user.id}"
                                 th:text="${globalFollowingIds != null and globalFollowingIds.contains(user.id) ? 'Following' : 'Follow'}">Follow</button>
@@ -501,8 +501,8 @@
                                 class="sophie-follow-btn connect-btn-ajax" th:data-user-id="${user.id}">Connect
                                 +</button>
 
-                            <!-- Follow (only for business/creator) -->
-                            <button th:if="${user.role.name() == 'BUSINESS' or user.role.name() == 'CREATOR'}"
+                            <!-- Follow -->
+                            <button th:if="${currentUser != null and user.id != currentUser.id}"
                                 class="sophie-follow-btn follow-btn-ajax" th:data-user-id="${user.id}"
                                 th:text="${globalFollowingIds != null and globalFollowingIds.contains(user.id) ? 'Following' : 'Follow +'}">Follow
                                 +</button>
@@ -577,8 +577,8 @@
                                     class="sophie-follow-btn btn-lg px-5 py-3 connect-btn-ajax"
                                     th:data-user-id="${user.id}">Connect +</button>
 
-                                <!-- Follow (only for business/creator) -->
-                                <button th:if="${user.role.name() == 'BUSINESS' or user.role.name() == 'CREATOR'}"
+                                <!-- Follow -->
+                                <button th:if="${currentUser != null and user.id != currentUser.id}"
                                     class="sophie-follow-btn btn-lg px-5 py-3 follow-btn-ajax"
                                     th:data-user-id="${user.id}"
                                     th:text="${globalFollowingIds != null and globalFollowingIds.contains(user.id) ? 'Following' : 'Follow +'}">Follow
@@ -650,8 +650,8 @@
                         class="btn-luxury btn-luxury-primary connect-btn-ajax"
                         th:data-user-id="${user.id}">CONNECT</button>
 
-                    <!-- Follow Button (Only for Business and Creator) -->
-                    <button th:if="${!isOwner && (user.role.name() == 'BUSINESS' || user.role.name() == 'CREATOR')}"
+                    <!-- Follow Button -->
+                    <button th:if="${!isOwner}"
                         class="btn-luxury follow-btn-ajax"
                         th:classappend="${globalFollowingIds != null and globalFollowingIds.contains(user.id) ? 'btn-luxury-outline' : 'btn-luxury-primary'}"
                         th:data-user-id="${user.id}" data-active-text="FOLLOWING" data-inactive-text="FOLLOW">
