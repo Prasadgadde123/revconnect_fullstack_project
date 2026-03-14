@@ -1,0 +1,208 @@
+2026-03-14 21:16:19 [main] INFO  org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.revconnect.ConnectionServiceTest]: ConnectionServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-03-14 21:16:19 [main] INFO  org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.revconnect.RevConnectAppApplication for test class com.revconnect.ConnectionServiceTest
+2026-03-14 21:16:20 [main] INFO  org.springframework.boot.devtools.restart.RestartApplicationListener - Restart disabled due to context in which it is running
+2026-03-14 21:16:20 [main] INFO  com.revconnect.ConnectionServiceTest - Starting ConnectionServiceTest using Java 25.0.1 with PID 30700 (started by MOHAN SIVA KIRAN in C:\Users\MOHAN SIVA KIRAN\IdeaProjects\revconnect_fullstack_project)
+2026-03-14 21:16:20 [main] DEBUG com.revconnect.ConnectionServiceTest - Running with Spring Boot v3.2.0, Spring v6.1.1
+2026-03-14 21:16:20 [main] INFO  com.revconnect.ConnectionServiceTest - The following 1 profile is active: "test"
+2026-03-14 21:16:21 [main] INFO  org.springframework.data.repository.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-03-14 21:16:22 [main] INFO  org.springframework.data.repository.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 110 ms. Found 9 JPA repository interfaces.
+2026-03-14 21:16:23 [main] INFO  org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-03-14 21:16:24 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-03-14 21:16:26 [main] INFO  org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-03-14 21:16:26 [main] INFO  org.springframework.data.jpa.repository.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-03-14 21:16:28 [main] WARN  org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-03-14 21:16:29 [main] INFO  com.revconnect.ConnectionServiceTest - Started ConnectionServiceTest in 9.77 seconds (process running for 12.792)
+2026-03-14 21:16:31 [main] INFO  com.revconnect.service.UserService - New user registered: userA
+2026-03-14 21:16:32 [main] INFO  com.revconnect.service.UserService - New user registered: userB
+2026-03-14 21:16:33 [main] DEBUG com.revconnect.service.NotificationService - Notification created for userB: userA sent you a connection request
+2026-03-14 21:16:33 [main] INFO  com.revconnect.service.UserService - New user registered: userA
+2026-03-14 21:16:33 [main] INFO  com.revconnect.service.UserService - New user registered: userB
+2026-03-14 21:16:33 [main] DEBUG com.revconnect.service.NotificationService - Notification created for userB: userA sent you a connection request
+2026-03-14 21:16:33 [main] DEBUG com.revconnect.service.NotificationService - Notification created for userA: userB accepted your connection request
+2026-03-14 21:16:33 [main] INFO  org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.revconnect.NotificationServiceTest]: NotificationServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-03-14 21:16:33 [main] INFO  org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.revconnect.RevConnectAppApplication for test class com.revconnect.NotificationServiceTest
+2026-03-14 21:16:34 [main] INFO  com.revconnect.service.UserService - New user registered: recip
+2026-03-14 21:16:34 [main] INFO  com.revconnect.service.UserService - New user registered: actor
+2026-03-14 21:16:34 [main] DEBUG com.revconnect.service.NotificationService - Notification created for recip: Liked your post
+2026-03-14 21:16:34 [main] INFO  org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.revconnect.PostServiceTest]: PostServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-03-14 21:16:34 [main] INFO  org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.revconnect.RevConnectAppApplication for test class com.revconnect.PostServiceTest
+2026-03-14 21:16:34 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:16:34 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:16:34 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:16:36 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:16:36 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:16:36 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:16:36 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:16:36 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:16:37 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:16:37 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:16:37 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:16:37 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:16:38 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:16:38 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:16:38 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:16:38 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:16:38 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:16:38 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:16:39 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:16:39 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:16:39 [main] INFO  com.revconnect.service.UserService - post_other followed post_author
+2026-03-14 21:16:39 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:16:39 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:16:40 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:16:40 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:16:40 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:16:40 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:16:40 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:16:40 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:16:40 [main] INFO  com.revconnect.service.PostService - Post created by post_other
+2026-03-14 21:16:41 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:16:41 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:16:41 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:16:41 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:16:41 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:16:41 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:16:42 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:16:42 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:16:42 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:16:42 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:16:42 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:16:42 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:16:43 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:16:43 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:16:43 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:16:43 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:16:43 [main] INFO  com.revconnect.service.PostService - Post created by post_other
+2026-03-14 21:16:44 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:16:44 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:16:44 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:16:44 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:16:44 [main] DEBUG com.revconnect.service.NotificationService - Notification created for post_author: post_other shared your post
+2026-03-14 21:16:44 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:16:45 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:16:45 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:16:45 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:16:45 [main] INFO  org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.revconnect.ProductServiceTest]: ProductServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-03-14 21:16:45 [main] INFO  org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.revconnect.RevConnectAppApplication for test class com.revconnect.ProductServiceTest
+2026-03-14 21:16:45 [main] INFO  com.revconnect.service.UserService - New user registered: business_test
+2026-03-14 21:16:46 [main] INFO  com.revconnect.service.UserService - New user registered: business_test
+2026-03-14 21:16:46 [main] INFO  org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.revconnect.UserServiceTest]: UserServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-03-14 21:16:46 [main] INFO  org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.revconnect.RevConnectAppApplication for test class com.revconnect.UserServiceTest
+2026-03-14 21:16:46 [main] INFO  com.revconnect.service.UserService - New user registered: testuser
+2026-03-14 21:16:46 [main] INFO  com.revconnect.service.UserService - New user registered: testuser
+2026-03-14 21:16:46 [main] INFO  com.revconnect.service.UserService - New user registered: testuser
+2026-03-14 21:16:46 [main] INFO  com.revconnect.service.UserService - New user registered: testuser
+2026-03-14 21:16:47 [main] INFO  com.revconnect.service.UserService - New user registered: testuser
+2026-03-14 21:16:47 [main] INFO  com.revconnect.service.UserService - New user registered: testuser
+2026-03-14 21:16:47 [main] INFO  com.revconnect.service.UserService - New user registered: target
+2026-03-14 21:16:47 [main] INFO  com.revconnect.service.UserService - testuser followed target
+2026-03-14 21:16:47 [main] INFO  com.revconnect.service.UserService - New user registered: testuser
+2026-03-14 21:16:48 [main] INFO  com.revconnect.service.UserService - Password reset successful for user: testuser
+2026-03-14 21:16:48 [main] INFO  com.revconnect.service.UserService - New user registered: testuser
+2026-03-14 21:16:48 [main] INFO  com.revconnect.service.UserService - New user registered: testuser
+2026-03-14 21:16:49 [main] INFO  com.revconnect.service.UserService - New user registered: testuser
+2026-03-14 21:16:49 [SpringApplicationShutdownHook] INFO  org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-03-14 21:17:01 [main] INFO  org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.revconnect.ConnectionServiceTest]: ConnectionServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-03-14 21:17:01 [main] INFO  org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.revconnect.RevConnectAppApplication for test class com.revconnect.ConnectionServiceTest
+2026-03-14 21:17:01 [main] INFO  org.springframework.boot.devtools.restart.RestartApplicationListener - Restart disabled due to context in which it is running
+2026-03-14 21:17:02 [main] INFO  com.revconnect.ConnectionServiceTest - Starting ConnectionServiceTest using Java 25.0.1 with PID 23240 (started by MOHAN SIVA KIRAN in C:\Users\MOHAN SIVA KIRAN\IdeaProjects\revconnect_fullstack_project)
+2026-03-14 21:17:02 [main] DEBUG com.revconnect.ConnectionServiceTest - Running with Spring Boot v3.2.0, Spring v6.1.1
+2026-03-14 21:17:02 [main] INFO  com.revconnect.ConnectionServiceTest - The following 1 profile is active: "test"
+2026-03-14 21:17:03 [main] INFO  org.springframework.data.repository.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-03-14 21:17:03 [main] INFO  org.springframework.data.repository.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 119 ms. Found 9 JPA repository interfaces.
+2026-03-14 21:17:05 [main] INFO  org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-03-14 21:17:05 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-03-14 21:17:07 [main] INFO  org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-03-14 21:17:08 [main] INFO  org.springframework.data.jpa.repository.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-03-14 21:17:10 [main] WARN  org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-03-14 21:17:12 [main] INFO  com.revconnect.ConnectionServiceTest - Started ConnectionServiceTest in 11.015 seconds (process running for 13.312)
+2026-03-14 21:17:16 [main] INFO  com.revconnect.service.UserService - New user registered: userA
+2026-03-14 21:17:17 [main] INFO  com.revconnect.service.UserService - New user registered: userB
+2026-03-14 21:17:17 [main] DEBUG com.revconnect.service.NotificationService - Notification created for userB: userA sent you a connection request
+2026-03-14 21:17:18 [main] INFO  com.revconnect.service.UserService - New user registered: userA
+2026-03-14 21:17:18 [main] INFO  com.revconnect.service.UserService - New user registered: userB
+2026-03-14 21:17:18 [main] DEBUG com.revconnect.service.NotificationService - Notification created for userB: userA sent you a connection request
+2026-03-14 21:17:18 [main] DEBUG com.revconnect.service.NotificationService - Notification created for userA: userB accepted your connection request
+2026-03-14 21:17:19 [main] INFO  org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.revconnect.NotificationServiceTest]: NotificationServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-03-14 21:17:19 [main] INFO  org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.revconnect.RevConnectAppApplication for test class com.revconnect.NotificationServiceTest
+2026-03-14 21:17:19 [main] INFO  com.revconnect.service.UserService - New user registered: recip
+2026-03-14 21:17:20 [main] INFO  com.revconnect.service.UserService - New user registered: actor
+2026-03-14 21:17:20 [main] DEBUG com.revconnect.service.NotificationService - Notification created for recip: Liked your post
+2026-03-14 21:17:20 [main] INFO  org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.revconnect.PostServiceTest]: PostServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-03-14 21:17:20 [main] INFO  org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.revconnect.RevConnectAppApplication for test class com.revconnect.PostServiceTest
+2026-03-14 21:17:20 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:17:21 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:17:22 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:17:22 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:17:22 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:17:23 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:17:23 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:17:23 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:17:24 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:17:24 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:17:25 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:17:25 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:17:25 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:17:26 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:17:27 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:17:27 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:17:27 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:17:28 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:17:28 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:17:28 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:17:28 [main] INFO  com.revconnect.service.UserService - post_other followed post_author
+2026-03-14 21:17:29 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:17:30 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:17:30 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:17:30 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:17:31 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:17:31 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:17:32 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:17:32 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:17:32 [main] INFO  com.revconnect.service.PostService - Post created by post_other
+2026-03-14 21:17:32 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:17:33 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:17:34 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:17:34 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:17:34 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:17:35 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:17:35 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:17:35 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:17:36 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:17:36 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:17:37 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:17:37 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:17:37 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:17:38 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:17:38 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:17:38 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:17:38 [main] INFO  com.revconnect.service.PostService - Post created by post_other
+2026-03-14 21:17:39 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:17:40 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:17:40 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:17:40 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:17:40 [main] DEBUG com.revconnect.service.NotificationService - Notification created for post_author: post_other shared your post
+2026-03-14 21:17:41 [main] INFO  com.revconnect.service.UserService - New user registered: post_author
+2026-03-14 21:17:41 [main] INFO  com.revconnect.service.UserService - New user registered: post_other
+2026-03-14 21:17:42 [main] INFO  com.revconnect.service.UserService - New user registered: post_admin
+2026-03-14 21:17:42 [main] INFO  com.revconnect.service.PostService - Post created by post_author
+2026-03-14 21:17:42 [main] INFO  org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.revconnect.ProductServiceTest]: ProductServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-03-14 21:17:42 [main] INFO  org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.revconnect.RevConnectAppApplication for test class com.revconnect.ProductServiceTest
+2026-03-14 21:17:42 [main] INFO  com.revconnect.service.UserService - New user registered: business_test
+2026-03-14 21:17:43 [main] INFO  com.revconnect.service.UserService - New user registered: business_test
+2026-03-14 21:17:43 [main] INFO  org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.revconnect.UserServiceTest]: UserServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-03-14 21:17:43 [main] INFO  org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.revconnect.RevConnectAppApplication for test class com.revconnect.UserServiceTest
+2026-03-14 21:17:43 [main] INFO  com.revconnect.service.UserService - New user registered: testuser
+2026-03-14 21:17:44 [main] INFO  com.revconnect.service.UserService - New user registered: testuser
+2026-03-14 21:17:45 [main] INFO  com.revconnect.service.UserService - New user registered: testuser
+2026-03-14 21:17:45 [main] INFO  com.revconnect.service.UserService - New user registered: testuser
+2026-03-14 21:17:46 [main] INFO  com.revconnect.service.UserService - New user registered: testuser
+2026-03-14 21:17:47 [main] INFO  com.revconnect.service.UserService - New user registered: testuser
+2026-03-14 21:17:47 [main] INFO  com.revconnect.service.UserService - New user registered: target
+2026-03-14 21:17:47 [main] INFO  com.revconnect.service.UserService - testuser followed target
+2026-03-14 21:17:48 [main] INFO  com.revconnect.service.UserService - New user registered: testuser
+2026-03-14 21:17:48 [main] INFO  com.revconnect.service.UserService - Password reset successful for user: testuser
+2026-03-14 21:17:49 [main] INFO  com.revconnect.service.UserService - New user registered: testuser
+2026-03-14 21:17:50 [main] INFO  com.revconnect.service.UserService - New user registered: testuser
+2026-03-14 21:17:50 [main] INFO  com.revconnect.service.UserService - New user registered: testuser
+2026-03-14 21:17:51 [SpringApplicationShutdownHook] INFO  org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'

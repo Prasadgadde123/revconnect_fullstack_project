@@ -4,7 +4,9 @@ import com.revconnect.entity.Post;
 import com.revconnect.enums.NotificationType;
 import com.revconnect.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import com.revconnect.entity.User;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,54 +16,63 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class PostSchedulerService {
+
+    private static final Logger logger = LogManager.getLogger(PostSchedulerService.class);
 
     private final PostRepository postRepository;
     private final NotificationService notificationService;
 
-    /**
-     * Scan every minute for posts that are due to be published
-     */
     @Scheduled(fixedRate = 60000)
     @Transactional
     public void publishDuePosts() {
         LocalDateTime now = LocalDateTime.now();
+        logger.debug("Scheduler running at: {} - checking for due posts", now);
+
         List<Post> duePosts = postRepository.findDuePosts(now);
-        
-        if (duePosts.isEmpty()) return;
-        
-        log.info("Found {} due posts to publish", duePosts.size());
-        
+
+        if (duePosts.isEmpty()) {
+            logger.debug("No due posts found at: {}", now);
+            return;
+        }
+
+        logger.info("Found {} due posts to publish at: {}", duePosts.size(), now);
+
         for (Post post : duePosts) {
             try {
                 publishPost(post);
             } catch (Exception e) {
-                log.error("Failed to publish post {}: {}", post.getId(), e.getMessage());
+                logger.error("Failed to publish post id: {} by user: {} - error: {}",
+                        post.getId(), post.getAuthor().getUsername(), e.getMessage(), e);
             }
         }
+
+        logger.info("Scheduler completed - processed {} posts", duePosts.size());
     }
 
     private void publishPost(Post post) {
+        logger.info("Publishing scheduled post id: {} by user: {}", post.getId(), post.getAuthor().getUsername());
+
         post.setPublished(true);
         postRepository.save(post);
-        
-        // Notify followers
+
         String authorName = post.getAuthor().getDisplayNameOrUsername();
         String message = String.format("New post from %s: %s", authorName, truncate(post.getContent(), 50));
         String linkUrl = "/post/" + post.getId();
-        
-        post.getAuthor().getFollowers().forEach(follower -> {
+
+        int notifyCount = 0;
+        for (User follower : post.getAuthor().getFollowers()) {
             notificationService.createNotification(
-                follower, 
-                post.getAuthor(), 
-                NotificationType.SYSTEM, 
-                message, 
-                linkUrl
+                    follower,
+                    post.getAuthor(),
+                    NotificationType.SYSTEM,
+                    message,
+                    linkUrl
             );
-        });
-        
-        log.info("Post {} by {} is now live!", post.getId(), post.getAuthor().getUsername());
+            notifyCount++;
+        }
+
+        logger.info("Post id: {} published and {} followers notified", post.getId(), notifyCount);
     }
 
     private String truncate(String text, int length) {
