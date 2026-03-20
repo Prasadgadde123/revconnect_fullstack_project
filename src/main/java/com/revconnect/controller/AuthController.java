@@ -39,7 +39,7 @@ public class AuthController {
         boolean signupBlocked = systemSettingRepository.findBySettingKey("BLOCK_SIGNUP")
                 .map(s -> Boolean.parseBoolean(s.getSettingValue()))
                 .orElse(false);
-        
+
         model.addAttribute("registerDTO", new RegisterDTO());
         model.addAttribute("signupBlocked", signupBlocked);
         return "auth/register";
@@ -50,15 +50,37 @@ public class AuthController {
                            BindingResult result,
                            RedirectAttributes redirectAttributes,
                            Model model) {
+
+        // ── PASSWORD MATCH CHECK ──────────────────────────────────────────
+        // Check BEFORE result.hasErrors() so it shows as a field-level error
+        // right next to the Confirm Password input field
+        if (dto.getPassword() != null && dto.getConfirmPassword() != null
+                && !dto.getPassword().equals(dto.getConfirmPassword())) {
+            result.rejectValue("confirmPassword", "error.confirmPassword",
+                    "Passwords do not match");
+        }
+        // ─────────────────────────────────────────────────────────────────
+
         if (result.hasErrors()) {
+            boolean signupBlocked = systemSettingRepository.findBySettingKey("BLOCK_SIGNUP")
+                    .map(s -> Boolean.parseBoolean(s.getSettingValue()))
+                    .orElse(false);
+            model.addAttribute("registerDTO", dto);
+            model.addAttribute("signupBlocked", signupBlocked);
             return "auth/register";
         }
+
         try {
             userService.register(dto);
             redirectAttributes.addFlashAttribute("success", "Account created! Please login.");
             return "redirect:/login";
         } catch (IllegalArgumentException e) {
+            boolean signupBlocked = systemSettingRepository.findBySettingKey("BLOCK_SIGNUP")
+                    .map(s -> Boolean.parseBoolean(s.getSettingValue()))
+                    .orElse(false);
             model.addAttribute("error", e.getMessage());
+            model.addAttribute("registerDTO", dto);
+            model.addAttribute("signupBlocked", signupBlocked);
             return "auth/register";
         }
     }

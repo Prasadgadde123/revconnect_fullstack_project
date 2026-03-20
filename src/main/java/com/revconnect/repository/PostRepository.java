@@ -24,13 +24,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
         @Query("SELECT p FROM Post p WHERE p.deleted = false AND p.author = :author AND p.published = false AND p.scheduledAt > :now AND p.scheduledAt <= :cutoffTime ORDER BY p.scheduledAt ASC")
         List<Post> findSoonToBePublishedPosts(@Param("author") User author, @Param("now") java.time.LocalDateTime now,
-                        @Param("cutoffTime") java.time.LocalDateTime cutoffTime);
+                                              @Param("cutoffTime") java.time.LocalDateTime cutoffTime);
 
         @Query("SELECT p FROM Post p WHERE p.deleted = false AND " +
-                        "p.author.id IN :userIds AND p.published = true " +
-                        "ORDER BY p.createdAt DESC")
+                "p.author.id IN :userIds AND p.published = true " +
+                "ORDER BY p.createdAt DESC")
         Page<Post> findFeedPosts(@Param("userIds") List<Long> userIds,
-                        Pageable pageable);
+                                 Pageable pageable);
 
         /**
          * Personalized Feed Query: Calculates an engagement score based on likes,
@@ -38,38 +38,35 @@ public interface PostRepository extends JpaRepository<Post, Long> {
          * The weights are calibrated for professional platform relevance.
          */
         @Query("SELECT p FROM Post p " +
-                        "LEFT JOIN p.likes l " +
-                        "LEFT JOIN p.comments c " +
-                        "WHERE p.deleted = false " +
-                        "AND (p.author.id IN :userIds) " +
-                        "AND p.published = true " +
-                        "GROUP BY p.id " +
-                        "ORDER BY (COUNT(DISTINCT l) * 1.5 + COUNT(DISTINCT c) * 3.0 + (CASE WHEN p.postType = 'REPOST' THEN 5 ELSE 0 END)) DESC, p.createdAt DESC")
+                "WHERE p.deleted = false " +
+                "AND p.author.id IN :userIds " +
+                "AND p.published = true " +
+                "ORDER BY p.createdAt DESC")
         Page<Post> findRankedFeedPosts(@Param("userIds") List<Long> userIds,
-                        Pageable pageable);
+                                       Pageable pageable);
 
         @Query("SELECT p FROM Post p WHERE p.deleted = false AND " +
-                        "p.author.id IN :userIds AND p.postType = :postType AND p.published = true "
-                        +
-                        "ORDER BY p.createdAt DESC")
+                "p.author.id IN :userIds AND p.postType = :postType AND p.published = true "
+                +
+                "ORDER BY p.createdAt DESC")
         Page<Post> findFeedPostsByType(@Param("userIds") List<Long> userIds,
-                        @Param("postType") com.revconnect.enums.PostType postType,
-                        Pageable pageable);
+                                       @Param("postType") com.revconnect.enums.PostType postType,
+                                       Pageable pageable);
 
         @Query("SELECT p FROM Post p WHERE p.deleted = false AND " +
-                        "p.author.id IN :userIds AND p.author.role = :userRole AND p.published = true "
-                        +
-                        "ORDER BY p.createdAt DESC")
+                "p.author.id IN :userIds AND p.author.role = :userRole AND p.published = true "
+                +
+                "ORDER BY p.createdAt DESC")
         Page<Post> findFeedPostsByRole(@Param("userIds") List<Long> userIds,
-                        @Param("userRole") com.revconnect.enums.UserRole userRole,
-                        Pageable pageable);
+                                       @Param("userRole") com.revconnect.enums.UserRole userRole,
+                                       Pageable pageable);
 
         @Query("SELECT p FROM Post p WHERE p.deleted = false AND p.scheduledAt IS NOT NULL AND p.scheduledAt <= :now AND p.published = false")
         List<Post> findDuePosts(@Param("now") java.time.LocalDateTime now);
 
         @Query("SELECT p FROM Post p WHERE p.deleted = false AND " +
-                        "LOWER(p.hashtags) LIKE LOWER(CONCAT('%',:tag,'%')) " +
-                        "ORDER BY p.createdAt DESC")
+                "LOWER(p.hashtags) LIKE LOWER(CONCAT('%',:tag,'%')) " +
+                "ORDER BY p.createdAt DESC")
         List<Post> findByHashtag(@Param("tag") String tag);
 
         @Query("SELECT p FROM Post p WHERE p.deleted = false ORDER BY SIZE(p.likes) DESC")
@@ -100,7 +97,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         /** Find existing reposts of a post by a specific user */
         @Query("SELECT p FROM Post p WHERE p.originalPost = :originalPost AND p.author = :author AND p.postType = 'REPOST' AND p.deleted = false")
         List<Post> findRepostsByOriginalPostAndAuthor(@Param("originalPost") Post originalPost,
-                        @Param("author") User author);
+                                                      @Param("author") User author);
 
         /** Check if a user has reposted a post */
         @Query("SELECT COUNT(p) > 0 FROM Post p WHERE p.originalPost.id = :postId AND p.author.id = :userId AND p.postType = 'REPOST' AND p.deleted = false")
